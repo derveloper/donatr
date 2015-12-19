@@ -49,19 +49,20 @@ public class DonatrRouter extends AbstractVerticle {
 
 		router.route("/socket*").handler(sockJSHandler);
 
-		router.get("/io/:id").handler(routingContext -> {
-			routingContext.session().put("id", routingContext.request().getParam("id"));
-			routingContext.response().sendFile("webroot/index.html");
-		});
 
-		final StaticHandler staticHandler = StaticHandler.create();
-		router.get().pathRegex("^(/|/(js|css)/.*)").handler(staticHandler);
 
 		new CommandHandler(eventStore);
 		apiRouter.get("/aggregate/dashboard/:id").handler(new DashboardAggregateHandler(eventStore));
 		apiRouter.post("/account").handler(new AccountEventHandler(eventStore));
 
 		router.mountSubRouter("/api", apiRouter);
+
+		final StaticHandler staticHandler = StaticHandler.create();
+		router.get().pathRegex("^(/.+\\.(js|css|ttf|png|jpg|woff|ico))").handler(staticHandler);
+
+		router.get("/*").handler(routingContext -> {
+			routingContext.response().sendFile("webroot/index.html");
+		});
 
 		server.requestHandler(router::accept).listen(8080);
 	}
