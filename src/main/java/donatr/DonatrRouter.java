@@ -4,24 +4,32 @@ import donatr.event.AccountCreatedEvent;
 import io.resx.core.EventStore;
 import io.resx.core.SQLiteEventStore;
 import io.resx.core.command.Command;
+import io.vertx.core.Handler;
 import io.vertx.core.json.Json;
+import io.vertx.core.json.JsonObject;
+import io.vertx.ext.auth.jwt.JWTOptions;
 import io.vertx.ext.web.handler.sockjs.SockJSHandlerOptions;
 import io.vertx.rxjava.core.AbstractVerticle;
 import io.vertx.rxjava.core.eventbus.EventBus;
 import io.vertx.rxjava.core.eventbus.MessageConsumer;
 import io.vertx.rxjava.core.http.HttpServer;
+import io.vertx.rxjava.core.http.HttpServerRequest;
 import io.vertx.rxjava.core.http.HttpServerResponse;
+import io.vertx.rxjava.ext.auth.jwt.JWTAuth;
+import io.vertx.rxjava.ext.web.Cookie;
 import io.vertx.rxjava.ext.web.Router;
 import io.vertx.rxjava.ext.web.RoutingContext;
 import io.vertx.rxjava.ext.web.handler.BodyHandler;
+import io.vertx.rxjava.ext.web.handler.CorsHandler;
+import io.vertx.rxjava.ext.web.handler.JWTAuthHandler;
 import io.vertx.rxjava.ext.web.handler.StaticHandler;
 import io.vertx.rxjava.ext.web.handler.sockjs.SockJSHandler;
+import org.apache.commons.lang3.StringUtils;
 import rx.Observable;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import static org.apache.commons.lang3.Validate.notEmpty;
+import java.util.concurrent.TimeUnit;
 
 public class DonatrRouter extends AbstractVerticle {
 	public void start() {
@@ -30,12 +38,49 @@ public class DonatrRouter extends AbstractVerticle {
 				.registerDefaultCodec(AccountCreatedEvent.class, new EventMessageCodec());
 		final EventStore eventStore = new SQLiteEventStore(vertx, eventBus, null);
 
+		final JWTAuth authProvider = getJwtAuth();
+
 		final HttpServer server = vertx.createHttpServer();
 
 		final Router router = Router.router(vertx);
 		final Router apiRouter = Router.router(vertx);
 
+		router.route().handler(CorsHandler.create("*"));
 		router.route().handler(BodyHandler.create());
+
+		apiRouter.post("/session").handler(loginHandler(authProvider));
+
+		apiRouter
+				.routeWithRegex("^((?!/session).)*$")
+				.handler(routingContext -> {
+					routingContext.cookies().stream()
+							.filter(cookie1 -> "auth".equals(cookie1.getName()))
+							.findFirst().ifPresent(cookie2 -> {
+						if ("auth".equals(cookie2.getName()) && StringUtils.isNotBlank(cookie2.getValue())) {
+							routingContext.request().headers()
+									.add("Authorization", "Bearer " + cookie2.getValue());
+						}
+					});
+					JWTAuthHandler.create(authProvider).handle(routingContext);
+				});
+
+		apiRouter.get("/session").handler(routingContext2 -> {
+			JWTAuthHandler.create(authProvider).handle(routingContext2);
+			if(!routingContext2.response().ended()) {
+				routingContext2.response().end();
+			}
+		});
+
+		apiRouter.delete("/session")
+				.handler(routingContext -> {
+					JWTAuthHandler.create(authProvider).handle(routingContext);
+					if(!routingContext.response().ended()) {
+						Cookie cookie = Cookie.cookie("auth", "");
+						cookie.setMaxAge(TimeUnit.DAYS.toSeconds(-1));
+						routingContext.addCookie(cookie);
+						routingContext.response().end("Bye!");
+					}
+				});
 
 		final SockJSHandlerOptions options = new SockJSHandlerOptions().setHeartbeatInterval(2000);
 
@@ -54,7 +99,7 @@ public class DonatrRouter extends AbstractVerticle {
 		router.mountSubRouter("/api", apiRouter);
 
 		final StaticHandler staticHandler = StaticHandler.create();
-		router.get().pathRegex("^(/.+\\.(js|css|ttf|png|jpg|woff|ico))").handler(staticHandler);
+		router.get().pathRegex("^(/.+\\.(js|css|ttf|gif|png|jpg|woff|ico))").handler(staticHandler);
 
 		router.get("/*").handler(routingContext -> {
 			routingContext.response().sendFile("webroot/index.html");
@@ -74,5 +119,34 @@ public class DonatrRouter extends AbstractVerticle {
 				.subscribe(reply -> {
 					response.setStatusCode(200).end(Json.encode(reply));
 				});
+	}
+
+	private Handler<RoutingContext> loginHandler(final JWTAuth authProvider) {
+		return routingContext -> {
+			final HttpServerRequest request = routingContext.request();
+			final HttpServerResponse response = routingContext.response();
+			final String username = request.getFormAttribute("username");
+			final String password = request.getFormAttribute("password");
+
+			if ("test".equals(username) && "test".equals(password)) {
+				final String token = authProvider.generateToken(new JsonObject().put("username", username), new JWTOptions());
+				Cookie cookie = Cookie.cookie("auth", token);
+				cookie.setMaxAge(TimeUnit.HOURS.toSeconds(12));
+				cookie.setHttpOnly(true);
+				routingContext.addCookie(cookie);
+				response.setStatusCode(200).end(token);
+			} else {
+				response.setStatusCode(401).end();
+			}
+		};
+	}
+
+	private JWTAuth getJwtAuth() {
+		final JsonObject config = new JsonObject().put("keyStore", new JsonObject()
+				.put("path", "keystore.jceks")
+				.put("type", "jceks")
+				.put("password", "secret"));
+
+		return JWTAuth.create(vertx, config);
 	}
 }

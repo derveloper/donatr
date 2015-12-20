@@ -6,6 +6,9 @@ import { argv } from 'yargs'
 const debug = _debug('app:config:_base')
 const config = {
   env : process.env.NODE_ENV,
+  api : {
+    url: 'http://localhost:8080'
+  },
 
   // ----------------------------------
   // Project Structure

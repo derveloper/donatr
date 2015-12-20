@@ -1,6 +1,7 @@
 import { createAction, handleActions } from 'redux-actions'
 import request from 'superagent'
 import cookie from 'cookie'
+import config from 'config'
 
 // ------------------------------------
 // Constants
@@ -21,7 +22,7 @@ export const loggedOut = createAction(SESSION_LOGGED_OUT)
 export const create = (username, password) => {
   return (dispatch) => {
     request
-      .post('http://localhost:8080/login')
+      .post(config.api.url + '/login')
       .type('form')
       .withCredentials()
       .send({username, password})
@@ -35,7 +36,7 @@ export const create = (username, password) => {
 export const destroy = () => {
   return (dispatch) => {
     request
-      .get('http://localhost:8080/logout')
+      .get(config.api.url + '/logout')
       .withCredentials()
       .end((err, res) => {
         if (err) dispatch(failed(false))
@@ -45,11 +46,10 @@ export const destroy = () => {
 }
 
 export function tryToAuthenticate () {
-  console.log('isAuthenticated')
   return (dispatch) => {
     if (!hasAuthCookie()) {
       request
-        .get('http://localhost:8080/')
+        .get(config.api.url + '/')
         .withCredentials()
         .end((err, res) => {
           if (err || res.statusCode === 401) dispatch(loggedOut())
