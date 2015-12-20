@@ -13,7 +13,7 @@ public class UpdateDashboardEvent extends DistributedEvent {
 	private Account account;
 
 	public UpdateDashboardEvent() {
-		super(UPDATE_DASHBOARD_EVENT_ADDRESS);
+		this(null);
 	}
 
 	public UpdateDashboardEvent(Account account) {

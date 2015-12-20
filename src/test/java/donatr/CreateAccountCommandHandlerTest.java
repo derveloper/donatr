@@ -1,5 +1,7 @@
 package donatr;
 
+import donatr.command.CreateTransactionCommand;
+import donatr.command.CreditAccountCommand;
 import donatr.command.DepositAccountCommand;
 import donatr.event.AccountCreatedEvent;
 import io.vertx.core.json.Json;
@@ -39,19 +41,48 @@ public class CreateAccountCommandHandlerTest {
 	}
 
 	@Test
-	public void testCreateAccount() throws Exception {
-		String accountName = "foobar";
-		HttpResponse execute = createAccount(accountName);
-		assertCreateAccount(execute, accountName);
-	}
-
-	@Test
 	public void testDepositAccount() throws Exception {
 		String accountName = "foobar";
 		HttpResponse account = createAccount(accountName);
 		final AccountCreatedEvent accountCreatedEvent = Json.decodeValue(responseString(account), AccountCreatedEvent.class);
 		HttpResponse deposit = depositAccount(accountCreatedEvent.getId(), 13.37);
-		assertDepositAccount(deposit, accountCreatedEvent.getId(), 13.37);
+		assertThat(deposit.getStatusLine().getStatusCode(), is(200));
+		assertGetAccount(BigDecimal.valueOf(13.37), accountCreatedEvent.getId());
+	}
+
+	@Test
+	public void testCreditAccount() throws Exception {
+		String accountName = "foobar";
+		HttpResponse account = createAccount(accountName);
+		final AccountCreatedEvent accountCreatedEvent = Json.decodeValue(responseString(account), AccountCreatedEvent.class);
+		HttpResponse credit = creditAccount(accountCreatedEvent.getId(), 13.37);
+		assertThat(credit.getStatusLine().getStatusCode(), is(200));
+		assertGetAccount(BigDecimal.valueOf(-13.37), accountCreatedEvent.getId());
+	}
+
+	@Test
+	public void testCreateTransaction() throws Exception {
+		String accountName = "foobar";
+		HttpResponse accountFrom = createAccount(accountName);
+		HttpResponse accountTo = createAccount(accountName);
+		final AccountCreatedEvent fromAccountEvent = Json.decodeValue(responseString(accountFrom), AccountCreatedEvent.class);
+		final AccountCreatedEvent toAccountEvent = Json.decodeValue(responseString(accountTo), AccountCreatedEvent.class);
+
+		HttpResponse transaction = createTransaction(
+				fromAccountEvent.getId(),
+				toAccountEvent.getId(),
+				13.37);
+
+		assertThat(transaction.getStatusLine().getStatusCode(), is(200));
+		assertGetAccount(BigDecimal.valueOf(-13.37), fromAccountEvent.getId());
+		assertGetAccount(BigDecimal.valueOf(13.37), toAccountEvent.getId());
+	}
+
+	@Test
+	public void testCreateAccount() throws Exception {
+		String accountName = "foobar";
+		HttpResponse execute = createAccount(accountName);
+		assertCreateAccount(execute, accountName);
 	}
 
 	@Test
@@ -72,12 +103,6 @@ public class CreateAccountCommandHandlerTest {
 				containsString(name));
 	}
 
-	private void assertDepositAccount(HttpResponse execute, String id, double balance) throws IOException {
-		System.out.println(responseString(execute));
-		assertThat(execute.getStatusLine().getStatusCode(), is(200));
-		assertGetAccount(BigDecimal.valueOf(balance), id);
-	}
-
 	private HttpResponse createAccount(String username) throws IOException {
 		final String token = responseString(login("test", "test"));
 		List<NameValuePair> parameters = new ArrayList<>();
@@ -87,10 +112,27 @@ public class CreateAccountCommandHandlerTest {
 
 	private HttpResponse depositAccount(String id, double amount) throws IOException {
 		final String token = responseString(login("test", "test"));
-		final DepositAccountCommand depositAccountCommand = new DepositAccountCommand();
-		depositAccountCommand.setId(id);
-		depositAccountCommand.setAmount(BigDecimal.valueOf(amount));
-		return postJson("/api/account/deposit", Json.encode(depositAccountCommand), token);
+		final DepositAccountCommand command = new DepositAccountCommand();
+		command.setId(id);
+		command.setAmount(BigDecimal.valueOf(amount));
+		return postJson("/api/account/deposit", Json.encode(command), token);
+	}
+
+	private HttpResponse creditAccount(String id, double amount) throws IOException {
+		final String token = responseString(login("test", "test"));
+		final CreditAccountCommand command = new CreditAccountCommand();
+		command.setId(id);
+		command.setAmount(BigDecimal.valueOf(amount));
+		return postJson("/api/account/credit", Json.encode(command), token);
+	}
+
+	private HttpResponse createTransaction(String from, String to, double amount) throws IOException {
+		final String token = responseString(login("test", "test"));
+		final CreateTransactionCommand command = new CreateTransactionCommand();
+		command.setAccountFrom(from);
+		command.setAccountTo(to);
+		command.setAmount(BigDecimal.valueOf(amount));
+		return postJson("/api/transaction", Json.encode(command), token);
 	}
 
 	private HttpResponse login(String username, String password) throws IOException {

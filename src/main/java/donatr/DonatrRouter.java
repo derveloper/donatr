@@ -1,8 +1,11 @@
 package donatr;
 
 import donatr.event.AccountCreatedEvent;
+import donatr.event.AccountCreditedEvent;
+import donatr.event.AccountDepositedEvent;
+import donatr.event.TransactionCreatedEvent;
 import io.resx.core.EventStore;
-import io.resx.core.SQLiteEventStore;
+import io.resx.core.InMemoryEventStore;
 import io.resx.core.command.Command;
 import io.vertx.core.Handler;
 import io.vertx.core.json.Json;
@@ -35,8 +38,18 @@ public class DonatrRouter extends AbstractVerticle {
 	public void start() {
 		final EventBus eventBus = vertx.eventBus();
 		((io.vertx.core.eventbus.EventBus) eventBus.getDelegate())
-				.registerDefaultCodec(AccountCreatedEvent.class, new EventMessageCodec());
-		final EventStore eventStore = new SQLiteEventStore(vertx, eventBus, null);
+				.registerDefaultCodec(AccountCreatedEvent.class,
+						new DistributedEventMessageCodec<>(AccountCreatedEvent.class))
+				.registerDefaultCodec(AccountDepositedEvent.class,
+						new DistributedEventMessageCodec<>(AccountDepositedEvent.class))
+				.registerDefaultCodec(AccountCreditedEvent.class,
+						new DistributedEventMessageCodec<>(AccountCreditedEvent.class))
+				.registerDefaultCodec(TransactionCreatedEvent.class,
+						new DistributedEventMessageCodec<>(TransactionCreatedEvent.class))
+		;
+		//final EventStore eventStore = new SQLiteEventStore(vertx, eventBus, null);
+		final EventStore eventStore = new InMemoryEventStore(eventBus);
+		new CommandHandler(eventStore);
 
 		final JWTAuth authProvider = getJwtAuth();
 
@@ -92,10 +105,11 @@ public class DonatrRouter extends AbstractVerticle {
 
 		router.route("/socket*").handler(sockJSHandler);
 
-		new CommandHandler(eventStore);
 		apiRouter.get("/aggregate/account/:id").handler(new AccountAggregateHandler(eventStore));
 		apiRouter.post("/account").handler(new CreateAccountCommandHandler(eventStore));
 		apiRouter.post("/account/deposit").handler(new DepositAccountCommandHandler(eventStore));
+		apiRouter.post("/account/credit").handler(new CreditAccountCommandHandler(eventStore));
+		apiRouter.post("/transaction").handler(new CreateTransactionCommandHandler(eventStore));
 
 		router.mountSubRouter("/api", apiRouter);
 

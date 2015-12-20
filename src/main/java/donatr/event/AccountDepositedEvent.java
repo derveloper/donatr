@@ -14,7 +14,7 @@ public class AccountDepositedEvent extends SourcedEvent {
 	private BigDecimal amount;
 
 	public AccountDepositedEvent() {
-		super(null, null);
+		this(null, null);
 	}
 
 	public AccountDepositedEvent(String id, BigDecimal amount) {

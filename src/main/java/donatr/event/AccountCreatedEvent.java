@@ -12,7 +12,7 @@ public class AccountCreatedEvent extends SourcedEvent {
 	private String name;
 
 	public AccountCreatedEvent() {
-		super(null, null);
+		this(null, null);
 	}
 
 	public AccountCreatedEvent(String id, String name) {

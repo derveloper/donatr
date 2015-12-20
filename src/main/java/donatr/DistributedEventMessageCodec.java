@@ -1,13 +1,19 @@
 package donatr;
 
-import donatr.event.AccountCreatedEvent;
 import io.netty.util.CharsetUtil;
+import io.resx.core.event.DistributedEvent;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.eventbus.MessageCodec;
 import io.vertx.core.json.Json;
 
-public class EventMessageCodec implements MessageCodec<AccountCreatedEvent, String> {
-	public void encodeToWire(Buffer buffer, AccountCreatedEvent distributedEvent) {
+public class DistributedEventMessageCodec<T extends DistributedEvent> implements MessageCodec<T, String> {
+	private final Class<T> clazz;
+
+	public DistributedEventMessageCodec(Class<T> clazz) {
+		this.clazz = clazz;
+	}
+
+	public void encodeToWire(Buffer buffer, T distributedEvent) {
 		String strJson = Json.encode(distributedEvent);
 		byte[] encoded = strJson.getBytes(CharsetUtil.UTF_8);
 		buffer.appendInt(encoded.length);
@@ -22,12 +28,12 @@ public class EventMessageCodec implements MessageCodec<AccountCreatedEvent, Stri
 		return new String(encoded, CharsetUtil.UTF_8);
 	}
 
-	public String transform(AccountCreatedEvent distributedEvent) {
+	public String transform(T distributedEvent) {
 		return Json.encode(distributedEvent);
 	}
 
 	public String name() {
-		return "AccountCreatedEvent";
+		return clazz.getSimpleName();
 	}
 
 	public byte systemCodecID() {

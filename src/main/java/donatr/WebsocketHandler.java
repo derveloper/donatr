@@ -2,14 +2,12 @@ package donatr;
 
 import donatr.event.AccountCreatedEvent;
 import io.resx.core.EventStore;
-import io.resx.core.MongoEventStore;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
 import io.vertx.rxjava.core.buffer.Buffer;
 import io.vertx.rxjava.core.eventbus.MessageConsumer;
 import io.vertx.rxjava.ext.web.handler.sockjs.SockJSSocket;
 import lombok.extern.log4j.Log4j2;
-import donatr.event.UpdateDashboardEvent;
 
 import java.util.Map;
 
