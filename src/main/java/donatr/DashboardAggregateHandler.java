@@ -1,18 +1,15 @@
 package donatr;
 
-import io.resx.core.MongoEventStore;
+import donatr.aggregate.Account;
+import io.resx.core.EventStore;
 import io.vertx.core.Handler;
 import io.vertx.core.json.Json;
-import io.vertx.core.json.JsonObject;
 import io.vertx.rxjava.ext.web.RoutingContext;
-import donatr.aggregate.Account;
-
-import static donatr.Constants.getTodaysEventsQueryFor;
 
 public class DashboardAggregateHandler implements Handler<RoutingContext> {
-	private final MongoEventStore eventStore;
+	private final EventStore eventStore;
 
-	public DashboardAggregateHandler(MongoEventStore eventStore) {
+	public DashboardAggregateHandler(EventStore eventStore) {
 		this.eventStore = eventStore;
 	}
 
@@ -20,9 +17,7 @@ public class DashboardAggregateHandler implements Handler<RoutingContext> {
 	public void handle(RoutingContext routingContext) {
 		String id = routingContext.request().getParam("id");
 
-		JsonObject query = getTodaysEventsQueryFor(id);
-
-		eventStore.load(query, Account.class).subscribe(dashboard -> {
+		eventStore.load(id, Account.class).subscribe(dashboard -> {
 			if(dashboard.getId() == null)
 				routingContext.response().setStatusCode(404).end("aggregate not found");
 			else routingContext.response().end(Json.encode(dashboard));

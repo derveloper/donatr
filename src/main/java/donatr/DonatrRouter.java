@@ -1,8 +1,13 @@
 package donatr;
 
+import donatr.event.AccountCreatedEvent;
 import io.resx.core.EventStore;
+import io.resx.core.InMemoryEventStore;
 import io.resx.core.MongoEventStore;
+import io.resx.core.SQLiteEventStore;
 import io.resx.core.command.Command;
+import io.vertx.core.eventbus.MessageCodec;
+import io.vertx.core.eventbus.impl.codecs.JsonObjectMessageCodec;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.handler.sockjs.SockJSHandlerOptions;
@@ -26,11 +31,9 @@ import static org.apache.commons.lang3.Validate.notEmpty;
 public class DonatrRouter extends AbstractVerticle {
 	public void start() {
 		final EventBus eventBus = vertx.eventBus();
-		final Configuration configuration = new Configuration();
-		String mongo_url = notEmpty(configuration.getString("MONGO_URL", "mongodb://localhost/donatr"));
-		final JsonObject config = new JsonObject()
-				.put("connection_string", mongo_url);
-		final MongoEventStore eventStore = new MongoEventStore(vertx, eventBus, config);
+		((io.vertx.core.eventbus.EventBus) eventBus.getDelegate())
+				.registerDefaultCodec(AccountCreatedEvent.class, new EventMessageCodec());
+		final EventStore eventStore = new InMemoryEventStore(eventBus);
 
 		final HttpServer server = vertx.createHttpServer();
 
@@ -48,8 +51,6 @@ public class DonatrRouter extends AbstractVerticle {
 		sockJSHandler.socketHandler(websocketHandler);
 
 		router.route("/socket*").handler(sockJSHandler);
-
-
 
 		new CommandHandler(eventStore);
 		apiRouter.get("/aggregate/dashboard/:id").handler(new DashboardAggregateHandler(eventStore));

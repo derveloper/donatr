@@ -1,6 +1,7 @@
 package donatr;
 
 import donatr.event.AccountCreatedEvent;
+import io.resx.core.EventStore;
 import io.resx.core.MongoEventStore;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
@@ -14,10 +15,10 @@ import java.util.Map;
 
 @Log4j2
 public class WebsocketHandler implements Handler<SockJSSocket> {
-	private final MongoEventStore eventStore;
+	private final EventStore eventStore;
 	private final Map<String, MessageConsumer<String>> consumers;
 
-	public WebsocketHandler(MongoEventStore eventStore, Map<String, MessageConsumer<String>> websocketConsumers) {
+	public WebsocketHandler(EventStore eventStore, Map<String, MessageConsumer<String>> websocketConsumers) {
 		this.eventStore = eventStore;
 		this.consumers = websocketConsumers;
 	}

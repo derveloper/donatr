@@ -11,6 +11,10 @@ import static donatr.Constants.ACCOUNT_CREATED_EVENT_ADDRESS;
 public class AccountCreatedEvent extends SourcedEvent {
 	private String name;
 
+	public AccountCreatedEvent() {
+		super(null, null);
+	}
+
 	public AccountCreatedEvent(String id, String name) {
 		super(ACCOUNT_CREATED_EVENT_ADDRESS, id);
 		this.name = name;

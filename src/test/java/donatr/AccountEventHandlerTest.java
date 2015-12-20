@@ -29,7 +29,7 @@ public class AccountEventHandlerTest {
 	@BeforeClass
 	public static void beforeClass() throws InterruptedException {
 		new DonatrMain().run(Vertx.vertx());
-		Thread.sleep(2000);
+		Thread.sleep(1000);
 	}
 
 	@Test

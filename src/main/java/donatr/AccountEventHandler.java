@@ -1,30 +1,30 @@
 package donatr;
 
 import donatr.command.CreateAccountCommand;
-import io.resx.core.MongoEventStore;
+import donatr.event.AccountCreatedEvent;
+import io.resx.core.EventStore;
 import io.vertx.core.Handler;
 import io.vertx.rxjava.ext.web.RoutingContext;
-import donatr.command.DepositAccountCommand;
 
-import java.math.BigDecimal;
+import java.util.UUID;
 
 public class AccountEventHandler implements Handler<RoutingContext> {
-	private final MongoEventStore eventStore;
+	private final EventStore eventStore;
 
-	public AccountEventHandler(MongoEventStore eventStore) {
+	public AccountEventHandler(EventStore eventStore) {
 		this.eventStore = eventStore;
 	}
 
 	@Override
 	public void handle(RoutingContext routingContext) {
 		CreateAccountCommand command = getCommand(routingContext);
-		DonatrRouter.publishCommand(command, eventStore, routingContext, String.class);
+		DonatrRouter.publishCommand(command, eventStore, routingContext, AccountCreatedEvent.class);
 	}
 
 	private CreateAccountCommand getCommand(RoutingContext routingContext) {
 		CreateAccountCommand command = new CreateAccountCommand();
 		String name = routingContext.request().getFormAttribute("name");
-		String id = routingContext.request().getParam("id");
+		String id = UUID.randomUUID().toString();
 		command.setName(name);
 		command.setId(id);
 		return command;
