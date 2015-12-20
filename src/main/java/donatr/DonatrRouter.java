@@ -56,10 +56,10 @@ public class DonatrRouter extends AbstractVerticle {
 		((io.vertx.core.eventbus.EventBus) eventBus.getDelegate())
 				.registerDefaultCodec(AccountCreatedEvent.class,
 						new DistributedEventMessageCodec<>(AccountCreatedEvent.class))
-				.registerDefaultCodec(AccountDepositedEvent.class,
-						new DistributedEventMessageCodec<>(AccountDepositedEvent.class))
 				.registerDefaultCodec(AccountCreditedEvent.class,
 						new DistributedEventMessageCodec<>(AccountCreditedEvent.class))
+				.registerDefaultCodec(AccountDebitedEvent.class,
+						new DistributedEventMessageCodec<>(AccountDebitedEvent.class))
 				.registerDefaultCodec(TransactionCreatedEvent.class,
 						new DistributedEventMessageCodec<>(TransactionCreatedEvent.class))
 				.registerDefaultCodec(FixedAmountAccountCreatedEvent.class,
@@ -126,8 +126,8 @@ public class DonatrRouter extends AbstractVerticle {
 		apiRouter.get("/aggregate/account/:id").handler(new AccountAggregateHandler(eventStore));
 		apiRouter.get("/aggregate/fixedamountaccount/:id").handler(new FixedAmountAccountAggregateHandler(eventStore));
 		apiRouter.post("/account").handler(new CreateAccountCommandHandler(eventStore));
-		apiRouter.post("/account/deposit").handler(new DepositAccountCommandHandler(eventStore));
 		apiRouter.post("/account/credit").handler(new CreditAccountCommandHandler(eventStore));
+		apiRouter.post("/account/debit").handler(new DebitAccountCommandHandler(eventStore));
 		apiRouter.post("/transaction").handler(new CreateTransactionCommandHandler(eventStore));
 		apiRouter.post("/donation").handler(new CreateFixedAmountAccountCommandHandler(eventStore));
 

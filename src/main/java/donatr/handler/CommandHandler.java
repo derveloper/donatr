@@ -15,10 +15,10 @@ public class CommandHandler {
 	}
 
 	private void attachCommandHandlers() {
-		eventStore.consumer(DepositAccountCommand.class, message -> {
-			DepositAccountCommand createCommand = Json.decodeValue(message.body(), DepositAccountCommand.class);
-			AccountDepositedEvent createdEvent = new AccountDepositedEvent(createCommand.getId(), createCommand.getAmount());
-			eventStore.publishSourcedEvent(createdEvent, AccountDepositedEvent.class)
+		eventStore.consumer(CreditAccountCommand.class, message -> {
+			CreditAccountCommand createCommand = Json.decodeValue(message.body(), CreditAccountCommand.class);
+			AccountCreditedEvent createdEvent = new AccountCreditedEvent(createCommand.getId(), createCommand.getAmount());
+			eventStore.publishSourcedEvent(createdEvent, AccountCreditedEvent.class)
 					.subscribe(message::reply);
 		});
 
@@ -29,10 +29,10 @@ public class CommandHandler {
 					.subscribe(message::reply);
 		});
 
-		eventStore.consumer(CreditAccountCommand.class, message -> {
-			CreditAccountCommand createCommand = Json.decodeValue(message.body(), CreditAccountCommand.class);
-			AccountCreditedEvent createdEvent = new AccountCreditedEvent(createCommand.getId(), createCommand.getAmount());
-			eventStore.publishSourcedEvent(createdEvent, AccountCreditedEvent.class)
+		eventStore.consumer(DebitAccountCommand.class, message -> {
+			DebitAccountCommand createCommand = Json.decodeValue(message.body(), DebitAccountCommand.class);
+			AccountDebitedEvent createdEvent = new AccountDebitedEvent(createCommand.getId(), createCommand.getAmount());
+			eventStore.publishSourcedEvent(createdEvent, AccountDebitedEvent.class)
 					.subscribe(message::reply);
 		});
 
@@ -56,11 +56,11 @@ public class CommandHandler {
 			);
 			eventStore.publishSourcedEvent(createdEvent, TransactionCreatedEvent.class)
 					.subscribe(event -> {
-						AccountDepositedEvent depositEvent = new AccountDepositedEvent();
+						AccountCreditedEvent depositEvent = new AccountCreditedEvent();
 						depositEvent.setId(event.getAccountTo());
 						depositEvent.setAmount(event.getAmount());
 
-						AccountCreditedEvent creditEvent = new AccountCreditedEvent();
+						AccountDebitedEvent creditEvent = new AccountDebitedEvent();
 						creditEvent.setId(event.getAccountFrom());
 						creditEvent.setAmount(event.getAmount());
 
@@ -71,9 +71,9 @@ public class CommandHandler {
 										creditEvent.setAmount(fixedAmountDonation1.getAmount());
 										depositEvent.setAmount(fixedAmountDonation1.getAmount());
 									}
-									eventStore.publishSourcedEvent(depositEvent, AccountDepositedEvent.class)
+									eventStore.publishSourcedEvent(depositEvent, AccountCreditedEvent.class)
 											.subscribe();
-									eventStore.publishSourcedEvent(creditEvent, AccountCreditedEvent.class)
+									eventStore.publishSourcedEvent(creditEvent, AccountDebitedEvent.class)
 											.subscribe();
 									message.reply(event);
 								});

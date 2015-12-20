@@ -2,8 +2,8 @@ package donatr;
 
 import donatr.command.CreateFixedAmountAccountCommand;
 import donatr.command.CreateTransactionCommand;
+import donatr.command.DebitAccountCommand;
 import donatr.command.CreditAccountCommand;
-import donatr.command.DepositAccountCommand;
 import donatr.event.AccountCreatedEvent;
 import donatr.event.FixedAmountAccountCreatedEvent;
 import io.vertx.core.json.Json;
@@ -144,18 +144,18 @@ public class CreateAccountCommandHandlerTest {
 
 	private HttpResponse depositAccount(String id, double amount) throws IOException {
 		final String token = responseString(login("test", "test"));
-		final DepositAccountCommand command = new DepositAccountCommand();
-		command.setId(id);
-		command.setAmount(BigDecimal.valueOf(amount));
-		return postJson("/api/account/deposit", Json.encode(command), token);
-	}
-
-	private HttpResponse creditAccount(String id, double amount) throws IOException {
-		final String token = responseString(login("test", "test"));
 		final CreditAccountCommand command = new CreditAccountCommand();
 		command.setId(id);
 		command.setAmount(BigDecimal.valueOf(amount));
 		return postJson("/api/account/credit", Json.encode(command), token);
+	}
+
+	private HttpResponse creditAccount(String id, double amount) throws IOException {
+		final String token = responseString(login("test", "test"));
+		final DebitAccountCommand command = new DebitAccountCommand();
+		command.setId(id);
+		command.setAmount(BigDecimal.valueOf(amount));
+		return postJson("/api/account/debit", Json.encode(command), token);
 	}
 
 	private HttpResponse createTransaction(String from, String to, double amount) throws IOException {

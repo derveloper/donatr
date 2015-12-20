@@ -6,15 +6,15 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 
-import static donatr.Constants.DEPOSIT_ACCOUNT_COMMAND_ADDRESS;
+import static donatr.Constants.DEBIT_ACCOUNT_COMMAND_ADDRESS;
 
 @Getter
 @Setter
-public class DepositAccountCommand extends Command {
+public class DebitAccountCommand extends Command {
 	private String id;
 	private BigDecimal amount;
 
-	public DepositAccountCommand() {
-		super(DEPOSIT_ACCOUNT_COMMAND_ADDRESS);
+	public DebitAccountCommand() {
+		super(DEBIT_ACCOUNT_COMMAND_ADDRESS);
 	}
 }

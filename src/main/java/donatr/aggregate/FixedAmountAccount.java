@@ -1,7 +1,7 @@
 package donatr.aggregate;
 
+import donatr.event.AccountDebitedEvent;
 import donatr.event.AccountCreditedEvent;
-import donatr.event.AccountDepositedEvent;
 import donatr.event.FixedAmountAccountCreatedEvent;
 import io.resx.core.Aggregate;
 import lombok.Getter;
@@ -23,11 +23,11 @@ public class FixedAmountAccount extends Aggregate {
 		amount = event.getAmount();
 	}
 
-	public void on(AccountDepositedEvent event) {
+	public void on(AccountCreditedEvent event) {
 		balance = balance.add(event.getAmount());
 	}
 
-	public void on(AccountCreditedEvent event) {
+	public void on(AccountDebitedEvent event) {
 		balance = balance.subtract(event.getAmount());
 	}
 }
