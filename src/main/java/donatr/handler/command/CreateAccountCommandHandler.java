@@ -1,5 +1,6 @@
-package donatr;
+package donatr.handler.command;
 
+import donatr.DonatrRouter;
 import donatr.command.CreateAccountCommand;
 import donatr.event.AccountCreatedEvent;
 import io.resx.core.EventStore;

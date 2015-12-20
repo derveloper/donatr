@@ -1,11 +1,13 @@
 package donatr;
 
-import donatr.event.AccountCreatedEvent;
-import donatr.event.AccountCreditedEvent;
-import donatr.event.AccountDepositedEvent;
-import donatr.event.TransactionCreatedEvent;
+import donatr.event.*;
+import donatr.handler.CommandHandler;
+import donatr.handler.WebsocketHandler;
+import donatr.handler.command.*;
+import donatr.handler.query.AccountAggregateHandler;
+import donatr.handler.query.FixedAmountAccountAggregateHandler;
 import io.resx.core.EventStore;
-import io.resx.core.InMemoryEventStore;
+import io.resx.core.SQLiteEventStore;
 import io.resx.core.command.Command;
 import io.vertx.core.Handler;
 import io.vertx.core.json.Json;
@@ -35,6 +37,20 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class DonatrRouter extends AbstractVerticle {
+	public static <T extends Command, R> void publishCommand(final T payload, final EventStore eventStore, final RoutingContext routingContext, final Class<R> clazz) {
+		final HttpServerResponse response = routingContext.response();
+
+		eventStore.publish(payload, clazz)
+				.onErrorResumeNext(message -> {
+					System.out.println(message.getMessage());
+					response.setStatusCode(500).end(message.getMessage());
+					return Observable.empty();
+				})
+				.subscribe(reply -> {
+					response.setStatusCode(200).end(Json.encode(reply));
+				});
+	}
+
 	public void start() {
 		final EventBus eventBus = vertx.eventBus();
 		((io.vertx.core.eventbus.EventBus) eventBus.getDelegate())
@@ -46,9 +62,11 @@ public class DonatrRouter extends AbstractVerticle {
 						new DistributedEventMessageCodec<>(AccountCreditedEvent.class))
 				.registerDefaultCodec(TransactionCreatedEvent.class,
 						new DistributedEventMessageCodec<>(TransactionCreatedEvent.class))
+				.registerDefaultCodec(FixedAmountAccountCreatedEvent.class,
+						new DistributedEventMessageCodec<>(FixedAmountAccountCreatedEvent.class))
 		;
-		//final EventStore eventStore = new SQLiteEventStore(vertx, eventBus, null);
-		final EventStore eventStore = new InMemoryEventStore(eventBus);
+		final EventStore eventStore = new SQLiteEventStore(vertx, eventBus, null);
+
 		new CommandHandler(eventStore);
 
 		final JWTAuth authProvider = getJwtAuth();
@@ -79,7 +97,7 @@ public class DonatrRouter extends AbstractVerticle {
 
 		apiRouter.get("/session").handler(routingContext2 -> {
 			JWTAuthHandler.create(authProvider).handle(routingContext2);
-			if(!routingContext2.response().ended()) {
+			if (!routingContext2.response().ended()) {
 				routingContext2.response().end();
 			}
 		});
@@ -87,7 +105,7 @@ public class DonatrRouter extends AbstractVerticle {
 		apiRouter.delete("/session")
 				.handler(routingContext -> {
 					JWTAuthHandler.create(authProvider).handle(routingContext);
-					if(!routingContext.response().ended()) {
+					if (!routingContext.response().ended()) {
 						Cookie cookie = Cookie.cookie("auth", "");
 						cookie.setMaxAge(TimeUnit.DAYS.toSeconds(-1));
 						routingContext.addCookie(cookie);
@@ -106,10 +124,12 @@ public class DonatrRouter extends AbstractVerticle {
 		router.route("/socket*").handler(sockJSHandler);
 
 		apiRouter.get("/aggregate/account/:id").handler(new AccountAggregateHandler(eventStore));
+		apiRouter.get("/aggregate/fixedamountaccount/:id").handler(new FixedAmountAccountAggregateHandler(eventStore));
 		apiRouter.post("/account").handler(new CreateAccountCommandHandler(eventStore));
 		apiRouter.post("/account/deposit").handler(new DepositAccountCommandHandler(eventStore));
 		apiRouter.post("/account/credit").handler(new CreditAccountCommandHandler(eventStore));
 		apiRouter.post("/transaction").handler(new CreateTransactionCommandHandler(eventStore));
+		apiRouter.post("/donation").handler(new CreateFixedAmountAccountCommandHandler(eventStore));
 
 		router.mountSubRouter("/api", apiRouter);
 
@@ -121,20 +141,6 @@ public class DonatrRouter extends AbstractVerticle {
 		});
 
 		server.requestHandler(router::accept).listen(8080);
-	}
-
-	public static <T extends Command, R> void publishCommand(final T payload, final EventStore eventStore, final RoutingContext routingContext, final Class<R> clazz) {
-		final HttpServerResponse response = routingContext.response();
-
-		eventStore.publish(payload, clazz)
-				.onErrorResumeNext(message -> {
-					System.out.println(message.getMessage());
-					response.setStatusCode(500).end(message.getMessage());
-					return Observable.empty();
-				})
-				.subscribe(reply -> {
-					response.setStatusCode(200).end(Json.encode(reply));
-				});
 	}
 
 	private Handler<RoutingContext> loginHandler(final JWTAuth authProvider) {

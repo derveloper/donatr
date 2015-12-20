@@ -1,8 +1,7 @@
-package donatr;
+package donatr.handler.command;
 
+import donatr.DonatrRouter;
 import donatr.command.CreateTransactionCommand;
-import donatr.command.DepositAccountCommand;
-import donatr.event.AccountDepositedEvent;
 import donatr.event.TransactionCreatedEvent;
 import io.resx.core.EventStore;
 import io.vertx.core.Handler;

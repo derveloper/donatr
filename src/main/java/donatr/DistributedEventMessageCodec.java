@@ -37,6 +37,6 @@ public class DistributedEventMessageCodec<T extends DistributedEvent> implements
 	}
 
 	public byte systemCodecID() {
-		return (byte)-1;
+		return (byte) -1;
 	}
 }

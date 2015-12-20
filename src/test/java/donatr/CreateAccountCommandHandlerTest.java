@@ -1,9 +1,11 @@
 package donatr;
 
+import donatr.command.CreateFixedAmountAccountCommand;
 import donatr.command.CreateTransactionCommand;
 import donatr.command.CreditAccountCommand;
 import donatr.command.DepositAccountCommand;
 import donatr.event.AccountCreatedEvent;
+import donatr.event.FixedAmountAccountCreatedEvent;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
 import io.vertx.rxjava.core.Vertx;
@@ -41,16 +43,6 @@ public class CreateAccountCommandHandlerTest {
 	}
 
 	@Test
-	public void testDepositAccount() throws Exception {
-		String accountName = "foobar";
-		HttpResponse account = createAccount(accountName);
-		final AccountCreatedEvent accountCreatedEvent = Json.decodeValue(responseString(account), AccountCreatedEvent.class);
-		HttpResponse deposit = depositAccount(accountCreatedEvent.getId(), 13.37);
-		assertThat(deposit.getStatusLine().getStatusCode(), is(200));
-		assertGetAccount(BigDecimal.valueOf(13.37), accountCreatedEvent.getId());
-	}
-
-	@Test
 	public void testCreditAccount() throws Exception {
 		String accountName = "foobar";
 		HttpResponse account = createAccount(accountName);
@@ -58,6 +50,23 @@ public class CreateAccountCommandHandlerTest {
 		HttpResponse credit = creditAccount(accountCreatedEvent.getId(), 13.37);
 		assertThat(credit.getStatusLine().getStatusCode(), is(200));
 		assertGetAccount(BigDecimal.valueOf(-13.37), accountCreatedEvent.getId());
+	}
+
+	@Test
+	public void testCreateAccount() throws Exception {
+		String accountName = "foobar";
+		HttpResponse execute = createAccount(accountName);
+		assertCreateAccount(execute, accountName);
+	}
+
+	@Test
+	public void testDepositAccount() throws Exception {
+		String accountName = "foobar";
+		HttpResponse account = createAccount(accountName);
+		final AccountCreatedEvent accountCreatedEvent = Json.decodeValue(responseString(account), AccountCreatedEvent.class);
+		HttpResponse deposit = depositAccount(accountCreatedEvent.getId(), 13.37);
+		assertThat(deposit.getStatusLine().getStatusCode(), is(200));
+		assertGetAccount(BigDecimal.valueOf(13.37), accountCreatedEvent.getId());
 	}
 
 	@Test
@@ -79,10 +88,33 @@ public class CreateAccountCommandHandlerTest {
 	}
 
 	@Test
-	public void testCreateAccount() throws Exception {
+	public void testCreateFixedAmountDonation() throws Exception {
+		HttpResponse transaction = createFixedAmountDonation("mate", 1.5);
+		final FixedAmountAccountCreatedEvent fixedAmountAccountCreatedEvent = Json.decodeValue(responseString(transaction), FixedAmountAccountCreatedEvent.class);
+		assertThat(transaction.getStatusLine().getStatusCode(), is(200));
+		assertThat(fixedAmountAccountCreatedEvent.getAmount(), is(BigDecimal.valueOf(1.5)));
+	}
+
+	@Test
+	public void testTransactionWithFixedAmountDonation() throws Exception {
+		HttpResponse accountTo = createFixedAmountDonation("mate", 1.5);
+		final FixedAmountAccountCreatedEvent toAccountEvent = Json.decodeValue(responseString(accountTo), FixedAmountAccountCreatedEvent.class);
+		assertThat(accountTo.getStatusLine().getStatusCode(), is(200));
+		assertThat(toAccountEvent.getAmount(), is(BigDecimal.valueOf(1.5)));
+
 		String accountName = "foobar";
-		HttpResponse execute = createAccount(accountName);
-		assertCreateAccount(execute, accountName);
+		HttpResponse accountFrom = createAccount(accountName);
+		final AccountCreatedEvent fromAccountEvent = Json.decodeValue(responseString(accountFrom), AccountCreatedEvent.class);
+
+		HttpResponse transaction = createTransactionWithDonation(
+				fromAccountEvent.getId(),
+				toAccountEvent.getId(),
+				13.37
+		);
+
+		assertThat(transaction.getStatusLine().getStatusCode(), is(200));
+		assertGetAccount(BigDecimal.valueOf(-1.5), fromAccountEvent.getId());
+		assertGetFixedAmountAccount(BigDecimal.valueOf(1.5), toAccountEvent.getId());
 	}
 
 	@Test
@@ -128,11 +160,30 @@ public class CreateAccountCommandHandlerTest {
 
 	private HttpResponse createTransaction(String from, String to, double amount) throws IOException {
 		final String token = responseString(login("test", "test"));
+		final CreateTransactionCommand command = makeCreateTransactionCommand(from, to, amount);
+		return postJson("/api/transaction", Json.encode(command), token);
+	}
+
+	private HttpResponse createTransactionWithDonation(String from, String to, double amount) throws IOException {
+		final String token = responseString(login("test", "test"));
+		final CreateTransactionCommand command = makeCreateTransactionCommand(from, to, amount);
+		return postJson("/api/transaction", Json.encode(command), token);
+	}
+
+	private CreateTransactionCommand makeCreateTransactionCommand(String from, String to, double amount) {
 		final CreateTransactionCommand command = new CreateTransactionCommand();
 		command.setAccountFrom(from);
 		command.setAccountTo(to);
 		command.setAmount(BigDecimal.valueOf(amount));
-		return postJson("/api/transaction", Json.encode(command), token);
+		return command;
+	}
+
+	private HttpResponse createFixedAmountDonation(String name, double amount) throws IOException {
+		final String token = responseString(login("test", "test"));
+		final CreateFixedAmountAccountCommand command = new CreateFixedAmountAccountCommand();
+		command.setName(name);
+		command.setAmount(BigDecimal.valueOf(amount));
+		return postJson("/api/donation", Json.encode(command), token);
 	}
 
 	private HttpResponse login(String username, String password) throws IOException {
@@ -143,7 +194,7 @@ public class CreateAccountCommandHandlerTest {
 	}
 
 	@Test
-	public void testGetDashboardAggregate() throws Exception {
+	public void testGetAccountAggregate() throws Exception {
 		String name = UUID.randomUUID().toString();
 		final HttpResponse account = createAccount(name);
 		final String accountJson = responseString(account);
@@ -155,7 +206,18 @@ public class CreateAccountCommandHandlerTest {
 
 	private void assertGetAccount(BigDecimal balance, String id) throws IOException {
 		final String token = responseString(login("test", "test"));
-		HttpResponse execute = get("/api/aggregate/account/" + id, token);
+		final String path = "/api/aggregate/account/";
+		assertAccountAggregate(balance, id, token, path);
+	}
+
+	private void assertGetFixedAmountAccount(BigDecimal balance, String id) throws IOException {
+		final String token = responseString(login("test", "test"));
+		final String path = "/api/aggregate/fixedamountaccount/";
+		assertAccountAggregate(balance, id, token, path);
+	}
+
+	private void assertAccountAggregate(BigDecimal balance, String id, String token, String path) throws IOException {
+		HttpResponse execute = get(path + id, token);
 		String actual = responseString(execute);
 		assertThat(actual, execute.getStatusLine().getStatusCode(), is(200));
 		final JsonObject jsonObject = new JsonObject(actual);

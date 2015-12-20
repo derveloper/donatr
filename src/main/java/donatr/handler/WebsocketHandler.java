@@ -1,4 +1,4 @@
-package donatr;
+package donatr.handler;
 
 import donatr.event.AccountCreatedEvent;
 import io.resx.core.EventStore;
@@ -26,12 +26,11 @@ public class WebsocketHandler implements Handler<SockJSSocket> {
 		final String sessionId = sockJSSocket.webSession().id();
 		final MessageConsumer<String> sessionConsumer = consumers.get(sessionId);
 
-		if(sessionConsumer == null) {
+		if (sessionConsumer == null) {
 			final MessageConsumer<String> consumer = eventStore.consumer(AccountCreatedEvent.class, message -> {
 				final String id = sockJSSocket.webSession().get("id").toString();
 				JsonObject dashboardJson = new JsonObject(message.body());
-				if (dashboardJson.getString("id").equals(id))
-				{
+				if (dashboardJson.getString("id").equals(id)) {
 					sockJSSocket.write(Buffer.buffer(message.body()));
 				}
 			});

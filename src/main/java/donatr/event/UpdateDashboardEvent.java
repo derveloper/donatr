@@ -1,9 +1,9 @@
 package donatr.event;
 
+import donatr.aggregate.Account;
 import io.resx.core.event.DistributedEvent;
 import lombok.Getter;
 import lombok.Setter;
-import donatr.aggregate.Account;
 
 import static donatr.Constants.UPDATE_DASHBOARD_EVENT_ADDRESS;
 

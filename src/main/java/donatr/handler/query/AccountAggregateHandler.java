@@ -1,4 +1,4 @@
-package donatr;
+package donatr.handler.query;
 
 import donatr.aggregate.Account;
 import io.resx.core.EventStore;
@@ -18,7 +18,7 @@ public class AccountAggregateHandler implements Handler<RoutingContext> {
 		String id = routingContext.request().getParam("id");
 
 		eventStore.load(id, Account.class).subscribe(dashboard -> {
-			if(dashboard.getId() == null)
+			if (dashboard.getId() == null)
 				routingContext.response().setStatusCode(404).end("aggregate not found");
 			else routingContext.response().end(Json.encode(dashboard));
 		});

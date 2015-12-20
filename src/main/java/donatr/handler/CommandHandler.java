@@ -1,13 +1,8 @@
-package donatr;
+package donatr.handler;
 
-import donatr.command.CreateAccountCommand;
-import donatr.command.CreateTransactionCommand;
-import donatr.command.CreditAccountCommand;
-import donatr.command.DepositAccountCommand;
-import donatr.event.AccountCreatedEvent;
-import donatr.event.AccountCreditedEvent;
-import donatr.event.AccountDepositedEvent;
-import donatr.event.TransactionCreatedEvent;
+import donatr.aggregate.FixedAmountAccount;
+import donatr.command.*;
+import donatr.event.*;
 import io.resx.core.EventStore;
 import io.vertx.core.json.Json;
 
@@ -41,6 +36,16 @@ public class CommandHandler {
 					.subscribe(message::reply);
 		});
 
+		eventStore.consumer(CreateFixedAmountAccountCommand.class, message -> {
+			CreateFixedAmountAccountCommand createCommand = Json.decodeValue(message.body(), CreateFixedAmountAccountCommand.class);
+			FixedAmountAccountCreatedEvent createdEvent = new FixedAmountAccountCreatedEvent(
+					createCommand.getId(),
+					createCommand.getName(),
+					createCommand.getAmount());
+			eventStore.publishSourcedEvent(createdEvent, FixedAmountAccountCreatedEvent.class)
+					.subscribe(message::reply);
+		});
+
 		eventStore.consumer(CreateTransactionCommand.class, message -> {
 			CreateTransactionCommand createCommand = Json.decodeValue(message.body(), CreateTransactionCommand.class);
 			TransactionCreatedEvent createdEvent = new TransactionCreatedEvent(
@@ -59,11 +64,19 @@ public class CommandHandler {
 						creditEvent.setId(event.getAccountFrom());
 						creditEvent.setAmount(event.getAmount());
 
-						eventStore.publishSourcedEvent(depositEvent, AccountDepositedEvent.class)
-								.subscribe();
-						eventStore.publishSourcedEvent(creditEvent, AccountCreditedEvent.class)
-								.subscribe();
-						message.reply(event);
+						eventStore
+								.load(event.getAccountTo(), FixedAmountAccount.class)
+								.subscribe(fixedAmountDonation1 -> {
+									if (fixedAmountDonation1 != null && fixedAmountDonation1.getId() != null) {
+										creditEvent.setAmount(fixedAmountDonation1.getAmount());
+										depositEvent.setAmount(fixedAmountDonation1.getAmount());
+									}
+									eventStore.publishSourcedEvent(depositEvent, AccountDepositedEvent.class)
+											.subscribe();
+									eventStore.publishSourcedEvent(creditEvent, AccountCreditedEvent.class)
+											.subscribe();
+									message.reply(event);
+								});
 					});
 		});
 	}
