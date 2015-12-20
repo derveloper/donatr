@@ -13,17 +13,17 @@ import java.util.UUID;
 public class CreateFixedAmountAccountCommandHandler implements Handler<RoutingContext> {
 	private final EventStore eventStore;
 
-	public CreateFixedAmountAccountCommandHandler(EventStore eventStore) {
+	public CreateFixedAmountAccountCommandHandler(final EventStore eventStore) {
 		this.eventStore = eventStore;
 	}
 
 	@Override
-	public void handle(RoutingContext routingContext) {
-		CreateFixedAmountAccountCommand command = getCommand(routingContext);
+	public void handle(final RoutingContext routingContext) {
+		final CreateFixedAmountAccountCommand command = getCommand(routingContext);
 		DonatrRouter.publishCommand(command, eventStore, routingContext, FixedAmountAccountCreatedEvent.class);
 	}
 
-	private CreateFixedAmountAccountCommand getCommand(RoutingContext routingContext) {
+	private CreateFixedAmountAccountCommand getCommand(final RoutingContext routingContext) {
 		final CreateFixedAmountAccountCommand command = Json.decodeValue(routingContext.getBodyAsString(), CreateFixedAmountAccountCommand.class);
 		command.setId(UUID.randomUUID().toString());
 		return command;

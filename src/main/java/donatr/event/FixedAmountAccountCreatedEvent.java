@@ -18,7 +18,7 @@ public class FixedAmountAccountCreatedEvent extends SourcedEvent {
 		this(null, null, null);
 	}
 
-	public FixedAmountAccountCreatedEvent(String id, String name, BigDecimal amount) {
+	public FixedAmountAccountCreatedEvent(final String id, final String name, final BigDecimal amount) {
 		super(FIXEDAMOUNTACCOUNT_CREATED_EVENT_ADDRESS, id);
 		this.name = name;
 		this.amount = amount;

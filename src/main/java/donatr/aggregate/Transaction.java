@@ -15,7 +15,7 @@ public class Transaction extends Aggregate {
 	private String accountTo;
 	private BigDecimal amount = BigDecimal.ZERO;
 
-	public void on(TransactionCreatedEvent event) {
+	public void on(final TransactionCreatedEvent event) {
 		id = event.getId();
 		amount = event.getAmount();
 	}

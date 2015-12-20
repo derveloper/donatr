@@ -10,7 +10,7 @@ public class Configuration extends CompositeConfiguration {
 		addConfiguration(new EnvironmentConfiguration());
 		try {
 			addConfiguration(new PropertiesConfiguration("application.properties"));
-		} catch (ConfigurationException e) {
+		} catch (final ConfigurationException e) {
 			log.warn(e.getMessage());
 		}
 	}

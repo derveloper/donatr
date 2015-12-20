@@ -9,13 +9,13 @@ import io.vertx.rxjava.ext.web.RoutingContext;
 public class AccountAggregateHandler implements Handler<RoutingContext> {
 	private final EventStore eventStore;
 
-	public AccountAggregateHandler(EventStore eventStore) {
+	public AccountAggregateHandler(final EventStore eventStore) {
 		this.eventStore = eventStore;
 	}
 
 	@Override
-	public void handle(RoutingContext routingContext) {
-		String id = routingContext.request().getParam("id");
+	public void handle(final RoutingContext routingContext) {
+		final String id = routingContext.request().getParam("id");
 
 		eventStore.load(id, Account.class).subscribe(dashboard -> {
 			if (dashboard.getId() == null)

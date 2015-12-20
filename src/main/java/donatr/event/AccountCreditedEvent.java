@@ -17,7 +17,7 @@ public class AccountCreditedEvent extends SourcedEvent {
 		this(null, null);
 	}
 
-	public AccountCreditedEvent(String id, BigDecimal amount) {
+	public AccountCreditedEvent(final String id, final BigDecimal amount) {
 		super(ACCOUNT_CREDITED_EVENT_ADDRESS, id);
 		this.amount = amount;
 	}

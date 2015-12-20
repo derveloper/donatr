@@ -16,20 +16,20 @@ public class WebsocketHandler implements Handler<SockJSSocket> {
 	private final EventStore eventStore;
 	private final Map<String, MessageConsumer<String>> consumers;
 
-	public WebsocketHandler(EventStore eventStore, Map<String, MessageConsumer<String>> websocketConsumers) {
+	public WebsocketHandler(final EventStore eventStore, final Map<String, MessageConsumer<String>> websocketConsumers) {
 		this.eventStore = eventStore;
 		this.consumers = websocketConsumers;
 	}
 
 	@Override
-	public void handle(SockJSSocket sockJSSocket) {
+	public void handle(final SockJSSocket sockJSSocket) {
 		final String sessionId = sockJSSocket.webSession().id();
 		final MessageConsumer<String> sessionConsumer = consumers.get(sessionId);
 
 		if (sessionConsumer == null) {
 			final MessageConsumer<String> consumer = eventStore.consumer(AccountCreatedEvent.class, message -> {
 				final String id = sockJSSocket.webSession().get("id").toString();
-				JsonObject dashboardJson = new JsonObject(message.body());
+				final JsonObject dashboardJson = new JsonObject(message.body());
 				if (dashboardJson.getString("id").equals(id)) {
 					sockJSSocket.write(Buffer.buffer(message.body()));
 				}

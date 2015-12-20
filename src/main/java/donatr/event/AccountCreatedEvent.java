@@ -15,7 +15,7 @@ public class AccountCreatedEvent extends SourcedEvent {
 		this(null, null);
 	}
 
-	public AccountCreatedEvent(String id, String name) {
+	public AccountCreatedEvent(final String id, final String name) {
 		super(ACCOUNT_CREATED_EVENT_ADDRESS, id);
 		this.name = name;
 	}

@@ -16,7 +16,7 @@ public class UpdateDashboardEvent extends DistributedEvent {
 		this(null);
 	}
 
-	public UpdateDashboardEvent(Account account) {
+	public UpdateDashboardEvent(final Account account) {
 		super(UPDATE_DASHBOARD_EVENT_ADDRESS);
 		this.account = account;
 	}

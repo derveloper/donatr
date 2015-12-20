@@ -17,17 +17,17 @@ public class FixedAmountAccount extends Aggregate {
 	private BigDecimal amount = BigDecimal.ZERO;
 	private BigDecimal balance = BigDecimal.ZERO;
 
-	public void on(FixedAmountAccountCreatedEvent event) {
+	public void on(final FixedAmountAccountCreatedEvent event) {
 		id = event.getId();
 		name = event.getName();
 		amount = event.getAmount();
 	}
 
-	public void on(AccountCreditedEvent event) {
+	public void on(final AccountCreditedEvent event) {
 		balance = balance.add(event.getAmount());
 	}
 
-	public void on(AccountDebitedEvent event) {
+	public void on(final AccountDebitedEvent event) {
 		balance = balance.subtract(event.getAmount());
 	}
 }

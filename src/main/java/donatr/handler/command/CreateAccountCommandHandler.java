@@ -12,20 +12,20 @@ import java.util.UUID;
 public class CreateAccountCommandHandler implements Handler<RoutingContext> {
 	private final EventStore eventStore;
 
-	public CreateAccountCommandHandler(EventStore eventStore) {
+	public CreateAccountCommandHandler(final EventStore eventStore) {
 		this.eventStore = eventStore;
 	}
 
 	@Override
-	public void handle(RoutingContext routingContext) {
-		CreateAccountCommand command = getCommand(routingContext);
+	public void handle(final RoutingContext routingContext) {
+		final CreateAccountCommand command = getCommand(routingContext);
 		DonatrRouter.publishCommand(command, eventStore, routingContext, AccountCreatedEvent.class);
 	}
 
-	private CreateAccountCommand getCommand(RoutingContext routingContext) {
-		CreateAccountCommand command = new CreateAccountCommand();
-		String name = routingContext.request().getFormAttribute("name");
-		String id = UUID.randomUUID().toString();
+	private CreateAccountCommand getCommand(final RoutingContext routingContext) {
+		final CreateAccountCommand command = new CreateAccountCommand();
+		final String name = routingContext.request().getFormAttribute("name");
+		final String id = UUID.randomUUID().toString();
 		command.setName(name);
 		command.setId(id);
 		return command;

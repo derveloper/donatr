@@ -9,26 +9,26 @@ import io.vertx.core.json.Json;
 public class DistributedEventMessageCodec<T extends DistributedEvent> implements MessageCodec<T, String> {
 	private final Class<T> clazz;
 
-	public DistributedEventMessageCodec(Class<T> clazz) {
+	public DistributedEventMessageCodec(final Class<T> clazz) {
 		this.clazz = clazz;
 	}
 
-	public void encodeToWire(Buffer buffer, T distributedEvent) {
-		String strJson = Json.encode(distributedEvent);
-		byte[] encoded = strJson.getBytes(CharsetUtil.UTF_8);
+	public void encodeToWire(final Buffer buffer, final T distributedEvent) {
+		final String strJson = Json.encode(distributedEvent);
+		final byte[] encoded = strJson.getBytes(CharsetUtil.UTF_8);
 		buffer.appendInt(encoded.length);
-		Buffer buff = Buffer.buffer(encoded);
+		final Buffer buff = Buffer.buffer(encoded);
 		buffer.appendBuffer(buff);
 	}
 
-	public String decodeFromWire(int pos, Buffer buffer) {
-		int length = buffer.getInt(pos);
+	public String decodeFromWire(int pos, final Buffer buffer) {
+		final int length = buffer.getInt(pos);
 		pos += 4;
-		byte[] encoded = buffer.getBytes(pos, pos + length);
+		final byte[] encoded = buffer.getBytes(pos, pos + length);
 		return new String(encoded, CharsetUtil.UTF_8);
 	}
 
-	public String transform(T distributedEvent) {
+	public String transform(final T distributedEvent) {
 		return Json.encode(distributedEvent);
 	}
 

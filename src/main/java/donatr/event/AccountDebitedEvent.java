@@ -17,7 +17,7 @@ public class AccountDebitedEvent extends SourcedEvent {
 		this(null, null);
 	}
 
-	public AccountDebitedEvent(String id, BigDecimal amount) {
+	public AccountDebitedEvent(final String id, final BigDecimal amount) {
 		super(ACCOUNT_DEBITED_EVENT_ADDRESS, id);
 		this.amount = amount;
 	}

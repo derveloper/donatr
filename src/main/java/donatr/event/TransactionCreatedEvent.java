@@ -19,7 +19,7 @@ public class TransactionCreatedEvent extends SourcedEvent {
 		super(null, null);
 	}
 
-	public TransactionCreatedEvent(String id, String accountFrom, String accountTo, BigDecimal amount) {
+	public TransactionCreatedEvent(final String id, final String accountFrom, final String accountTo, final BigDecimal amount) {
 		super(TRANSACTION_CREATED_EVENT_ADDRESS, id);
 		this.accountFrom = accountFrom;
 		this.accountTo = accountTo;

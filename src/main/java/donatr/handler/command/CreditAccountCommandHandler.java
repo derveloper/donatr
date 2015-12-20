@@ -11,17 +11,17 @@ import io.vertx.rxjava.ext.web.RoutingContext;
 public class CreditAccountCommandHandler implements Handler<RoutingContext> {
 	private final EventStore eventStore;
 
-	public CreditAccountCommandHandler(EventStore eventStore) {
+	public CreditAccountCommandHandler(final EventStore eventStore) {
 		this.eventStore = eventStore;
 	}
 
 	@Override
-	public void handle(RoutingContext routingContext) {
-		CreditAccountCommand command = getCommand(routingContext);
+	public void handle(final RoutingContext routingContext) {
+		final CreditAccountCommand command = getCommand(routingContext);
 		DonatrRouter.publishCommand(command, eventStore, routingContext, AccountCreditedEvent.class);
 	}
 
-	private CreditAccountCommand getCommand(RoutingContext routingContext) {
+	private CreditAccountCommand getCommand(final RoutingContext routingContext) {
 		return Json.decodeValue(routingContext.getBodyAsString(), CreditAccountCommand.class);
 	}
 }

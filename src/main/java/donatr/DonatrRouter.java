@@ -106,7 +106,7 @@ public class DonatrRouter extends AbstractVerticle {
 				.handler(routingContext -> {
 					JWTAuthHandler.create(authProvider).handle(routingContext);
 					if (!routingContext.response().ended()) {
-						Cookie cookie = Cookie.cookie("auth", "");
+						final Cookie cookie = Cookie.cookie("auth", "");
 						cookie.setMaxAge(TimeUnit.DAYS.toSeconds(-1));
 						routingContext.addCookie(cookie);
 						routingContext.response().end("Bye!");
@@ -136,9 +136,7 @@ public class DonatrRouter extends AbstractVerticle {
 		final StaticHandler staticHandler = StaticHandler.create();
 		router.get().pathRegex("^(/.+\\.(js|css|ttf|gif|png|jpg|woff|ico))").handler(staticHandler);
 
-		router.get("/*").handler(routingContext -> {
-			routingContext.response().sendFile("webroot/index.html");
-		});
+		router.get("/*").handler(routingContext -> routingContext.response().sendFile("webroot/index.html"));
 
 		server.requestHandler(router::accept).listen(8080);
 	}
@@ -152,7 +150,7 @@ public class DonatrRouter extends AbstractVerticle {
 
 			if ("test".equals(username) && "test".equals(password)) {
 				final String token = authProvider.generateToken(new JsonObject().put("username", username), new JWTOptions());
-				Cookie cookie = Cookie.cookie("auth", token);
+				final Cookie cookie = Cookie.cookie("auth", token);
 				cookie.setMaxAge(TimeUnit.HOURS.toSeconds(12));
 				cookie.setHttpOnly(true);
 				routingContext.addCookie(cookie);

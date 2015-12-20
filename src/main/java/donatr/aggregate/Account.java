@@ -16,16 +16,16 @@ public class Account extends Aggregate {
 	private String name;
 	private BigDecimal balance = BigDecimal.ZERO;
 
-	public void on(AccountCreatedEvent event) {
+	public void on(final AccountCreatedEvent event) {
 		id = event.getId();
 		name = event.getName();
 	}
 
-	public void on(AccountCreditedEvent event) {
+	public void on(final AccountCreditedEvent event) {
 		balance = balance.add(event.getAmount());
 	}
 
-	public void on(AccountDebitedEvent event) {
+	public void on(final AccountDebitedEvent event) {
 		balance = balance.subtract(event.getAmount());
 	}
 }
