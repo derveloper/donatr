@@ -1,5 +1,8 @@
 package donatr;
 
+import donatr.aggregate.Account;
+import donatr.event.AccountCreatedEvent;
+import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
 import io.vertx.rxjava.core.Vertx;
 import org.apache.commons.io.IOUtils;
@@ -53,19 +56,16 @@ public class AccountEventHandlerTest {
 
 	@Test
 	public void testGetDashboardAggregate() throws Exception {
-		String userId = UUID.randomUUID().toString();
-
-		for (int i = 0; i < 1; i++) {
 			String name = UUID.randomUUID().toString();
-			createAccount(name);
-		}
-
-		HttpResponse execute = get("/api/aggregate/dashboard/" + userId);
+		final HttpResponse account = createAccount(name);
+		final String accountJson = IOUtils.toString(account.getEntity().getContent());
+		final AccountCreatedEvent decodeValue = Json.decodeValue(accountJson, AccountCreatedEvent.class);
+		HttpResponse execute = get("/api/aggregate/dashboard/" + decodeValue.getId());
 		String actual = IOUtils.toString(execute.getEntity().getContent());
 		assertThat(actual, execute.getStatusLine().getStatusCode(), is(200));
 		final JsonObject jsonObject = new JsonObject(actual);
-		assertThat(actual, jsonObject.getString("id"), is(userId));
-		assertThat(actual, jsonObject.getInteger("balance"), is(100));
+		assertThat(actual, jsonObject.getString("id"), is(decodeValue.getId()));
+		assertThat(actual, jsonObject.getInteger("balance"), is(0));
 	}
 
 	private HttpResponse post(String path, List<NameValuePair> params) throws IOException {

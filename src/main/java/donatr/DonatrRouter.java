@@ -33,7 +33,7 @@ public class DonatrRouter extends AbstractVerticle {
 		final EventBus eventBus = vertx.eventBus();
 		((io.vertx.core.eventbus.EventBus) eventBus.getDelegate())
 				.registerDefaultCodec(AccountCreatedEvent.class, new EventMessageCodec());
-		final EventStore eventStore = new InMemoryEventStore(eventBus);
+		final EventStore eventStore = new SQLiteEventStore(vertx, eventBus, null);
 
 		final HttpServer server = vertx.createHttpServer();
 
