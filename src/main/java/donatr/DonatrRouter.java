@@ -94,7 +94,8 @@ public class DonatrRouter extends AbstractVerticle {
 
 		new CommandHandler(eventStore);
 		apiRouter.get("/aggregate/account/:id").handler(new AccountAggregateHandler(eventStore));
-		apiRouter.post("/account").handler(new AccountEventHandler(eventStore));
+		apiRouter.post("/account").handler(new CreateAccountCommandHandler(eventStore));
+		apiRouter.post("/account/deposit").handler(new DepositAccountCommandHandler(eventStore));
 
 		router.mountSubRouter("/api", apiRouter);
 
@@ -113,6 +114,7 @@ public class DonatrRouter extends AbstractVerticle {
 
 		eventStore.publish(payload, clazz)
 				.onErrorResumeNext(message -> {
+					System.out.println(message.getMessage());
 					response.setStatusCode(500).end(message.getMessage());
 					return Observable.empty();
 				})

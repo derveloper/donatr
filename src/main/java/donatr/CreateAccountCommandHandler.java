@@ -8,10 +8,10 @@ import io.vertx.rxjava.ext.web.RoutingContext;
 
 import java.util.UUID;
 
-public class AccountEventHandler implements Handler<RoutingContext> {
+public class CreateAccountCommandHandler implements Handler<RoutingContext> {
 	private final EventStore eventStore;
 
-	public AccountEventHandler(EventStore eventStore) {
+	public CreateAccountCommandHandler(EventStore eventStore) {
 		this.eventStore = eventStore;
 	}
 

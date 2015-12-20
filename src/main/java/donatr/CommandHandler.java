@@ -19,7 +19,10 @@ public class CommandHandler {
 		eventStore.consumer(DepositAccountCommand.class, message -> {
 			DepositAccountCommand createCommand = Json.decodeValue(message.body(), DepositAccountCommand.class);
 			AccountDepositedEvent createdEvent = new AccountDepositedEvent(createCommand.getId(), createCommand.getAmount());
-			eventStore.publish(createdEvent, AccountDepositedEvent.class).subscribe(message::reply);
+			eventStore.publish(createdEvent, AccountDepositedEvent.class)
+					.subscribe(accountDepositedEvent -> {
+						message.reply(accountDepositedEvent);
+					});
 		});
 
 		eventStore.consumer(CreateAccountCommand.class, message -> {
