@@ -109,8 +109,7 @@ public class CreateAccountCommandHandlerTest {
 		HttpResponse transaction = createTransactionWithDonation(
 				fromAccountEvent.getId(),
 				toAccountEvent.getId(),
-				13.37
-		);
+				13.37);
 
 		assertThat(transaction.getStatusLine().getStatusCode(), is(200));
 		assertGetAccount(BigDecimal.valueOf(-1.5), fromAccountEvent.getId());
