@@ -6,10 +6,10 @@ import io.vertx.core.Handler;
 import io.vertx.core.json.Json;
 import io.vertx.rxjava.ext.web.RoutingContext;
 
-public class DashboardAggregateHandler implements Handler<RoutingContext> {
+public class AccountAggregateHandler implements Handler<RoutingContext> {
 	private final EventStore eventStore;
 
-	public DashboardAggregateHandler(EventStore eventStore) {
+	public AccountAggregateHandler(EventStore eventStore) {
 		this.eventStore = eventStore;
 	}
 

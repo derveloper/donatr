@@ -60,7 +60,7 @@ public class AccountEventHandlerTest {
 		final HttpResponse account = createAccount(name);
 		final String accountJson = IOUtils.toString(account.getEntity().getContent());
 		final AccountCreatedEvent decodeValue = Json.decodeValue(accountJson, AccountCreatedEvent.class);
-		HttpResponse execute = get("/api/aggregate/dashboard/" + decodeValue.getId());
+		HttpResponse execute = get("/api/aggregate/account/" + decodeValue.getId());
 		String actual = IOUtils.toString(execute.getEntity().getContent());
 		assertThat(actual, execute.getStatusLine().getStatusCode(), is(200));
 		final JsonObject jsonObject = new JsonObject(actual);

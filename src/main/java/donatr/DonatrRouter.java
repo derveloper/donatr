@@ -2,14 +2,9 @@ package donatr;
 
 import donatr.event.AccountCreatedEvent;
 import io.resx.core.EventStore;
-import io.resx.core.InMemoryEventStore;
-import io.resx.core.MongoEventStore;
 import io.resx.core.SQLiteEventStore;
 import io.resx.core.command.Command;
-import io.vertx.core.eventbus.MessageCodec;
-import io.vertx.core.eventbus.impl.codecs.JsonObjectMessageCodec;
 import io.vertx.core.json.Json;
-import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.handler.sockjs.SockJSHandlerOptions;
 import io.vertx.rxjava.core.AbstractVerticle;
 import io.vertx.rxjava.core.eventbus.EventBus;
@@ -53,7 +48,7 @@ public class DonatrRouter extends AbstractVerticle {
 		router.route("/socket*").handler(sockJSHandler);
 
 		new CommandHandler(eventStore);
-		apiRouter.get("/aggregate/dashboard/:id").handler(new DashboardAggregateHandler(eventStore));
+		apiRouter.get("/aggregate/account/:id").handler(new AccountAggregateHandler(eventStore));
 		apiRouter.post("/account").handler(new AccountEventHandler(eventStore));
 
 		router.mountSubRouter("/api", apiRouter);
