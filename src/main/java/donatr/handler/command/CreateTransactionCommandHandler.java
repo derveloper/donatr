@@ -8,6 +8,7 @@ import io.vertx.core.Handler;
 import io.vertx.core.json.Json;
 import io.vertx.rxjava.ext.web.RoutingContext;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 public class CreateTransactionCommandHandler implements Handler<RoutingContext> {
@@ -24,8 +25,9 @@ public class CreateTransactionCommandHandler implements Handler<RoutingContext> 
 	}
 
 	private CreateTransactionCommand getCommand(final RoutingContext routingContext) {
-		final CreateTransactionCommand createTransactionCommand = Json.decodeValue(routingContext.getBodyAsString(), CreateTransactionCommand.class);
-		createTransactionCommand.setId(UUID.randomUUID().toString());
-		return createTransactionCommand;
+		final CreateTransactionCommand command = Json.decodeValue(routingContext.getBodyAsString(), CreateTransactionCommand.class);
+		command.setId(UUID.randomUUID().toString());
+		command.setAmount(command.getAmount().setScale(2, BigDecimal.ROUND_HALF_UP));
+		return command;
 	}
 }

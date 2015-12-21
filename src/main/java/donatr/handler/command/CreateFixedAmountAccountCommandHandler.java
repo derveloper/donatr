@@ -8,6 +8,7 @@ import io.vertx.core.Handler;
 import io.vertx.core.json.Json;
 import io.vertx.rxjava.ext.web.RoutingContext;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 public class CreateFixedAmountAccountCommandHandler implements Handler<RoutingContext> {
@@ -26,6 +27,7 @@ public class CreateFixedAmountAccountCommandHandler implements Handler<RoutingCo
 	private CreateFixedAmountAccountCommand getCommand(final RoutingContext routingContext) {
 		final CreateFixedAmountAccountCommand command = Json.decodeValue(routingContext.getBodyAsString(), CreateFixedAmountAccountCommand.class);
 		command.setId(UUID.randomUUID().toString());
+		command.setAmount(command.getAmount().setScale(2, BigDecimal.ROUND_HALF_UP));
 		return command;
 	}
 }

@@ -8,6 +8,8 @@ import io.vertx.core.Handler;
 import io.vertx.core.json.Json;
 import io.vertx.rxjava.ext.web.RoutingContext;
 
+import java.math.BigDecimal;
+
 public class DebitAccountCommandHandler implements Handler<RoutingContext> {
 	private final EventStore eventStore;
 
@@ -22,6 +24,8 @@ public class DebitAccountCommandHandler implements Handler<RoutingContext> {
 	}
 
 	private DebitAccountCommand getCommand(final RoutingContext routingContext) {
-		return Json.decodeValue(routingContext.getBodyAsString(), DebitAccountCommand.class);
+		final DebitAccountCommand command = Json.decodeValue(routingContext.getBodyAsString(), DebitAccountCommand.class);
+		command.setAmount(command.getAmount().setScale(2, BigDecimal.ROUND_HALF_UP));
+		return command;
 	}
 }

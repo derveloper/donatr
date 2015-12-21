@@ -2,8 +2,8 @@ package donatr;
 
 import donatr.command.CreateFixedAmountAccountCommand;
 import donatr.command.CreateTransactionCommand;
-import donatr.command.DebitAccountCommand;
 import donatr.command.CreditAccountCommand;
+import donatr.command.DebitAccountCommand;
 import donatr.event.AccountCreatedEvent;
 import donatr.event.FixedAmountAccountCreatedEvent;
 import io.vertx.core.json.Json;
@@ -26,6 +26,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -39,7 +40,7 @@ public class CreateAccountCommandHandlerTest {
 	@BeforeClass
 	public static void beforeClass() throws InterruptedException {
 		new DonatrMain().run(Vertx.vertx());
-		Thread.sleep(2000);
+		Thread.sleep(2500);
 	}
 
 	@Test
@@ -92,28 +93,36 @@ public class CreateAccountCommandHandlerTest {
 		final HttpResponse transaction = createFixedAmountDonation("mate", 1.5);
 		final FixedAmountAccountCreatedEvent fixedAmountAccountCreatedEvent = Json.decodeValue(responseString(transaction), FixedAmountAccountCreatedEvent.class);
 		assertThat(transaction.getStatusLine().getStatusCode(), is(200));
-		assertThat(fixedAmountAccountCreatedEvent.getAmount(), is(BigDecimal.valueOf(1.5)));
+		assertThat(fixedAmountAccountCreatedEvent.getAmount(), is(BigDecimal.valueOf(1.5).setScale(2, BigDecimal.ROUND_HALF_UP)));
 	}
 
 	@Test
 	public void testTransactionWithFixedAmountDonation() throws Exception {
-		final HttpResponse accountTo = createFixedAmountDonation("mate", 1.5);
-		final FixedAmountAccountCreatedEvent toAccountEvent = Json.decodeValue(responseString(accountTo), FixedAmountAccountCreatedEvent.class);
-		assertThat(accountTo.getStatusLine().getStatusCode(), is(200));
-		assertThat(toAccountEvent.getAmount(), is(BigDecimal.valueOf(1.5)));
+		final SecureRandom rng = new SecureRandom();
+		for (int t = 0; t < 3; t++) {
+			final double amount = BigDecimal.valueOf(rng.nextDouble()).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+			final HttpResponse accountTo = createFixedAmountDonation("mate", amount);
+			final FixedAmountAccountCreatedEvent toAccountEvent = Json.decodeValue(responseString(accountTo), FixedAmountAccountCreatedEvent.class);
+			assertThat(accountTo.getStatusLine().getStatusCode(), is(200));
+			assertThat(toAccountEvent.getAmount(), is(BigDecimal.valueOf(amount).setScale(2, BigDecimal.ROUND_HALF_UP)));
 
-		final String accountName = "foobar";
-		final HttpResponse accountFrom = createAccount(accountName);
-		final AccountCreatedEvent fromAccountEvent = Json.decodeValue(responseString(accountFrom), AccountCreatedEvent.class);
+			final String accountName = "foobar";
+			final HttpResponse accountFrom = createAccount(accountName);
+			final AccountCreatedEvent fromAccountEvent = Json.decodeValue(responseString(accountFrom), AccountCreatedEvent.class);
 
-		final HttpResponse transaction = createTransactionWithDonation(
-				fromAccountEvent.getId(),
-				toAccountEvent.getId(),
-				13.37);
+			final int transactionCount = 3;
+			for (int i = 0; i < transactionCount; i++) {
+				final HttpResponse transaction = createTransactionWithDonation(
+						fromAccountEvent.getId(),
+						toAccountEvent.getId(),
+						13.37);
 
-		assertThat(transaction.getStatusLine().getStatusCode(), is(200));
-		assertGetAccount(BigDecimal.valueOf(-1.5), fromAccountEvent.getId());
-		assertGetFixedAmountAccount(BigDecimal.valueOf(1.5), toAccountEvent.getId());
+				assertThat(transaction.getStatusLine().getStatusCode(), is(200));
+			}
+
+			assertGetAccount(BigDecimal.valueOf(-(amount * transactionCount)), fromAccountEvent.getId());
+			assertGetFixedAmountAccount(BigDecimal.valueOf((amount * transactionCount)), toAccountEvent.getId());
+		}
 	}
 
 	@Test
@@ -221,7 +230,7 @@ public class CreateAccountCommandHandlerTest {
 		assertThat(actual, execute.getStatusLine().getStatusCode(), is(200));
 		final JsonObject jsonObject = new JsonObject(actual);
 		assertThat(actual, jsonObject.getString("id"), is(id));
-		assertThat(actual, jsonObject.getDouble("balance"), is(balance.doubleValue()));
+		assertThat(actual, jsonObject.getDouble("balance"), is(balance.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue()));
 	}
 
 	private HttpResponse post(final String path, final List<NameValuePair> params, final String token) throws IOException {
