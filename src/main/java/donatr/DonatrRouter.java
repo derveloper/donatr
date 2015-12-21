@@ -48,11 +48,13 @@ public class DonatrRouter extends AbstractVerticle {
 		eventStore.publish(payload, clazz)
 				.onErrorResumeNext(message -> {
 					System.out.println(message.getMessage());
-					response.setStatusCode(500).end(message.getMessage());
+					response.putHeader("content-type", "application/json")
+							.setStatusCode(500).end(message.getMessage());
 					return Observable.empty();
 				})
 				.subscribe(reply -> {
-					response.setStatusCode(200).end(Json.encode(reply));
+					response.putHeader("content-type", "application/json")
+							.setStatusCode(200).end(Json.encode(reply));
 				});
 	}
 

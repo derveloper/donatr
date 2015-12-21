@@ -23,12 +23,14 @@ public class AccountListAggregateHandler implements Handler<RoutingContext> {
 			Observable.from(accounts)
 					.flatMap(accountObservable -> accountObservable
 							.map(account -> {
-								array.add(Json.encode(account));
+								array.add(new JsonObject(Json.encode(account)));
 								return account;
 							}))
 					.doOnCompleted(() -> {
 						final JsonObject entries = new JsonObject().put("accounts", array);
-						routingContext.response().end(entries.encode());
+						routingContext.response()
+								.putHeader("content-type", "application/json")
+								.end(entries.encode());
 					}).subscribe();
 		});
 	}

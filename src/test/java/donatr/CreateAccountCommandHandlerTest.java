@@ -36,6 +36,7 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class CreateAccountCommandHandlerTest {
 	@BeforeClass
@@ -154,14 +155,9 @@ public class CreateAccountCommandHandlerTest {
 		final JsonArray jsonArray = accounts.getJsonArray("accounts");
 		assertThat(jsonArray.size(), not(0));
 
-		for (Object o : jsonArray) {
-			JsonObject object;
-
-		}
-
-		assertThat(((JsonObject) jsonArray.stream()
-				.filter(o -> account.getId().equals(((JsonObject) o).getString("id")))
-				.findAny().get()).getString("name"), is(username));
+		assertTrue(jsonArray.stream()
+				.map(o -> (JsonObject) o)
+				.anyMatch(entries -> username.equals(entries.getString("name"))));
 	}
 
 	private String responseString(final HttpResponse execute) throws IOException {

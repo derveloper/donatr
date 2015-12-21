@@ -20,7 +20,8 @@ public class FixedAmountAccountAggregateHandler implements Handler<RoutingContex
 		eventStore.load(id, FixedAmountAccount.class).subscribe(dashboard -> {
 			if (dashboard.getId() == null)
 				routingContext.response().setStatusCode(404).end("aggregate not found");
-			else routingContext.response().end(Json.encode(dashboard));
+			else routingContext.response()
+					.putHeader("content-type", "application/json").end(Json.encode(dashboard));
 		});
 	}
 }
