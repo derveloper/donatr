@@ -1,6 +1,5 @@
 import { createAction, handleActions } from 'redux-actions'
 import request from 'superagent'
-import cookie from 'cookie'
 import config from 'config'
 
 // ------------------------------------
@@ -22,7 +21,7 @@ export const loggedOut = createAction(SESSION_LOGGED_OUT)
 export const create = (username, password) => {
   return (dispatch) => {
     request
-      .post(config.api.url + '/login')
+      .post(config.api.url + '/session')
       .type('form')
       .withCredentials()
       .send({username, password})
@@ -36,7 +35,7 @@ export const create = (username, password) => {
 export const destroy = () => {
   return (dispatch) => {
     request
-      .get(config.api.url + '/logout')
+      .del(config.api.url + '/session')
       .withCredentials()
       .end((err, res) => {
         if (err) dispatch(failed(false))
@@ -46,10 +45,10 @@ export const destroy = () => {
 }
 
 export function tryToAuthenticate () {
-  return (dispatch) => {
-    if (!hasAuthCookie()) {
+  return (dispatch, getState) => {
+    if (!getState().isAuthenticated) {
       request
-        .get(config.api.url + '/')
+        .get(config.api.url + '/session')
         .withCredentials()
         .end((err, res) => {
           if (err || res.statusCode === 401) dispatch(loggedOut())
@@ -69,21 +68,14 @@ export const actions = {
   tryToAuthenticate
 }
 
-function hasAuthCookie () {
-  const cookies = cookie.parse(document.cookie)
-  return !!cookies['auth']
-}
-
 // ------------------------------------
 // Reducer
 // ------------------------------------
 export default handleActions({
   [SESSION_CREATED]: (state, { payload }) => {
-    sessionStorage.setItem('isAuthenticated', true)
     return {isAuthenticated: payload, loginFailed: false}
   },
   [SESSION_CREATE_FAILED]: (state, { payload }) => {
-    sessionStorage.setItem('isAuthenticated', false)
     return {isAuthenticated: payload, loginFailed: true}
   },
   [SESSION_DESTROYED]: (reload) => {

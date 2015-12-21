@@ -19,7 +19,7 @@ export const increment = createAction(COUNTER_INCREMENT, (value = 1) => value)
 // reducer take care of this logic.
 export const doubleAsync = () => {
   return (dispatch, getState) => {
-    request.get('http://localhost:8080/')
+    request.get('http://localhost:8080/api/session')
       .withCredentials()
       .end(() => dispatch(increment(getState().counter)))
   }
