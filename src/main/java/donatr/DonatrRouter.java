@@ -5,6 +5,7 @@ import donatr.handler.CommandHandler;
 import donatr.handler.WebsocketHandler;
 import donatr.handler.command.*;
 import donatr.handler.query.AccountAggregateHandler;
+import donatr.handler.query.AccountListAggregateHandler;
 import donatr.handler.query.FixedAmountAccountAggregateHandler;
 import io.resx.core.EventStore;
 import io.resx.core.SQLiteEventStore;
@@ -124,6 +125,7 @@ public class DonatrRouter extends AbstractVerticle {
 		router.route("/socket*").handler(sockJSHandler);
 
 		apiRouter.get("/aggregate/account/:id").handler(new AccountAggregateHandler(eventStore));
+		apiRouter.get("/aggregate/account").handler(new AccountListAggregateHandler(eventStore));
 		apiRouter.get("/aggregate/fixedamountaccount/:id").handler(new FixedAmountAccountAggregateHandler(eventStore));
 		apiRouter.post("/account").handler(new CreateAccountCommandHandler(eventStore));
 		apiRouter.post("/account/credit").handler(new CreditAccountCommandHandler(eventStore));

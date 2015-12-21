@@ -34,7 +34,7 @@ preBootstrapCustomizations: ./src/styles/bootstrap/pre-customizations.scss
 # So you can refer to bootstrap variables
 bootstrapCustomizations: ./src/styles/bootstrap/customizations.scss
 
-# With CSS Modules we load all application styles directly in React components
+# With CSS Modules we loadAll all application styles directly in React components
 # appStyles: ./app/styles/app.scss
 
 ### Bootstrap styles

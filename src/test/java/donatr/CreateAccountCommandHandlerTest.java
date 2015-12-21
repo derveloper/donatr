@@ -7,6 +7,7 @@ import donatr.command.DebitAccountCommand;
 import donatr.event.AccountCreatedEvent;
 import donatr.event.FixedAmountAccountCreatedEvent;
 import io.vertx.core.json.Json;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.rxjava.core.Vertx;
 import org.apache.commons.io.IOUtils;
@@ -133,6 +134,36 @@ public class CreateAccountCommandHandlerTest {
 		assertThat(token.length(), not(0));
 	}
 
+	@Test
+	public void testGetAccountAggregate() throws Exception {
+		final String name = UUID.randomUUID().toString();
+		final HttpResponse account = createAccount(name);
+		final String accountJson = responseString(account);
+		final AccountCreatedEvent decodeValue = Json.decodeValue(accountJson, AccountCreatedEvent.class);
+		final BigDecimal balance = new BigDecimal(0);
+		final String id = decodeValue.getId();
+		assertGetAccount(balance, id);
+	}
+
+	@Test
+	public void testGetAccountList() throws IOException {
+		final String username = UUID.randomUUID().toString();
+		final AccountCreatedEvent account = Json.decodeValue(responseString(createAccount(username)), AccountCreatedEvent.class);
+		final HttpResponse response = get("/api/aggregate/account", responseString(login("test", "test")));
+		final JsonObject accounts = new JsonObject(responseString(response));
+		final JsonArray jsonArray = accounts.getJsonArray("accounts");
+		assertThat(jsonArray.size(), not(0));
+
+		for (Object o : jsonArray) {
+			JsonObject object;
+
+		}
+
+		assertThat(((JsonObject) jsonArray.stream()
+				.filter(o -> account.getId().equals(((JsonObject) o).getString("id")))
+				.findAny().get()).getString("name"), is(username));
+	}
+
 	private String responseString(final HttpResponse execute) throws IOException {
 		return IOUtils.toString(execute.getEntity().getContent());
 	}
@@ -201,17 +232,6 @@ public class CreateAccountCommandHandlerTest {
 		return post("/api/session", parameters);
 	}
 
-	@Test
-	public void testGetAccountAggregate() throws Exception {
-		final String name = UUID.randomUUID().toString();
-		final HttpResponse account = createAccount(name);
-		final String accountJson = responseString(account);
-		final AccountCreatedEvent decodeValue = Json.decodeValue(accountJson, AccountCreatedEvent.class);
-		final BigDecimal balance = new BigDecimal(0);
-		final String id = decodeValue.getId();
-		assertGetAccount(balance, id);
-	}
-
 	private void assertGetAccount(final BigDecimal balance, final String id) throws IOException {
 		final String token = responseString(login("test", "test"));
 		final String path = "/api/aggregate/account/";
@@ -259,9 +279,5 @@ public class CreateAccountCommandHandlerTest {
 		final HttpGet httpGet = new HttpGet(uri);
 		if (StringUtils.isNotEmpty(token)) httpGet.addHeader("Authorization", "Bearer " + token);
 		return httpclient.execute(httpGet);
-	}
-
-	private HttpResponse get(final String path) throws IOException {
-		return get(path, null);
 	}
 }
