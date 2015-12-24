@@ -84,7 +84,7 @@ public class DonatrRouter extends AbstractVerticle {
 		final Router apiRouter = Router.router(vertx);
 
 		final CorsHandler corsHandler = CorsHandler
-				.create("http://172.28.0.99:3000")
+				.create("*")
 				.allowedMethod(HttpMethod.GET)
 				.allowedMethod(HttpMethod.POST)
 				.allowedMethod(HttpMethod.PUT)
@@ -94,8 +94,9 @@ public class DonatrRouter extends AbstractVerticle {
 				.allowedMethod(HttpMethod.DELETE)
 				.allowedHeaders(new HashSet<>(Arrays.asList("authorization", "content-type", "content-length", "accept", "cookie")))
 				.allowCredentials(true);
-		router.route().handler(corsHandler);
-		apiRouter.route().handler(corsHandler);
+		router.route().handler(routingContext -> {
+			corsHandler.handle(routingContext);
+		});
 		router.route().handler(CookieHandler.create());
 		router.route().handler(BodyHandler.create());
 

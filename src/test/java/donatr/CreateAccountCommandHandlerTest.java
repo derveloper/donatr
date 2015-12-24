@@ -1,9 +1,6 @@
 package donatr;
 
-import donatr.command.CreateFixedAmountAccountCommand;
-import donatr.command.CreateTransactionCommand;
-import donatr.command.CreditAccountCommand;
-import donatr.command.DebitAccountCommand;
+import donatr.command.*;
 import donatr.event.AccountCreatedEvent;
 import donatr.event.FixedAmountAccountCreatedEvent;
 import io.vertx.core.json.Json;
@@ -172,9 +169,9 @@ public class CreateAccountCommandHandlerTest {
 
 	private HttpResponse createAccount(final String username) throws IOException {
 		final String token = responseString(login("test", "test"));
-		final List<NameValuePair> parameters = new ArrayList<>();
-		parameters.add(new BasicNameValuePair("name", username));
-		return post("/api/account/", parameters, token);
+		final CreateAccountCommand command = new CreateAccountCommand();
+		command.setName(username);
+		return postJson("/api/account/", Json.encode(command), token);
 	}
 
 	private HttpResponse depositAccount(final String id, final double amount) throws IOException {
