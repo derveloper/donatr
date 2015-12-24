@@ -73,16 +73,16 @@ export const actions = {
 // ------------------------------------
 export default handleActions({
   [SESSION_CREATED]: (state, { payload }) => {
-    return {isAuthenticated: payload, loginFailed: false}
+    return {isAuthenticated: payload, loginFailed: false, triedToAuthenticate: true}
   },
   [SESSION_CREATE_FAILED]: (state, { payload }) => {
-    return {isAuthenticated: payload, loginFailed: true}
+    return {isAuthenticated: payload, loginFailed: true, triedToAuthenticate: true}
   },
   [SESSION_DESTROYED]: (reload) => {
     if (reload) window.location.reload()
-    return {isAuthenticated: false, loginFailed: false}
+    return {isAuthenticated: false, loginFailed: false, triedToAuthenticate: true}
   },
   [SESSION_LOGGED_OUT]: () => {
-    return {isAuthenticated: false, loginFailed: false}
+    return {isAuthenticated: false, loginFailed: false, triedToAuthenticate: true}
   }
-}, {isAuthenticated: false, loginFailed: false})
+}, {isAuthenticated: false, loginFailed: false, triedToAuthenticate: false})

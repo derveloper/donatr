@@ -22,7 +22,6 @@ const webpackConfig = {
   target: 'web',
   entry: {
     app: [
-      'bootstrap-loader',
       paths.base(config.dir_client) + '/app.js'
     ],
     vendor: config.compiler_vendor

@@ -4,6 +4,10 @@ import { pushPath } from 'redux-simple-router'
 import { actions as sessionActions } from '../redux/modules/session'
 
 export function requireAuthentication (Component) {
+  const mapStateToProps = (state) => ({
+    isAuthenticated: state.session.isAuthenticated
+  })
+
   class AuthenticatedComponent extends React.Component {
     static propTypes = {
       isAuthenticated: React.PropTypes.bool.isRequired,
@@ -38,10 +42,6 @@ export function requireAuthentication (Component) {
       )
     }
   }
-
-  const mapStateToProps = (state) => ({
-    isAuthenticated: state.session.isAuthenticated
-  })
 
   return connect(mapStateToProps)(AuthenticatedComponent)
 }

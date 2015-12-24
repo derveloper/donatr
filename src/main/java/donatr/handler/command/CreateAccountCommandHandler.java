@@ -5,6 +5,7 @@ import donatr.command.CreateAccountCommand;
 import donatr.event.AccountCreatedEvent;
 import io.resx.core.EventStore;
 import io.vertx.core.Handler;
+import io.vertx.core.json.Json;
 import io.vertx.rxjava.ext.web.RoutingContext;
 
 import java.util.UUID;
@@ -23,10 +24,8 @@ public class CreateAccountCommandHandler implements Handler<RoutingContext> {
 	}
 
 	private CreateAccountCommand getCommand(final RoutingContext routingContext) {
-		final CreateAccountCommand command = new CreateAccountCommand();
-		final String name = routingContext.request().getFormAttribute("name");
+		final CreateAccountCommand command = Json.decodeValue(routingContext.getBodyAsString(), CreateAccountCommand.class);
 		final String id = UUID.randomUUID().toString();
-		command.setName(name);
 		command.setId(id);
 		return command;
 	}

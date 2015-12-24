@@ -84,7 +84,7 @@ public class DonatrRouter extends AbstractVerticle {
 		final Router apiRouter = Router.router(vertx);
 
 		final CorsHandler corsHandler = CorsHandler
-				.create("http://localhost:3000")
+				.create("http://172.28.0.99:3000")
 				.allowedMethod(HttpMethod.GET)
 				.allowedMethod(HttpMethod.POST)
 				.allowedMethod(HttpMethod.PUT)

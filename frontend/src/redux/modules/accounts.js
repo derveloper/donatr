@@ -9,14 +9,18 @@ export const ACCOUNT_CREATED = 'ACCOUNT_CREATED'
 export const ACCOUNT_CREATE_FAILED = 'ACCOUNT_CREATE_FAILED'
 export const ACCOUNT_DESTROYED = 'ACCOUNT_DESTROYED'
 export const ACCOUNT_FETCHED = 'ACCOUNT_FETCHED'
+export const ACCOUNT_TOGGLE_CREATE_DIALOG = 'ACCOUNT_TOGGLE_CREATE_DIALOG'
+export const ACCOUNT_CLOSE_CREATE_DIALOG = 'ACCOUNT_CLOSE_CREATE_DIALOG'
 
 // ------------------------------------
 // Actions
 // ------------------------------------
-export const created = createAction(ACCOUNT_CREATED)
+export const created = createAction(ACCOUNT_CREATED, (createdEvent) => createdEvent)
 export const failed = createAction(ACCOUNT_CREATE_FAILED)
 export const destroyed = createAction(ACCOUNT_DESTROYED)
-export const fetched = createAction(ACCOUNT_FETCHED, (result = {accounts: []}) => result)
+export const fetched = createAction(ACCOUNT_FETCHED, (result) => result)
+export const toggleCreateDialog = createAction(ACCOUNT_TOGGLE_CREATE_DIALOG)
+export const closeCreateDialog = createAction(ACCOUNT_CLOSE_CREATE_DIALOG)
 
 export const fetchAll = () => {
   return (dispatch) => {
@@ -31,15 +35,15 @@ export const fetchAll = () => {
   }
 }
 
-export const create = (username) => {
+export const create = (name) => {
   return (dispatch) => {
     request
       .post(config.api.url + '/account')
       .withCredentials()
-      .send({username})
-      .end((err) => {
+      .send({name})
+      .end((err, res) => {
         if (err) dispatch(failed(false))
-        else dispatch(created(true))
+        else dispatch(created(res.body))
       })
   }
 }
@@ -61,15 +65,30 @@ export const actions = {
   create,
   created,
   failed,
-  destroy
+  destroy,
+  toggleCreateDialog,
+  closeCreateDialog
 }
 
 // ------------------------------------
 // Reducer
 // ------------------------------------
 export default handleActions({
-  [ACCOUNT_CREATED]: (state) => state,
+  [ACCOUNT_CREATED]: (state, createdEvent) => {
+    let accounts = state.accounts
+    accounts.push({
+      id: createdEvent.payload.id,
+      name: createdEvent.payload.name,
+      balance: 0
+    })
+    return Object.assign({}, state, {accounts})
+  },
   [ACCOUNT_CREATE_FAILED]: (state) => state,
   [ACCOUNT_DESTROYED]: (state) => state,
-  [ACCOUNT_FETCHED]: (state, { payload }) => payload
-}, {accounts: []})
+  [ACCOUNT_FETCHED]: (state, { payload }) =>
+    Object.assign({}, state, {accounts: payload.accounts}),
+  [ACCOUNT_TOGGLE_CREATE_DIALOG]: (state) =>
+    Object.assign({}, state, {createDialogOpen: !state.createDialogOpen}),
+  [ACCOUNT_CLOSE_CREATE_DIALOG]: (state) =>
+    Object.assign({}, state, {createDialogOpen: false})
+}, {accounts: [], createDialogOpen: false})

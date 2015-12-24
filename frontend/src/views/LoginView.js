@@ -47,6 +47,7 @@ export class LoginView extends React.Component {
   }
 
   render () {
+    if (this.props.session.triedToAuthenticate || this.props.session.isAuthenticated) return null
     return (
       <div className='container-fluid text-xs-center'>
         <h1>Welcome to the React Redux Starter Kit</h1>

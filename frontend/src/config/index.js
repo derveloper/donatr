@@ -6,7 +6,7 @@ let base = {
 
 const development = {
   api: {
-    url: 'http://localhost:8080/api'
+    url: 'http://172.28.0.99:8080/api'
   }
 }
 

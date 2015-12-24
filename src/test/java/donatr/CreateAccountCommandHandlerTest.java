@@ -157,7 +157,7 @@ public class CreateAccountCommandHandlerTest {
 
 		assertTrue(jsonArray.stream()
 				.map(o -> (JsonObject) o)
-				.anyMatch(entries -> username.equals(entries.getString("name"))));
+				.anyMatch(entries -> account.getName().equals(entries.getString("name"))));
 	}
 
 	private String responseString(final HttpResponse execute) throws IOException {
