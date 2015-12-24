@@ -41,10 +41,12 @@ export default class Root extends React.Component {
         <div style={{ height: '100%' }}>
           <Navigation ref='leftNav'/>
           <AppBar
-            style={{ position: 'relative' }}
+            style={{ position: 'fixed' }}
             onLeftIconButtonTouchTap={() => this.props.store.dispatch(navActions.toggle())}
             title='donatr'/>
-          {this.content}
+          <div style={{ paddingTop: 70 }}>
+            {this.content}
+          </div>
           {this.devTools}
         </div>
       </Provider>
