@@ -26,16 +26,16 @@ class AppTopBar extends React.Component {
     const topAccountInfo = currentAccount
       ? <span>
           <Avatar src={trollface}/>
-          <span
-            style={{ paddingLeft: 5, position: 'relative', top: -15 }}>{currentAccount.name} {currentAccount.balance}
-            €</span>
+          <span style={{ paddingLeft: 5, position: 'relative', top: -15 }}>
+            { currentAccount.name} {currentAccount.balance} €
+          </span>
         </span>
       : null
     return <AppBar
       style={{ position: 'fixed' }}
       onLeftIconButtonTouchTap={() => dispatch(navActions.toggle())}
       iconElementRight={topAccountInfo}
-      title='donatr'/>
+      title='donatr' />
   }
 }
 
