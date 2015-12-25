@@ -153,6 +153,7 @@ public class CreateAccountCommandHandlerTest {
 		assertThat(jsonArray.size(), not(0));
 
 		assertTrue(jsonArray.stream()
+				.filter(o -> o != null)
 				.map(o -> (JsonObject) o)
 				.anyMatch(entries -> account.getName().equals(entries.getString("name"))));
 	}
@@ -233,7 +234,7 @@ public class CreateAccountCommandHandlerTest {
 
 	private void assertGetFixedAmountAccount(final BigDecimal balance, final String id) throws IOException {
 		final String token = responseString(login("test", "test"));
-		final String path = "/api/aggregate/fixedamountaccount/";
+		final String path = "/api/aggregate/donatable/";
 		assertAccountAggregate(balance, id, token, path);
 	}
 
