@@ -10,15 +10,15 @@ import static donatr.Constants.FIXEDAMOUNTACCOUNT_CREATED_EVENT_ADDRESS;
 
 @Getter
 @Setter
-public class FixedAmountAccountCreatedEvent extends SourcedEvent {
+public class DonatableCreatedEvent extends SourcedEvent {
 	private String name;
 	private BigDecimal amount;
 
-	public FixedAmountAccountCreatedEvent() {
+	public DonatableCreatedEvent() {
 		this(null, null, null);
 	}
 
-	public FixedAmountAccountCreatedEvent(final String id, final String name, final BigDecimal amount) {
+	public DonatableCreatedEvent(final String id, final String name, final BigDecimal amount) {
 		super(FIXEDAMOUNTACCOUNT_CREATED_EVENT_ADDRESS, id);
 		this.name = name;
 		this.amount = amount;

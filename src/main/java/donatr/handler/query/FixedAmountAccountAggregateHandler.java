@@ -1,6 +1,6 @@
 package donatr.handler.query;
 
-import donatr.aggregate.FixedAmountAccount;
+import donatr.aggregate.Donatable;
 import io.resx.core.EventStore;
 import io.vertx.core.Handler;
 import io.vertx.core.json.Json;
@@ -17,7 +17,7 @@ public class FixedAmountAccountAggregateHandler implements Handler<RoutingContex
 	public void handle(final RoutingContext routingContext) {
 		final String id = routingContext.request().getParam("id");
 
-		eventStore.load(id, FixedAmountAccount.class).subscribe(dashboard -> {
+		eventStore.load(id, Donatable.class).subscribe(dashboard -> {
 			if (dashboard.getId() == null)
 				routingContext.response().setStatusCode(404).end("aggregate not found");
 			else routingContext.response()

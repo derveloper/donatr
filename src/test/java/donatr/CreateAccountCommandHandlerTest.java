@@ -2,7 +2,7 @@ package donatr;
 
 import donatr.command.*;
 import donatr.event.AccountCreatedEvent;
-import donatr.event.FixedAmountAccountCreatedEvent;
+import donatr.event.DonatableCreatedEvent;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
@@ -90,9 +90,9 @@ public class CreateAccountCommandHandlerTest {
 	@Test
 	public void testCreateFixedAmountDonation() throws Exception {
 		final HttpResponse transaction = createFixedAmountDonation("mate", 1.5);
-		final FixedAmountAccountCreatedEvent fixedAmountAccountCreatedEvent = Json.decodeValue(responseString(transaction), FixedAmountAccountCreatedEvent.class);
+		final DonatableCreatedEvent donatableCreatedEvent = Json.decodeValue(responseString(transaction), DonatableCreatedEvent.class);
 		assertThat(transaction.getStatusLine().getStatusCode(), is(200));
-		assertThat(fixedAmountAccountCreatedEvent.getAmount(), is(BigDecimal.valueOf(1.5).setScale(2, BigDecimal.ROUND_HALF_UP)));
+		assertThat(donatableCreatedEvent.getAmount(), is(BigDecimal.valueOf(1.5).setScale(2, BigDecimal.ROUND_HALF_UP)));
 	}
 
 	@Test
@@ -101,7 +101,7 @@ public class CreateAccountCommandHandlerTest {
 		for (int t = 0; t < 3; t++) {
 			final double amount = BigDecimal.valueOf(rng.nextDouble()).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
 			final HttpResponse accountTo = createFixedAmountDonation("mate", amount);
-			final FixedAmountAccountCreatedEvent toAccountEvent = Json.decodeValue(responseString(accountTo), FixedAmountAccountCreatedEvent.class);
+			final DonatableCreatedEvent toAccountEvent = Json.decodeValue(responseString(accountTo), DonatableCreatedEvent.class);
 			assertThat(accountTo.getStatusLine().getStatusCode(), is(200));
 			assertThat(toAccountEvent.getAmount(), is(BigDecimal.valueOf(amount).setScale(2, BigDecimal.ROUND_HALF_UP)));
 
@@ -212,10 +212,10 @@ public class CreateAccountCommandHandlerTest {
 
 	private HttpResponse createFixedAmountDonation(final String name, final double amount) throws IOException {
 		final String token = responseString(login("test", "test"));
-		final CreateFixedAmountAccountCommand command = new CreateFixedAmountAccountCommand();
+		final CreateDonatableCommand command = new CreateDonatableCommand();
 		command.setName(name);
 		command.setAmount(BigDecimal.valueOf(amount));
-		return postJson("/api/donation", Json.encode(command), token);
+		return postJson("/api/donatable", Json.encode(command), token);
 	}
 
 	private HttpResponse login(final String username, final String password) throws IOException {

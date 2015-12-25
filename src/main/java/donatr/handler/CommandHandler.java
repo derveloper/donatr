@@ -1,6 +1,6 @@
 package donatr.handler;
 
-import donatr.aggregate.FixedAmountAccount;
+import donatr.aggregate.Donatable;
 import donatr.command.*;
 import donatr.event.*;
 import io.resx.core.EventStore;
@@ -36,13 +36,13 @@ public class CommandHandler {
 					.subscribe(message::reply);
 		});
 
-		eventStore.consumer(CreateFixedAmountAccountCommand.class, message -> {
-			final CreateFixedAmountAccountCommand createCommand = Json.decodeValue(message.body(), CreateFixedAmountAccountCommand.class);
-			final FixedAmountAccountCreatedEvent createdEvent = new FixedAmountAccountCreatedEvent(
+		eventStore.consumer(CreateDonatableCommand.class, message -> {
+			final CreateDonatableCommand createCommand = Json.decodeValue(message.body(), CreateDonatableCommand.class);
+			final DonatableCreatedEvent createdEvent = new DonatableCreatedEvent(
 					createCommand.getId(),
 					createCommand.getName(),
 					createCommand.getAmount());
-			eventStore.publishSourcedEvent(createdEvent, FixedAmountAccountCreatedEvent.class)
+			eventStore.publishSourcedEvent(createdEvent, DonatableCreatedEvent.class)
 					.subscribe(message::reply);
 		});
 
@@ -65,7 +65,7 @@ public class CommandHandler {
 						creditEvent.setAmount(event.getAmount());
 
 						eventStore
-								.load(event.getAccountTo(), FixedAmountAccount.class)
+								.load(event.getAccountTo(), Donatable.class)
 								.subscribe(fixedAmountDonation1 -> {
 									if (fixedAmountDonation1 != null && fixedAmountDonation1.getId() != null) {
 										creditEvent.setAmount(fixedAmountDonation1.getAmount());

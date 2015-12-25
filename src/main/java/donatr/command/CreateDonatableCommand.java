@@ -10,12 +10,12 @@ import static donatr.Constants.CREATE_FIXEDAMOUNTACCOUNT_COMMAND_ADDRESS;
 
 @Getter
 @Setter
-public class CreateFixedAmountAccountCommand extends Command {
+public class CreateDonatableCommand extends Command {
 	private String id;
 	private String name;
 	private BigDecimal amount;
 
-	public CreateFixedAmountAccountCommand() {
+	public CreateDonatableCommand() {
 		super(CREATE_FIXEDAMOUNTACCOUNT_COMMAND_ADDRESS);
 	}
 }

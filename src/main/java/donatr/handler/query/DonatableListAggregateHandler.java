@@ -1,6 +1,6 @@
 package donatr.handler.query;
 
-import donatr.aggregate.FixedAmountAccount;
+import donatr.aggregate.Donatable;
 import io.resx.core.EventStore;
 import io.vertx.core.Handler;
 import io.vertx.core.json.Json;
@@ -18,7 +18,7 @@ public class DonatableListAggregateHandler implements Handler<RoutingContext> {
 
 	@Override
 	public void handle(final RoutingContext routingContext) {
-		eventStore.loadAll(FixedAmountAccount.class).subscribe(donatables -> {
+		eventStore.loadAll(Donatable.class).subscribe(donatables -> {
 			final JsonArray array = new JsonArray();
 			Observable.from(donatables)
 					.flatMap(accountObservable -> accountObservable

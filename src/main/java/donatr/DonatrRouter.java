@@ -70,8 +70,8 @@ public class DonatrRouter extends AbstractVerticle {
 						new DistributedEventMessageCodec<>(AccountDebitedEvent.class))
 				.registerDefaultCodec(TransactionCreatedEvent.class,
 						new DistributedEventMessageCodec<>(TransactionCreatedEvent.class))
-				.registerDefaultCodec(FixedAmountAccountCreatedEvent.class,
-						new DistributedEventMessageCodec<>(FixedAmountAccountCreatedEvent.class))
+				.registerDefaultCodec(DonatableCreatedEvent.class,
+						new DistributedEventMessageCodec<>(DonatableCreatedEvent.class))
 		;
 		final EventStore eventStore = new SQLiteEventStore(vertx, eventBus, null);
 
@@ -136,7 +136,7 @@ public class DonatrRouter extends AbstractVerticle {
 		apiRouter.post("/account/credit").handler(new CreditAccountCommandHandler(eventStore));
 		apiRouter.post("/account/debit").handler(new DebitAccountCommandHandler(eventStore));
 		apiRouter.post("/transaction").handler(new CreateTransactionCommandHandler(eventStore));
-		apiRouter.post("/donatable").handler(new CreateFixedAmountAccountCommandHandler(eventStore));
+		apiRouter.post("/donatable").handler(new CreateDonatableCommandHandler(eventStore));
 
 		router.mountSubRouter("/api", apiRouter);
 
