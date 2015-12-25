@@ -1,6 +1,12 @@
 # donatr
 track and collect donations
 
+## tl;dr run donatr
+```
+cd dist
+java -jar donatr-1.0-SNAPSHOT-fat.jar
+```
+
 ## who should use it?
 the intended purpose of this is to run at hackerspaces that want to collect donations for the space infrastructure.
 but it is not tied to any hackerspace. anyone who wants to collect donations could use it.
