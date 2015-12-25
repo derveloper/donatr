@@ -12,7 +12,7 @@ const development = {
 
 const production = {
   api: {
-    url: 'http://donatr:8080/api'
+    url: '/api'
   }
 }
 

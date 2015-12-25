@@ -67,6 +67,7 @@ Temporary Items
 # .idea/dynamic.xml
 # .idea/uiDesigner.xml
 
+/dist/.vertx
 # Gradle:
 # .idea/gradle.xml
 # .idea/libraries
@@ -98,6 +99,7 @@ crashlytics-build.properties
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
+/dist/donatr.db
 
 # Package Files #
 *.jar

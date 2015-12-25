@@ -151,7 +151,7 @@ public class DonatrRouter extends AbstractVerticle {
 		final StaticHandler staticHandler = StaticHandler.create();
 		router.get().pathRegex("^(/.+\\.(js|css|ttf|gif|png|jpg|woff|ico))$").handler(staticHandler::handle);
 
-		router.get("/").handler(routingContext -> routingContext.response().sendFile("webroot/index.html"));
+		router.get("/*").handler(routingContext -> routingContext.response().sendFile("webroot/index.html"));
 
 		server.requestHandler(router::accept).listen(8080);
 	}
