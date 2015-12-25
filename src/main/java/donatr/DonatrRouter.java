@@ -73,7 +73,7 @@ public class DonatrRouter extends AbstractVerticle {
 				.registerDefaultCodec(DonatableCreatedEvent.class,
 						new DistributedEventMessageCodec<>(DonatableCreatedEvent.class))
 		;
-		final EventStore eventStore = new SQLiteEventStore(vertx, eventBus, null);
+		final EventStore eventStore = new SQLiteEventStore(vertx, eventBus, "donatr.db");
 
 		new CommandHandler(eventStore);
 
