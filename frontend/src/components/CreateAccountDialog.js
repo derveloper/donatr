@@ -14,18 +14,6 @@ class CreateAccountDialog extends React.Component {
     dispatch: React.PropTypes.func.isRequired
   }
 
-  render() {
-    const { dispatch, isOpen } = this.props
-    return <Dialog
-      modal={false}
-      title='Dialog With Standard Actions'
-      actions={this.getActions()}
-      onRequestClose={() => dispatch(accountActions.closeCreateDialog())}
-      open={isOpen}>
-      <TextField floatingLabelText='Name' ref='nameInput'/>
-    </Dialog>
-  }
-
   createAccount = () => {
     const name = this.refs.nameInput.getValue()
     this.props.dispatch(accountActions.create(name))
@@ -42,6 +30,18 @@ class CreateAccountDialog extends React.Component {
                   onClick={this.createAccount}
                   primary/>
     ]
+  }
+
+  render() {
+    const { dispatch, isOpen } = this.props
+    return <Dialog
+      modal={false}
+      title='Dialog With Standard Actions'
+      actions={this.getActions()}
+      onRequestClose={() => dispatch(accountActions.closeCreateDialog())}
+      open={isOpen}>
+      <TextField floatingLabelText='Name' ref='nameInput'/>
+    </Dialog>
   }
 }
 

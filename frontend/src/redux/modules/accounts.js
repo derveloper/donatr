@@ -1,4 +1,6 @@
 import { createAction, handleActions } from 'redux-actions'
+import { DONATABLE_DONATED } from './donatables'
+import _ from 'underscore'
 import request from 'superagent'
 import config from 'config'
 
@@ -74,13 +76,19 @@ export const actions = {
 // Reducer
 // ------------------------------------
 export default handleActions({
-  [ACCOUNT_CREATED]: (state, createdEvent) => {
+  [ACCOUNT_CREATED]: (state, { payload }) => {
     let accounts = state.accounts
     accounts.push({
-      id: createdEvent.payload.id,
-      name: createdEvent.payload.name,
+      id: payload.id,
+      name: payload.name,
       balance: 0
     })
+    return Object.assign({}, state, {accounts})
+  },
+  [DONATABLE_DONATED]: (state, { payload }) => {
+    let accounts = state.accounts
+    let currentAccountIndex = _.findIndex(accounts, {id: payload.accountFrom})
+    accounts[currentAccountIndex].balance = (accounts[currentAccountIndex].balance - payload.amount).toFixed(2)
     return Object.assign({}, state, {accounts})
   },
   [ACCOUNT_CREATE_FAILED]: (state) => state,

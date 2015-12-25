@@ -9,6 +9,7 @@ export const SESSION_CREATED = 'SESSION_CREATED'
 export const SESSION_CREATE_FAILED = 'SESSION_CREATE_FAILED'
 export const SESSION_DESTROYED = 'SESSION_DESTROYED'
 export const SESSION_LOGGED_OUT = 'SESSION_LOGGED_OUT'
+export const SESSION_SET_CURRENT_ACCOUNT = 'SESSION_SET_CURRENT_ACCOUNT'
 
 // ------------------------------------
 // Actions
@@ -17,6 +18,7 @@ export const created = createAction(SESSION_CREATED, (value = {}) => value)
 export const failed = createAction(SESSION_CREATE_FAILED, (value = {}) => value)
 export const destroyed = createAction(SESSION_DESTROYED, (reload = true) => reload)
 export const loggedOut = createAction(SESSION_LOGGED_OUT)
+export const currentAccount = createAction(SESSION_SET_CURRENT_ACCOUNT, (accountId) => accountId)
 
 export const create = (username, password) => {
   return (dispatch) => {
@@ -65,7 +67,8 @@ export const actions = {
   failed,
   destroy,
   destroyed,
-  tryToAuthenticate
+  tryToAuthenticate,
+  currentAccount
 }
 
 // ------------------------------------
@@ -73,16 +76,19 @@ export const actions = {
 // ------------------------------------
 export default handleActions({
   [SESSION_CREATED]: (state, { payload }) => {
-    return {isAuthenticated: payload, loginFailed: false, triedToAuthenticate: true}
+    return {isAuthenticated: payload, loginFailed: false, triedToAuthenticate: true, currentAccount: false}
   },
   [SESSION_CREATE_FAILED]: (state, { payload }) => {
-    return {isAuthenticated: payload, loginFailed: true, triedToAuthenticate: true}
+    return {isAuthenticated: payload, loginFailed: true, triedToAuthenticate: true, currentAccount: false}
   },
   [SESSION_DESTROYED]: (reload) => {
     if (reload) window.location.reload()
-    return {isAuthenticated: false, loginFailed: false, triedToAuthenticate: true}
+    return {isAuthenticated: false, loginFailed: false, triedToAuthenticate: true, currentAccount: false}
   },
   [SESSION_LOGGED_OUT]: () => {
-    return {isAuthenticated: false, loginFailed: false, triedToAuthenticate: true}
+    return {isAuthenticated: false, loginFailed: false, triedToAuthenticate: true, currentAccount: false}
+  },
+  [SESSION_SET_CURRENT_ACCOUNT]: (state, { payload }) => {
+    return Object.assign({}, state, {currentAccount: payload})
   }
-}, {isAuthenticated: false, loginFailed: false, triedToAuthenticate: false})
+}, {isAuthenticated: false, loginFailed: false, triedToAuthenticate: false, currentAccount: false})

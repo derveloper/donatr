@@ -1,9 +1,8 @@
 import React from 'react'
 import { Provider } from 'react-redux'
 import { Router } from 'react-router'
-import AppBar from 'material-ui/lib/app-bar'
 import Navigation from 'components/Navigation'
-import { actions as navActions } from '../redux/modules/navigation'
+import AppTopBar from 'components/AppTopBar'
 
 export default class Root extends React.Component {
   static propTypes = {
@@ -40,10 +39,7 @@ export default class Root extends React.Component {
       <Provider store={this.props.store}>
         <div style={{ height: '100%' }}>
           <Navigation ref='leftNav'/>
-          <AppBar
-            style={{ position: 'fixed' }}
-            onLeftIconButtonTouchTap={() => this.props.store.dispatch(navActions.toggle())}
-            title='donatr'/>
+          <AppTopBar />
           <div style={{ paddingTop: 70 }}>
             {this.content}
           </div>

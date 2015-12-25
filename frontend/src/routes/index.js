@@ -4,6 +4,7 @@ import CoreLayout from 'layouts/CoreLayout'
 import AccountsView from 'views/AccountsView'
 import AboutView from 'views/AboutView'
 import LoginView from 'views/LoginView'
+import DonateView from 'views/DonateView'
 import {requireAuthentication} from '../components/AuthenticatedComponent'
 
 export default (
@@ -11,5 +12,6 @@ export default (
     <IndexRoute component={requireAuthentication(AccountsView)}/>
     <Route path='/login' component={LoginView} />
     <Route path='/about' component={requireAuthentication(AboutView)} />
+    <Route path='/donate' component={requireAuthentication(DonateView)}/>
   </Route>
 )

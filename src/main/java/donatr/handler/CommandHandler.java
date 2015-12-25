@@ -75,6 +75,7 @@ public class CommandHandler {
 											.subscribe();
 									eventStore.publishSourcedEvent(creditEvent, AccountDebitedEvent.class)
 											.subscribe();
+									event.setAmount(creditEvent.getAmount());
 									message.reply(event);
 								});
 					});

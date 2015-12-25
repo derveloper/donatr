@@ -27,7 +27,9 @@ public class CreateTransactionCommandHandler implements Handler<RoutingContext> 
 	private CreateTransactionCommand getCommand(final RoutingContext routingContext) {
 		final CreateTransactionCommand command = Json.decodeValue(routingContext.getBodyAsString(), CreateTransactionCommand.class);
 		command.setId(UUID.randomUUID().toString());
-		command.setAmount(command.getAmount().setScale(2, BigDecimal.ROUND_HALF_UP));
+		if (command.getAmount() != null) {
+			command.setAmount(command.getAmount().setScale(2, BigDecimal.ROUND_HALF_UP));
+		}
 		return command;
 	}
 }

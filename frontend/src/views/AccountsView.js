@@ -1,7 +1,8 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { Link } from 'react-router'
 import { actions as accountActions } from '../redux/modules/accounts'
+import { actions as sessionActions } from '../redux/modules/session'
+import { pushPath } from 'redux-simple-router'
 import GridList from 'material-ui/lib/grid-list/grid-list'
 import GridTile from 'material-ui/lib/grid-list/grid-tile'
 
@@ -30,6 +31,11 @@ export class HomeView extends React.Component {
     this.props.dispatch(accountActions.fetchAll())
   }
 
+  onAccountClick = (account) => {
+    this.props.dispatch(sessionActions.currentAccount(account))
+    this.props.dispatch(pushPath('/donate'))
+  }
+
   render () {
     return (
       <div>
@@ -37,13 +43,15 @@ export class HomeView extends React.Component {
           cols={3}
           cellHeight={160}>
           {
-            this.props.accounts.accounts.map(account => <GridTile
-              title={account.name}
-            ><img src={trollface}/></GridTile>)
+            this.props.accounts.accounts.map(account =>
+              <GridTile
+                key={account.id}
+                title={account.name}
+                onClick={() => this.onAccountClick(account)}>
+                <img src={trollface}/>
+              </GridTile>)
           }
         </GridList>
-        <hr />
-        <Link to='/about'>Go To About View</Link>
       </div>
     )
   }
