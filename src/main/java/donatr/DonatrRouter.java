@@ -95,9 +95,7 @@ public class DonatrRouter extends AbstractVerticle {
 				.allowedMethod(HttpMethod.DELETE)
 				.allowedHeaders(new HashSet<>(Arrays.asList("authorization", "content-type", "content-length", "accept", "cookie")))
 				.allowCredentials(true);
-		router.route().handler(routingContext -> {
-			corsHandler.handle(routingContext);
-		});
+		router.route().handler(corsHandler::handle);
 		router.route().handler(CookieHandler.create());
 		router.route().handler(BodyHandler.create());
 
@@ -110,7 +108,7 @@ public class DonatrRouter extends AbstractVerticle {
 			if (!routingContext.response().ended()) {
 				routingContext.response().end();
 			}
-				});
+		});
 
 		apiRouter.delete("/session").handler(this::mapAuthCookieToHeader);
 		apiRouter.delete("/session")
