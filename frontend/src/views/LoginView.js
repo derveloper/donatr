@@ -55,15 +55,17 @@ export class LoginView extends React.Component {
       ? (
         <div className='flex-container'>
           <div>
-            <div className="flex-container">
+            <div className='flex-container'>
               <h1>donatr</h1>
             </div>
-            <div className="flex-container">
+            <div className='flex-container'>
               <h3>login</h3>
             </div>
-            <div className="flex-container">
-              { this.props.session.loginFailed
-                ? <div className='alert-danger'>Login failed!</div> : '' }
+            { this.props.session.loginFailed
+              ? <div className='flex-container'><div className='alert danger'>Login failed!</div></div>
+              : ''
+            }
+            <div className='flex-container'>
               <form onSubmit={this.onSubmit} action='/login' method='post'>
                 <div><TextField floatingLabelText='Username' name='username'/></div>
                 <div><TextField floatingLabelText='Password' type='password' name='password'/></div>

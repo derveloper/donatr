@@ -40,7 +40,7 @@ export default class Root extends React.Component {
         <div style={{ height: '100%' }}>
           <Navigation ref='leftNav'/>
           <AppTopBar />
-          <div style={{ paddingTop: 70 }}>
+          <div style={{ padding: '70px 2px' }}>
             {this.content}
           </div>
           {this.devTools}
