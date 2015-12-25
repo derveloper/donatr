@@ -14,7 +14,7 @@ const mapStateToProps = (state) => ({
 class AppTopBar extends React.Component {
   static propTypes = {
     accounts: React.PropTypes.object.isRequired,
-    currentAccount: React.PropTypes.object.isRequired,
+    currentAccount: React.PropTypes.object,
     dispatch: React.PropTypes.func.isRequired
   }
 
