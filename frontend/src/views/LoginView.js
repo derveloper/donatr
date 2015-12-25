@@ -2,6 +2,8 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { actions as sessionActions } from '../redux/modules/session'
 import { pushPath } from 'redux-simple-router'
+import TextField from 'material-ui/lib/text-field'
+import RaisedButton from 'material-ui/lib/raised-button'
 
 const mapStateToProps = (state) => ({
   session: state.session
@@ -51,15 +53,26 @@ export class LoginView extends React.Component {
     const { triedToAuthenticate, isAuthenticated } = this.props.session
     return (triedToAuthenticate && !isAuthenticated)
       ? (
-        <div className='container-fluid text-xs-center'>
-          <h1>Welcome to the React Redux Starter Kit</h1>
-          { this.props.session.loginFailed
-            ? <div className='alert-danger'>Login failed!</div> : '' }
-          <form onSubmit={this.onSubmit} action='/login' method='post'>
-            <div><input type='text' name='username' id='user-name-label'/></div>
-            <div><input type='password' name='password' id='password-name-label'/></div>
-            <button type='submit'>Login</button>
-          </form>
+        <div className='flex-container'>
+          <div>
+            <div className="flex-container">
+              <h1>donatr</h1>
+            </div>
+            <div className="flex-container">
+              <h3>login</h3>
+            </div>
+            <div className="flex-container">
+              { this.props.session.loginFailed
+                ? <div className='alert-danger'>Login failed!</div> : '' }
+              <form onSubmit={this.onSubmit} action='/login' method='post'>
+                <div><TextField floatingLabelText='Username' name='username'/></div>
+                <div><TextField floatingLabelText='Password' type='password' name='password'/></div>
+                <div style={{marginTop: 20}} className='flex-container'>
+                  <RaisedButton secondary type='submit'>Login</RaisedButton>
+                </div>
+              </form>
+            </div>
+          </div>
         </div>)
       : null
   }

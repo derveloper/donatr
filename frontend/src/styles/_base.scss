@@ -11,3 +11,8 @@ For example:
 @import './themes/default'
 */
 @import './vendor/_normalize.css';
+@import './flexbox';
+
+input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0px 1000px white inset;
+}
