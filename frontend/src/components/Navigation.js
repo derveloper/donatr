@@ -8,6 +8,7 @@ import { pushPath } from 'redux-simple-router'
 import { actions as navActions } from '../redux/modules/navigation'
 import { actions as accountActions } from '../redux/modules/accounts'
 import { actions as donatableActions } from '../redux/modules/donatables'
+import { actions as sessionActions } from '../redux/modules/session'
 
 const mapStateToProps = (state) => ({
   isOpen: state.navigation.isOpen || false
@@ -46,6 +47,7 @@ class Navigation extends React.Component {
         <MenuItem onClick={this.goToAccounts} primaryText='Accounts'/>
         <MenuItem onClick={this.toggleCreateAccountDialog} primaryText='Add account'/>
         <MenuItem onClick={this.toggleCreateDonatableDialog} primaryText='Add donatable'/>
+        <MenuItem onClick={() => dispatch(sessionActions.destroy())} primaryText='Logout'/>
       </LeftNav>
     </span>
   }

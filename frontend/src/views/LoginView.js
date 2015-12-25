@@ -3,11 +3,6 @@ import { connect } from 'react-redux'
 import { actions as sessionActions } from '../redux/modules/session'
 import { pushPath } from 'redux-simple-router'
 
-// We define mapStateToProps where we'd normally use
-// the @connect decorator so the data requirements are clear upfront, but then
-// export the decorated component after the main class definition so
-// the component can be tested w/ and w/o being connected.
-// See: http://rackt.github.io/redux/docs/recipes/WritingTests.html
 const mapStateToProps = (state) => ({
   session: state.session
 })
@@ -29,11 +24,17 @@ export class LoginView extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    this.checkAuth(nextProps.session.isAuthenticated)
+    this.checkAuth(
+      nextProps.session.isAuthenticated,
+      nextProps.session.triedToAuthenticate
+    )
   }
 
-  checkAuth (isAuthenticated) {
-    if (isAuthenticated || this.props.session.isAuthenticated) {
+  checkAuth (isAuthenticated, triedToAuthenticate) {
+    triedToAuthenticate = triedToAuthenticate || this.props.session.triedToAuthenticate
+    isAuthenticated = isAuthenticated || this.props.session.isAuthenticated
+    if (!triedToAuthenticate) this.props.dispatch(sessionActions.tryToAuthenticate())
+    if (triedToAuthenticate && isAuthenticated) {
       let redirectAfterLogin = this.props.location.query.next || '/'
       this.props.dispatch(pushPath(redirectAfterLogin))
     }
@@ -47,18 +48,20 @@ export class LoginView extends React.Component {
   }
 
   render () {
-    return (
-      <div className='container-fluid text-xs-center'>
-        <h1>Welcome to the React Redux Starter Kit</h1>
-        { this.props.session.loginFailed
-          ? <div className='alert-danger'>Login failed!</div> : '' }
-        <form onSubmit={this.onSubmit} action='/login' method='post'>
-          <div><input type='text' name='username' id='user-name-label'/></div>
-          <div><input type='password' name='password' id='password-name-label'/></div>
-          <button type='submit'>Login</button>
-        </form>
-      </div>
-    )
+    const { triedToAuthenticate, isAuthenticated } = this.props.session
+    return (triedToAuthenticate && !isAuthenticated)
+      ? (
+        <div className='container-fluid text-xs-center'>
+          <h1>Welcome to the React Redux Starter Kit</h1>
+          { this.props.session.loginFailed
+            ? <div className='alert-danger'>Login failed!</div> : '' }
+          <form onSubmit={this.onSubmit} action='/login' method='post'>
+            <div><input type='text' name='username' id='user-name-label'/></div>
+            <div><input type='password' name='password' id='password-name-label'/></div>
+            <button type='submit'>Login</button>
+          </form>
+        </div>)
+      : null
   }
 }
 

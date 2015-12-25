@@ -8,11 +8,6 @@ import GridTile from 'material-ui/lib/grid-list/grid-tile'
 
 const trollface = require('assets/trollface.svg')
 
-// We define mapStateToProps where we'd normally use
-// the @connect decorator so the data requirements are clear upfront, but then
-// export the decorated component after the main class definition so
-// the component can be tested w/ and w/o being connected.
-// See: http://rackt.github.io/redux/docs/recipes/WritingTests.html
 const mapStateToProps = (state) => ({
   accounts: state.accounts
 })

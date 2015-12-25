@@ -1,7 +1,6 @@
 import React from 'react'
 import {connect} from 'react-redux'
 import { pushPath } from 'redux-simple-router'
-import { actions as sessionActions } from '../redux/modules/session'
 
 export function requireAuthentication (Component) {
   const mapStateToProps = (state) => ({
@@ -25,7 +24,6 @@ export function requireAuthentication (Component) {
 
     checkAuth () {
       if (!this.props.isAuthenticated) {
-        this.props.dispatch(sessionActions.tryToAuthenticate())
         let redirectAfterLogin = this.props.location.pathname
         this.props.dispatch(pushPath(`/login?next=${redirectAfterLogin}`))
       }

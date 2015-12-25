@@ -16,7 +16,7 @@ export class DonateView extends React.Component {
   static propTypes = {
     donatables: React.PropTypes.object.isRequired,
     dispatch: React.PropTypes.func.isRequired,
-    currentAccount: React.PropTypes.object.isRequired
+    currentAccount: React.PropTypes.object
   }
 
   constructor (props) {
