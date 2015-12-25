@@ -3,7 +3,7 @@ track and collect donations
 
 ## who should use it?
 the intended purpose of this is to run at hackerspaces that want to collect donations for the space infrastructure.
-but it is not tied to any hackerspaces. anyone who wants to collect donations could use it.
+but it is not tied to any hackerspace. anyone who wants to collect donations could use it.
 
 ## collect donations
 create accounts and donatables. accounts then tranfere money to donatables.
@@ -17,3 +17,4 @@ donatr is written using a eventsourced pattern. every action in the system is tr
 ## technlogies uses
 the backend is implemented in java and vert.x using a CQRS/ES pattern.
 the frontend is implemented using reactjs+redux+material-ui.
+database is sqlite or mongodb
