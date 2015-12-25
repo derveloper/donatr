@@ -3,7 +3,8 @@ track and collect donations
 
 ## tl;dr run donatr
 ```
-cd dist
+git clone https://github.com/vileda/donatr.git
+cd donatr/dist
 java -jar donatr-1.0-SNAPSHOT-fat.jar
 ```
 
