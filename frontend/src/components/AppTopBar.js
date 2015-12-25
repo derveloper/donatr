@@ -9,16 +9,19 @@ const trollface = require('assets/trollface.svg')
 
 const mapStateToProps = (state) => ({
   accounts: state.accounts,
+  session: state.session,
   currentAccount: _.findWhere(state.accounts.accounts, {id: state.session.currentAccount.id})
 })
 class AppTopBar extends React.Component {
   static propTypes = {
     accounts: React.PropTypes.object.isRequired,
+    session: React.PropTypes.object,
     currentAccount: React.PropTypes.object,
     dispatch: React.PropTypes.func.isRequired
   }
 
   render () {
+    if (!this.props.session.isAuthenticated) return null
     const { dispatch, currentAccount } = this.props
     const topAccountInfo = currentAccount
       ? <span>

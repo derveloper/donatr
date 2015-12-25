@@ -11,11 +11,13 @@ import { actions as donatableActions } from '../redux/modules/donatables'
 import { actions as sessionActions } from '../redux/modules/session'
 
 const mapStateToProps = (state) => ({
-  isOpen: state.navigation.isOpen || false
+  isOpen: state.navigation.isOpen || false,
+  session: state.session
 })
 class Navigation extends React.Component {
   static propTypes = {
     isOpen: React.PropTypes.bool.isRequired,
+    session: React.PropTypes.object.isRequired,
     dispatch: React.PropTypes.func.isRequired
   }
 
@@ -35,6 +37,7 @@ class Navigation extends React.Component {
   }
 
   render () {
+    if (!this.props.session.isAuthenticated) return null
     const { dispatch } = this.props
     return <span>
       <CreateAccountDialog />
