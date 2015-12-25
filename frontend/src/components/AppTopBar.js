@@ -14,10 +14,11 @@ const mapStateToProps = (state) => ({
 class AppTopBar extends React.Component {
   static propTypes = {
     accounts: React.PropTypes.object.isRequired,
+    currentAccount: React.PropTypes.object.isRequired,
     dispatch: React.PropTypes.func.isRequired
   }
 
-  render() {
+  render () {
     const { dispatch, currentAccount } = this.props
     const topAccountInfo = currentAccount
       ? <span>

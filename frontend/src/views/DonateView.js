@@ -19,12 +19,12 @@ export class DonateView extends React.Component {
     currentAccount: React.PropTypes.object.isRequired
   }
 
-  constructor(props) {
+  constructor (props) {
     super(props)
     this.componentWillMount = this.componentWillMount.bind(this)
   }
 
-  componentWillMount() {
+  componentWillMount () {
     if (!this.props.currentAccount) this.props.dispatch(pushPath('/'))
     else this.props.dispatch(donatablesActions.fetchAll())
   }
@@ -33,7 +33,7 @@ export class DonateView extends React.Component {
     this.props.dispatch(donatablesActions.donate(this.props.currentAccount, donatable))
   }
 
-  render() {
+  render () {
     return (
       <div>
         <GridList

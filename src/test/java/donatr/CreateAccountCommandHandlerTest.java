@@ -153,7 +153,6 @@ public class CreateAccountCommandHandlerTest {
 		assertThat(jsonArray.size(), not(0));
 
 		assertTrue(jsonArray.stream()
-				.filter(o -> o != null)
 				.map(o -> (JsonObject) o)
 				.anyMatch(entries -> account.getName().equals(entries.getString("name"))));
 	}

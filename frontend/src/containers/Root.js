@@ -19,7 +19,7 @@ export default class Root extends React.Component {
     )
   }
 
-  constructor(props) {
+  constructor (props) {
     super(props)
   }
 

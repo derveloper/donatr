@@ -33,7 +33,7 @@ class Navigation extends React.Component {
     this.props.dispatch(pushPath('/'))
   }
 
-  render() {
+  render () {
     const { dispatch } = this.props
     return <span>
       <CreateAccountDialog />

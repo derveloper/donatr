@@ -16,18 +16,18 @@ const trollface = require('assets/trollface.svg')
 const mapStateToProps = (state) => ({
   accounts: state.accounts
 })
-export class HomeView extends React.Component {
+export class AccountsView extends React.Component {
   static propTypes = {
     accounts: React.PropTypes.object.isRequired,
     dispatch: React.PropTypes.func.isRequired
   }
 
-  constructor(props) {
+  constructor (props) {
     super(props)
     this.componentWillMount = this.componentWillMount.bind(this)
   }
 
-  componentWillMount() {
+  componentWillMount () {
     this.props.dispatch(accountActions.fetchAll())
   }
 
@@ -57,4 +57,4 @@ export class HomeView extends React.Component {
   }
 }
 
-export default connect(mapStateToProps)(HomeView)
+export default connect(mapStateToProps)(AccountsView)

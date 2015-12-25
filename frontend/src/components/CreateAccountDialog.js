@@ -32,7 +32,7 @@ class CreateAccountDialog extends React.Component {
     ]
   }
 
-  render() {
+  render () {
     const { dispatch, isOpen } = this.props
     return <Dialog
       modal={false}
