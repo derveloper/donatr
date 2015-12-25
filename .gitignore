@@ -1,3 +1,4 @@
+!/dist
 /donatr.db
 /keystore.jceks
 /sample.db
@@ -18,6 +19,7 @@ pom.xml.versionsBackup
 pom.xml.next
 release.properties
 dependency-reduced-pom.xml
+/webroot
 buildNumber.properties
 .mvn/timing.properties
 ### OSX template
