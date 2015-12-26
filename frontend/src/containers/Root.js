@@ -1,4 +1,6 @@
 import React from 'react'
+import ThemeManager from 'material-ui/lib/styles/theme-manager'
+import Theme from '../styles/mui-theme'
 import { Provider } from 'react-redux'
 import { Router } from 'react-router'
 import Navigation from 'components/Navigation'
@@ -9,6 +11,16 @@ export default class Root extends React.Component {
     history: React.PropTypes.object.isRequired,
     routes: React.PropTypes.element.isRequired,
     store: React.PropTypes.object.isRequired
+  }
+
+  static childContextTypes = {
+    muiTheme: React.PropTypes.object
+  }
+
+  getChildContext () {
+    return {
+      muiTheme: ThemeManager.getMuiTheme(Theme)
+    }
   }
 
   get content () {
