@@ -1,6 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { actions as donatablesActions } from '../redux/modules/donatables'
+import { actions as navActions } from '../redux/modules/navigation'
 import { pushPath } from 'redux-simple-router'
 import GridList from 'material-ui/lib/grid-list/grid-list'
 import GridTile from 'material-ui/lib/grid-list/grid-tile'
@@ -27,6 +28,7 @@ export class DonateView extends React.Component {
   componentWillMount () {
     if (!this.props.currentAccount) this.props.dispatch(pushPath('/'))
     else this.props.dispatch(donatablesActions.fetchAll())
+    this.props.dispatch(navActions.showCurrentAccount(true))
   }
 
   donate = (donatable) => {

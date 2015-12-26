@@ -2,6 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { actions as accountActions } from '../redux/modules/accounts'
 import { actions as sessionActions } from '../redux/modules/session'
+import { actions as navActions } from '../redux/modules/navigation'
 import { pushPath } from 'redux-simple-router'
 import GridList from 'material-ui/lib/grid-list/grid-list'
 import GridTile from 'material-ui/lib/grid-list/grid-tile'
@@ -23,6 +24,7 @@ export class AccountsView extends React.Component {
   }
 
   componentWillMount () {
+    this.props.dispatch(navActions.showCurrentAccount(false))
     this.props.dispatch(accountActions.fetchAll())
   }
 

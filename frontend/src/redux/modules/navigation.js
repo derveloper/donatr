@@ -5,16 +5,19 @@ import { createAction, handleActions } from 'redux-actions'
 // ------------------------------------
 export const NAV_TOGGLE = 'NAV_TOGGLE'
 export const NAV_OPEN = 'NAV_OPEN'
+export const NAV_SHOW_CURRENT_ACCOUNT = 'NAV_SHOW_CURRENT_ACCOUNT'
 
 // ------------------------------------
 // Actions
 // ------------------------------------
 export const toggle = createAction(NAV_TOGGLE)
 export const open = createAction(NAV_OPEN, value => value)
+export const showCurrentAccount = createAction(NAV_SHOW_CURRENT_ACCOUNT)
 
 export const actions = {
   toggle,
-  open
+  open,
+  showCurrentAccount
 }
 
 // ------------------------------------
@@ -22,9 +25,12 @@ export const actions = {
 // ------------------------------------
 export default handleActions({
   [NAV_TOGGLE]: (state) => {
-    return {isOpen: !state.isOpen}
+    return Object.assign({}, state, {isOpen: !state.isOpen})
   },
-  [NAV_OPEN]: (state, { isOpen }) => {
-    return {isOpen: isOpen || false}
+  [NAV_OPEN]: (state, { payload }) => {
+    return Object.assign({}, state, {isOpen: payload || false})
+  },
+  [NAV_SHOW_CURRENT_ACCOUNT]: (state, { payload }) => {
+    return Object.assign({}, state, {currentAccountVisible: payload})
   }
-}, {isOpen: false})
+}, {isOpen: false, currentAccountVisible: false})

@@ -9,6 +9,7 @@ const trollface = require('assets/trollface.svg')
 
 const mapStateToProps = (state) => ({
   accounts: state.accounts,
+  navigation: state.navigation,
   session: state.session,
   currentAccount: _.findWhere(state.accounts.accounts, {id: state.session.currentAccount.id})
 })
@@ -16,6 +17,7 @@ class AppTopBar extends React.Component {
   static propTypes = {
     accounts: React.PropTypes.object.isRequired,
     session: React.PropTypes.object,
+    navigation: React.PropTypes.object,
     currentAccount: React.PropTypes.object,
     dispatch: React.PropTypes.func.isRequired
   }
@@ -23,7 +25,7 @@ class AppTopBar extends React.Component {
   render () {
     if (!this.props.session.isAuthenticated) return null
     const { dispatch, currentAccount } = this.props
-    const topAccountInfo = currentAccount
+    const topAccountInfo = currentAccount && this.props.navigation.currentAccountVisible
       ? <span>
           <Avatar src={trollface}/>
           <span style={{ paddingLeft: 5, position: 'relative', top: -15 }}>

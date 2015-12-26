@@ -14,8 +14,10 @@ import java.math.BigDecimal;
 public class Donatable extends Aggregate {
 	private String id;
 	private String name;
+	private String imageUrl;
 	private BigDecimal amount = BigDecimal.ZERO;
 	private BigDecimal balance = BigDecimal.ZERO;
+	private int timesDonated = 0;
 
 	public void on(final DonatableCreatedEvent event) {
 		id = event.getId();
@@ -25,6 +27,7 @@ public class Donatable extends Aggregate {
 
 	public void on(final AccountCreditedEvent event) {
 		balance = balance.add(event.getAmount());
+		timesDonated = timesDonated + 1;
 	}
 
 	public void on(final AccountDebitedEvent event) {

@@ -14,6 +14,8 @@ import java.math.BigDecimal;
 public class Account extends Aggregate {
 	private String id;
 	private String name;
+	private String gravatarEmail;
+	private String imageUrl;
 	private BigDecimal balance = BigDecimal.ZERO;
 
 	public void on(final AccountCreatedEvent event) {
