@@ -68,6 +68,7 @@ Temporary Items
 # .idea/uiDesigner.xml
 
 /dist/.vertx
+/dist/file-uploads
 # Gradle:
 # .idea/gradle.xml
 # .idea/libraries
