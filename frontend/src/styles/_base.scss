@@ -13,8 +13,14 @@ For example:
 @import './vendor/_normalize.css';
 @import './flexbox';
 
+$main-background-color: #f1f1f1;
+
+body {
+  background-color: $main-background-color;
+}
+
 input:-webkit-autofill {
-  -webkit-box-shadow: 0 0 0px 1000px white inset;
+  -webkit-box-shadow: 0 0 0px 1000px $main-background-color inset;
 }
 
 .danger {

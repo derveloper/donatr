@@ -14,11 +14,11 @@ export default {
     accent1Color: Colors.pinkA200,
     accent2Color: Colors.pinkA400,
     accent3Color: Colors.pinkA100,
-    textColor: Colors.fullWhite,
+    textColor: Colors.grey900,
     alternateTextColor: '#303030',
     canvasColor: '#303030',
-    borderColor: ColorManipulator.fade(Colors.fullWhite, 0.3),
-    disabledColor: ColorManipulator.fade(Colors.fullWhite, 0.3),
+    borderColor: ColorManipulator.fade(Colors.grey600, 0.5),
+    disabledColor: ColorManipulator.fade(Colors.grey600, 0.5),
     pickerHeaderColor: ColorManipulator.fade(Colors.fullWhite, 0.12),
     clockCircleColor: ColorManipulator.fade(Colors.fullWhite, 0.12)
   }
