@@ -36,7 +36,7 @@ class CreateAccountDialog extends React.Component {
     const { dispatch, isOpen } = this.props
     return <Dialog
       modal={false}
-      title='Dialog With Standard Actions'
+      title='Create new account'
       actions={this.getActions()}
       onRequestClose={() => dispatch(accountActions.closeCreateDialog())}
       open={isOpen}>
