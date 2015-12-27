@@ -11,7 +11,9 @@ const mapStateToProps = (state) => ({
 class CreateAccountDialog extends React.Component {
   static propTypes = {
     isOpen: React.PropTypes.bool.isRequired,
-    dispatch: React.PropTypes.func.isRequired
+    dispatch: React.PropTypes.func.isRequired,
+    defaultName: React.PropTypes.string,
+    defaultEmail: React.PropTypes.string
   }
 
   createAccount = () => {
@@ -41,8 +43,8 @@ class CreateAccountDialog extends React.Component {
       actions={this.getActions()}
       onRequestClose={() => dispatch(accountActions.closeCreateDialog())}
       open={isOpen}>
-      <div><TextField floatingLabelText='Name' ref='nameInput'/></div>
-      <div><TextField floatingLabelText='E-Mail' ref='emailInput'/></div>
+      <div><TextField defaultValue={this.props.defaultName} floatingLabelText='Name' ref='nameInput'/></div>
+      <div><TextField defaultValue={this.props.defaultEmail} floatingLabelText='E-Mail' ref='emailInput'/></div>
     </Dialog>
   }
 }

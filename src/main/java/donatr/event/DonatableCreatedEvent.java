@@ -6,7 +6,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 
-import static donatr.Constants.FIXEDAMOUNTACCOUNT_CREATED_EVENT_ADDRESS;
+import static donatr.Constants.DONATABLE_CREATED_EVENT_ADDRESS;
 
 @Getter
 @Setter
@@ -20,7 +20,7 @@ public class DonatableCreatedEvent extends SourcedEvent {
 	}
 
 	public DonatableCreatedEvent(final String id, final String name, final String imageUrl, final BigDecimal amount) {
-		super(FIXEDAMOUNTACCOUNT_CREATED_EVENT_ADDRESS, id);
+		super(DONATABLE_CREATED_EVENT_ADDRESS, id);
 		this.name = name;
 		this.imageUrl = imageUrl;
 		this.amount = amount;

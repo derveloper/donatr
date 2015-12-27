@@ -6,7 +6,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 
-import static donatr.Constants.CREATE_FIXEDAMOUNTACCOUNT_COMMAND_ADDRESS;
+import static donatr.Constants.CREATE_DONATABLE_COMMAND_ADDRESS;
 
 @Getter
 @Setter
@@ -17,6 +17,6 @@ public class CreateDonatableCommand extends Command {
 	private BigDecimal amount;
 
 	public CreateDonatableCommand() {
-		super(CREATE_FIXEDAMOUNTACCOUNT_COMMAND_ADDRESS);
+		super(CREATE_DONATABLE_COMMAND_ADDRESS);
 	}
 }

@@ -135,6 +135,9 @@ public class DonatrRouter extends AbstractVerticle {
 		apiRouter.post("/account/debit").handler(new DebitAccountCommandHandler(eventStore));
 		apiRouter.post("/transaction").handler(new CreateTransactionCommandHandler(eventStore));
 		apiRouter.post("/donatable").handler(new CreateDonatableCommandHandler(eventStore));
+		apiRouter.post("/donatable/amount").handler(new UpdateDonatableAmountCommandHandler(eventStore));
+		apiRouter.post("/donatable/image").handler(new UpdateDonatableImageUrlCommandHandler(eventStore));
+		apiRouter.post("/donatable/name").handler(new UpdateDonatableNameCommandHandler(eventStore));
 
 		router.mountSubRouter("/api", apiRouter);
 
