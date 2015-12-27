@@ -44,6 +44,7 @@ public class CommandHandler {
 			final DonatableCreatedEvent createdEvent = new DonatableCreatedEvent(
 					createCommand.getId(),
 					createCommand.getName(),
+					createCommand.getImageUrl(),
 					createCommand.getAmount());
 			eventStore.publishSourcedEvent(createdEvent, DonatableCreatedEvent.class)
 					.subscribe(message::reply);

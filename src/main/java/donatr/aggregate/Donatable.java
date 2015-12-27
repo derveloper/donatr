@@ -22,6 +22,7 @@ public class Donatable extends Aggregate {
 	public void on(final DonatableCreatedEvent event) {
 		id = event.getId();
 		name = event.getName();
+		imageUrl = event.getImageUrl();
 		amount = event.getAmount();
 	}
 

@@ -46,7 +46,9 @@ export class DonateView extends React.Component {
                 key={donatable.id}
                 title={`${donatable.name} ${donatable.amount} €`}
                 onClick={() => this.donate(donatable)}>
-                <img src={`http://www.gravatar.com/avatar/${md5(donatable.id)}?s=200&d=identicon&r=PG`} />
+                {donatable.imageUrl
+                  ? <img src={donatable.imageUrl}/>
+                  : null }
               </GridTile>)
           }
         </GridList>

@@ -37,12 +37,12 @@ export const fetchAll = () => {
   }
 }
 
-export const create = (name, amount) => {
+export const create = (name, amount, imageUrl) => {
   return (dispatch) => {
     request
       .post(config.api.url + '/donatable')
       .withCredentials()
-      .send({name, amount})
+      .send({name, amount, imageUrl})
       .end((err, res) => {
         if (err) dispatch(failed(false))
         else dispatch(created(res.body))
@@ -91,12 +91,13 @@ export const actions = {
 // Reducer
 // ------------------------------------
 export default handleActions({
-  [DONATABLE_CREATED]: (state, createdEvent) => {
+  [DONATABLE_CREATED]: (state, { payload }) => {
     let donatables = state.donatables
     donatables.push({
-      id: createdEvent.payload.id,
-      name: createdEvent.payload.name,
-      amount: createdEvent.payload.amount
+      id: payload.id,
+      name: payload.name,
+      amount: payload.amount,
+      imageUrl: payload.imageUrl
     })
     return Object.assign({}, state, {donatables})
   },

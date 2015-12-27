@@ -17,7 +17,8 @@ class CreateDonatableDialog extends React.Component {
   createDonatable = () => {
     const name = this.refs.nameInput.getValue()
     const amount = this.refs.amountInput.getValue()
-    this.props.dispatch(donatablesActions.create(name, amount))
+    const imageUrl = this.refs.imageUrlInput.getValue()
+    this.props.dispatch(donatablesActions.create(name, amount, imageUrl))
     this.props.dispatch(donatablesActions.closeCreateDialog())
   }
 
@@ -43,6 +44,7 @@ class CreateDonatableDialog extends React.Component {
       open={isOpen}>
       <div><TextField floatingLabelText='Name' ref='nameInput'/></div>
       <div><TextField floatingLabelText='Amount' ref='amountInput'/></div>
+      <div><TextField floatingLabelText='Image URL' ref='imageUrlInput'/></div>
     </Dialog>
   }
 }

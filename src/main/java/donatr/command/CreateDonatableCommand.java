@@ -13,6 +13,7 @@ import static donatr.Constants.CREATE_FIXEDAMOUNTACCOUNT_COMMAND_ADDRESS;
 public class CreateDonatableCommand extends Command {
 	private String id;
 	private String name;
+	private String imageUrl;
 	private BigDecimal amount;
 
 	public CreateDonatableCommand() {
