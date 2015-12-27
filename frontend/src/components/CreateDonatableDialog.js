@@ -36,7 +36,7 @@ class CreateDonatableDialog extends React.Component {
 
   render () {
     const { dispatch, isOpen } = this.props
-    return <Dialog
+    return <Dialog autoScrollBodyContent
       modal={false}
       title='Create donatable'
       actions={this.getActions()}

@@ -51,7 +51,7 @@ class TransferMoneyDialog extends React.Component {
     const items = this.props.accounts.accounts.map(account =>
       <MenuItem key={account.id} value={account.id} primaryText={account.name} />)
     const { dispatch, isOpen } = this.props
-    return <Dialog
+    return <Dialog autoScrollBodyContent
       modal={false}
       title='Create new account'
       actions={this.getActions()}

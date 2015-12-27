@@ -90,8 +90,15 @@ export default handleActions({
     let accounts = state.accounts
     let fromAccountIndex = _.findIndex(accounts, {id: payload.accountFrom})
     let toAccountIndex = _.findIndex(accounts, {id: payload.accountTo})
-    accounts[fromAccountIndex].balance = (accounts[fromAccountIndex].balance - payload.amount).toFixed(2)
-    accounts[toAccountIndex].balance = (accounts[toAccountIndex].balance + payload.amount).toFixed(2)
+    const amount = parseFloat(payload.amount)
+    if (fromAccountIndex !== -1) {
+      accounts[fromAccountIndex].balance =
+        (parseFloat(accounts[fromAccountIndex].balance) - amount).toFixed(2)
+    }
+    if (toAccountIndex !== -1) {
+      accounts[toAccountIndex].balance =
+        (parseFloat(accounts[toAccountIndex].balance) + amount).toFixed(2)
+    }
     return Object.assign({}, state, {accounts})
   },
   [ACCOUNT_CREATE_FAILED]: (state) => state,

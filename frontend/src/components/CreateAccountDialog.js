@@ -35,7 +35,7 @@ class CreateAccountDialog extends React.Component {
 
   render () {
     const { dispatch, isOpen } = this.props
-    return <Dialog
+    return <Dialog autoScrollBodyContent
       modal={false}
       title='Create new account'
       actions={this.getActions()}
