@@ -8,7 +8,9 @@ cd donatr/dist
 java -jar donatr-1.0-SNAPSHOT-fat.jar
 ```
 
-then point your browser to `http://localhost:8080`
+then point your browser to `http://localhost:8080`.
+the default user is `test` and the password is also `test`.
+if you want to change it, you need to compile it by your self.
 
 ## who should use it?
 the intended purpose of this is to run at hackerspaces that want to collect donations for the space infrastructure.
@@ -23,10 +25,22 @@ one could use it like a prepaid system.
 ## track donations
 donatr is written using a eventsourced pattern. every action in the system is tracked by events.
 
-## technlogies uses
+## technologies uses
 the backend is implemented in java and vert.x using a CQRS/ES pattern.
 the frontend is implemented using reactjs+redux+material-ui.
-database is sqlite or mongodb
+database is sqlite or mongodb (or whatever resx supports)
+
+## development
+run the following:
+```
+git clone https://github.com/res-x/resx.git
+cd resx/resx-parent && mvn install && cd ../..
+git clone https://github.com/vileda/donatr.git
+cd donatr && ./mkkeystore.sh && mvn install
+```
+
+now start hacking with your favorite editor or IDE!
+the main method is in the DonatrMain class.
 
 ## license
 ```
