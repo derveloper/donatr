@@ -42,6 +42,14 @@ cd donatr && ./mkkeystore.sh && mvn install
 now start hacking with your favorite editor or IDE!
 the main method is in the DonatrMain class.
 
+### backend
+the backend is a java maven project located in `src/`
+
+### frontend
+the frontend client is located in `frontend`.
+you'll need nodejs >= 4.0.0 and npm.
+there is also a README.md in `frontend`.
+
 ## license
 ```
 Copyright 2015 vileda
