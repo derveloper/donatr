@@ -23,10 +23,11 @@
   "author": "David Zukowski <david@zuko.me> (http://zuko.me)",
   "license": "MIT",
   "dependencies": {
+    "blueimp-md5": "^1.1.1",
     "cssnano": "^3.3.2",
     "debug": "^2.2.0",
     "dotenv": "^1.2.0",
-    "history": "1.13.1",
+    "history": "^1.17.0",
     "material-ui": "^0.14.0-rc2",
     "react": "^0.14.0",
     "react-dom": "^0.14.0",

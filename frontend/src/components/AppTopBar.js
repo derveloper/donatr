@@ -4,8 +4,7 @@ import AppBar from 'material-ui/lib/app-bar'
 import Avatar from 'material-ui/lib/avatar'
 import { actions as navActions } from '../redux/modules/navigation'
 import _ from 'underscore'
-
-const trollface = require('assets/trollface.svg')
+import md5 from 'md5'
 
 const mapStateToProps = (state) => ({
   accounts: state.accounts,
@@ -27,7 +26,7 @@ class AppTopBar extends React.Component {
     const { dispatch, currentAccount } = this.props
     const topAccountInfo = currentAccount && this.props.navigation.currentAccountVisible
       ? <span>
-          <Avatar src={trollface} />
+          <Avatar src={`http://www.gravatar.com/avatar/${md5(currentAccount.id)}?s=200&d=identicon&r=PG`} />
           <span style={{ paddingLeft: 5, position: 'relative', top: -15 }}>
             { currentAccount.name} {currentAccount.balance} €
           </span>

@@ -6,8 +6,7 @@ import { actions as navActions } from '../redux/modules/navigation'
 import { pushPath } from 'redux-simple-router'
 import GridList from 'material-ui/lib/grid-list/grid-list'
 import GridTile from 'material-ui/lib/grid-list/grid-tile'
-
-const trollface = require('assets/trollface.svg')
+import md5 from 'md5'
 
 const mapStateToProps = (state) => ({
   accounts: state.accounts
@@ -45,7 +44,7 @@ export class AccountsView extends React.Component {
                 key={account.id}
                 title={account.name}
                 onClick={() => this.onAccountClick(account)}>
-                <img src={trollface}/>
+                <img src={`http://www.gravatar.com/avatar/${md5(account.id)}?s=200&d=identicon&r=PG`}/>
               </GridTile>)
           }
         </GridList>

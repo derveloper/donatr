@@ -6,8 +6,7 @@ import { pushPath } from 'redux-simple-router'
 import GridList from 'material-ui/lib/grid-list/grid-list'
 import GridTile from 'material-ui/lib/grid-list/grid-tile'
 import _ from 'underscore'
-
-const trollface = require('assets/trollface.svg')
+import md5 from 'md5'
 
 const mapStateToProps = (state) => ({
   donatables: state.donatables,
@@ -47,7 +46,7 @@ export class DonateView extends React.Component {
                 key={donatable.id}
                 title={`${donatable.name} ${donatable.amount} €`}
                 onClick={() => this.donate(donatable)}>
-                <img src={trollface}/>
+                <img src={`http://www.gravatar.com/avatar/${md5(donatable.id)}?s=200&d=identicon&r=PG`} />
               </GridTile>)
           }
         </GridList>
