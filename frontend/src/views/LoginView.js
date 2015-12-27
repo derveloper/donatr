@@ -4,6 +4,13 @@ import { actions as sessionActions } from '../redux/modules/session'
 import { pushPath } from 'redux-simple-router'
 import TextField from 'material-ui/lib/text-field'
 import RaisedButton from 'material-ui/lib/raised-button'
+import Card from 'material-ui/lib/card/card'
+import CardActions from 'material-ui/lib/card/card-actions'
+import CardHeader from 'material-ui/lib/card/card-header'
+import CardMedia from 'material-ui/lib/card/card-media'
+import CardTitle from 'material-ui/lib/card/card-title'
+import FlatButton from 'material-ui/lib/flat-button'
+import CardText from 'material-ui/lib/card/card-text'
 
 const mapStateToProps = (state) => ({
   session: state.session
@@ -53,29 +60,35 @@ export class LoginView extends React.Component {
     const { triedToAuthenticate, isAuthenticated } = this.props.session
     return (triedToAuthenticate && !isAuthenticated)
       ? (
-        <div className='flex-container'>
+      <div className='flex-container'>
+        <Card style={{ padding: 10, color: '#f1f1f1' }}>
           <div>
-            <div className='flex-container'>
+            <div style={{color: '#f1f1f1'}} className='flex-container'>
               <h1>donatr</h1>
             </div>
             <div className='flex-container'>
               <h3>login</h3>
             </div>
             { this.props.session.loginFailed
-              ? <div className='flex-container'><div className='alert danger'>Login failed!</div></div>
+              ? <div className='flex-container'>
+              <div className='alert danger'>Login failed!</div>
+            </div>
               : ''
             }
             <div className='flex-container'>
-              <form onSubmit={this.onSubmit} action='/login' method='post'>
-                <div><TextField floatingLabelText='Username' name='username'/></div>
-                <div><TextField floatingLabelText='Password' type='password' name='password'/></div>
+              <form autoComplete='fooo' onSubmit={this.onSubmit} action='/login' method='post'>
+                <input type='text' name='username_fake' id='username_fake' value='' style={{display:'none'}} />
+                <input type='password' name='password_fake' id='password_fake' value='' style={{display:'none'}} />
+                <div><TextField autoComplete='username' floatingLabelText='Username' name='username'/></div>
+                <div><TextField autoComplete='password' floatingLabelText='Password' type='password' name='password'/></div>
                 <div style={{marginTop: 20}} className='flex-container'>
                   <RaisedButton secondary type='submit'>Login</RaisedButton>
                 </div>
               </form>
             </div>
           </div>
-        </div>)
+        </Card>
+      </div>)
       : null
   }
 }
