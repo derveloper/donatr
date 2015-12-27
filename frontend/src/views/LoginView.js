@@ -5,12 +5,6 @@ import { pushPath } from 'redux-simple-router'
 import TextField from 'material-ui/lib/text-field'
 import RaisedButton from 'material-ui/lib/raised-button'
 import Card from 'material-ui/lib/card/card'
-import CardActions from 'material-ui/lib/card/card-actions'
-import CardHeader from 'material-ui/lib/card/card-header'
-import CardMedia from 'material-ui/lib/card/card-media'
-import CardTitle from 'material-ui/lib/card/card-title'
-import FlatButton from 'material-ui/lib/flat-button'
-import CardText from 'material-ui/lib/card/card-text'
 
 const mapStateToProps = (state) => ({
   session: state.session
@@ -77,8 +71,6 @@ export class LoginView extends React.Component {
             }
             <div className='flex-container'>
               <form autoComplete='fooo' onSubmit={this.onSubmit} action='/login' method='post'>
-                <input type='text' name='username_fake' id='username_fake' value='' style={{display:'none'}} />
-                <input type='password' name='password_fake' id='password_fake' value='' style={{display:'none'}} />
                 <div><TextField autoComplete='username' floatingLabelText='Username' name='username'/></div>
                 <div><TextField autoComplete='password' floatingLabelText='Password' type='password' name='password'/></div>
                 <div style={{marginTop: 20}} className='flex-container'>

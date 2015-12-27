@@ -88,8 +88,10 @@ export default handleActions({
   },
   [DONATABLE_DONATED]: (state, { payload }) => {
     let accounts = state.accounts
-    let currentAccountIndex = _.findIndex(accounts, {id: payload.accountFrom})
-    accounts[currentAccountIndex].balance = (accounts[currentAccountIndex].balance - payload.amount).toFixed(2)
+    let fromAccountIndex = _.findIndex(accounts, {id: payload.accountFrom})
+    let toAccountIndex = _.findIndex(accounts, {id: payload.accountTo})
+    accounts[fromAccountIndex].balance = (accounts[fromAccountIndex].balance - payload.amount).toFixed(2)
+    accounts[toAccountIndex].balance = (accounts[toAccountIndex].balance + payload.amount).toFixed(2)
     return Object.assign({}, state, {accounts})
   },
   [ACCOUNT_CREATE_FAILED]: (state) => state,

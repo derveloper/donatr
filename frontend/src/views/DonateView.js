@@ -6,7 +6,6 @@ import { pushPath } from 'redux-simple-router'
 import GridList from 'material-ui/lib/grid-list/grid-list'
 import GridTile from 'material-ui/lib/grid-list/grid-tile'
 import _ from 'underscore'
-import md5 from 'md5'
 
 const mapStateToProps = (state) => ({
   donatables: state.donatables,
