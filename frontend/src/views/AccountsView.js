@@ -44,7 +44,7 @@ export class AccountsView extends React.Component {
                 key={account.id}
                 title={account.name}
                 onClick={() => this.onAccountClick(account)}>
-                <img src={`http://www.gravatar.com/avatar/${md5(account.id)}?s=200&d=identicon&r=PG`}/>
+                <img src={`http://www.gravatar.com/avatar/${md5(account.email || 'anonymous')}?s=200&d=identicon&r=PG`}/>
               </GridTile>)
           }
         </GridList>

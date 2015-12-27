@@ -16,7 +16,8 @@ class CreateAccountDialog extends React.Component {
 
   createAccount = () => {
     const name = this.refs.nameInput.getValue()
-    this.props.dispatch(accountActions.create(name))
+    const email = this.refs.emailInput.getValue()
+    this.props.dispatch(accountActions.create(name, email))
     this.props.dispatch(accountActions.closeCreateDialog())
   }
 
@@ -40,7 +41,8 @@ class CreateAccountDialog extends React.Component {
       actions={this.getActions()}
       onRequestClose={() => dispatch(accountActions.closeCreateDialog())}
       open={isOpen}>
-      <TextField floatingLabelText='Name' ref='nameInput'/>
+      <div><TextField floatingLabelText='Name' ref='nameInput'/></div>
+      <div><TextField floatingLabelText='E-Mail' ref='emailInput'/></div>
     </Dialog>
   }
 }

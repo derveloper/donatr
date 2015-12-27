@@ -11,6 +11,7 @@ import static donatr.Constants.CREATE_ACCOUNT_COMMAND_ADDRESS;
 public class CreateAccountCommand extends Command {
 	private String id;
 	private String name;
+	private String email;
 
 	public CreateAccountCommand() {
 		super(CREATE_ACCOUNT_COMMAND_ADDRESS);

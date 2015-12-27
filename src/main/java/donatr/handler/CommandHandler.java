@@ -24,7 +24,10 @@ public class CommandHandler {
 
 		eventStore.consumer(CreateAccountCommand.class, message -> {
 			final CreateAccountCommand createCommand = Json.decodeValue(message.body(), CreateAccountCommand.class);
-			final AccountCreatedEvent createdEvent = new AccountCreatedEvent(createCommand.getId(), createCommand.getName());
+			final AccountCreatedEvent createdEvent = new AccountCreatedEvent(
+					createCommand.getId(),
+					createCommand.getName(),
+					createCommand.getEmail());
 			eventStore.publishSourcedEvent(createdEvent, AccountCreatedEvent.class)
 					.subscribe(message::reply);
 		});

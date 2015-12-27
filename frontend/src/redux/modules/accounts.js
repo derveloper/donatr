@@ -37,12 +37,12 @@ export const fetchAll = () => {
   }
 }
 
-export const create = (name) => {
+export const create = (name, email) => {
   return (dispatch) => {
     request
       .post(config.api.url + '/account')
       .withCredentials()
-      .send({name})
+      .send({name, email})
       .end((err, res) => {
         if (err) dispatch(failed(false))
         else dispatch(created(res.body))
@@ -81,6 +81,7 @@ export default handleActions({
     accounts.push({
       id: payload.id,
       name: payload.name,
+      email: payload.email,
       balance: 0
     })
     return Object.assign({}, state, {accounts})
