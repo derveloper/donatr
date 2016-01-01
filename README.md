@@ -12,6 +12,13 @@ then point your browser to `http://localhost:8080`.
 the default user is `test` and the password is also `test`.
 if you want to change it, you need to compile it by your self.
 
+
+You can also use docker, it will install all requirements
+```
+docker build -t donatr .
+docker run -i -d -p 8080:8080 -v /path/to/db/folder:/data --name donatr donatr
+```
+
 ## who should use it?
 the intended purpose of this is to run at hackerspaces that want to collect donations for the space infrastructure.
 but it is not tied to any hackerspace. anyone who wants to collect donations could use it.
