@@ -10,6 +10,7 @@ export const SESSION_CREATE_FAILED = 'SESSION_CREATE_FAILED'
 export const SESSION_DESTROYED = 'SESSION_DESTROYED'
 export const SESSION_LOGGED_OUT = 'SESSION_LOGGED_OUT'
 export const SESSION_SET_CURRENT_ACCOUNT = 'SESSION_SET_CURRENT_ACCOUNT'
+export const SESSION_TOGGLE_EDIT_MODE = 'SESSION_TOGGLE_EDIT_MODE'
 
 // ------------------------------------
 // Actions
@@ -19,6 +20,7 @@ export const failed = createAction(SESSION_CREATE_FAILED, (value = {}) => value)
 export const destroyed = createAction(SESSION_DESTROYED, (reload = true) => reload)
 export const loggedOut = createAction(SESSION_LOGGED_OUT)
 export const currentAccount = createAction(SESSION_SET_CURRENT_ACCOUNT, (accountId) => accountId)
+export const toggleEditMode = createAction(SESSION_TOGGLE_EDIT_MODE)
 
 export const create = (username, password) => {
   return (dispatch) => {
@@ -27,7 +29,7 @@ export const create = (username, password) => {
       .type('form')
       .withCredentials()
       .send({username, password})
-      .end((err, res) => {
+      .end((err) => {
         if (err) dispatch(failed(false))
         else dispatch(created(true))
       })
@@ -39,7 +41,7 @@ export const destroy = () => {
     request
       .del(config.api.url + '/session')
       .withCredentials()
-      .end((err, res) => {
+      .end((err) => {
         if (err) dispatch(failed(false))
         else dispatch(destroyed())
       })
@@ -68,7 +70,8 @@ export const actions = {
   destroy,
   destroyed,
   tryToAuthenticate,
-  currentAccount
+  currentAccount,
+  toggleEditMode
 }
 
 // ------------------------------------
@@ -90,5 +93,8 @@ export default handleActions({
   },
   [SESSION_SET_CURRENT_ACCOUNT]: (state, { payload }) => {
     return Object.assign({}, state, {currentAccount: payload})
+  },
+  [SESSION_TOGGLE_EDIT_MODE]: (state) => {
+    return Object.assign({}, state, {editMode: !state.editMode})
   }
-}, {isAuthenticated: false, loginFailed: false, triedToAuthenticate: false, currentAccount: false})
+}, {isAuthenticated: false, loginFailed: false, triedToAuthenticate: false, currentAccount: false, editMode: false})

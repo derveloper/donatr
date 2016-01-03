@@ -43,12 +43,17 @@ class Navigation extends React.Component {
     this.props.dispatch(pushPath('/'))
   }
 
+  toggleEditMode = () => {
+    this.props.dispatch(sessionActions.toggleEditMode())
+    this.props.dispatch(navActions.toggle())
+  }
+
   render () {
     if (!this.props.session.isAuthenticated) return null
-    const { dispatch } = this.props
+    const { dispatch, session } = this.props
     return <span>
-      <CreateAccountDialog />
-      <CreateDonatableDialog />
+      <CreateAccountDialog account={session.editMode ? (session.currentAccount || {}) : {}} />
+      <CreateDonatableDialog donatable={session.editMode ? (session.currentAccount || {}) : {}} />
       <TransferMoneyDialog />
       <LeftNav
         docked={false}
@@ -59,6 +64,7 @@ class Navigation extends React.Component {
         <MenuItem onClick={this.toggleCreateAccountDialog} primaryText='Add account'/>
         <MenuItem onClick={this.toggleTransferMoneyDialog} primaryText='Transfer money'/>
         <MenuItem onClick={this.toggleCreateDonatableDialog} primaryText='Add donatable'/>
+        <MenuItem onClick={this.toggleEditMode} primaryText={`Toggle edit mode ${session.editMode ? 'off' : 'on'}`}/>
         <MenuItem onClick={() => dispatch(sessionActions.destroy())} primaryText='Logout'/>
       </LeftNav>
     </span>

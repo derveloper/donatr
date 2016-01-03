@@ -50,6 +50,45 @@ export const create = (name, email) => {
   }
 }
 
+export const updateName = (id, name) => {
+  return (dispatch) => {
+    request
+      .post(config.api.url + '/account/name')
+      .withCredentials()
+      .send({id, name})
+      .end((err) => {
+        if (err) dispatch(failed(false))
+        else dispatch(fetchAll())
+      })
+  }
+}
+
+export const updateEmail = (id, email) => {
+  return (dispatch) => {
+    request
+      .post(config.api.url + '/account/email')
+      .withCredentials()
+      .send({id, email})
+      .end((err) => {
+        if (err) dispatch(failed(false))
+        else dispatch(fetchAll())
+      })
+  }
+}
+
+export const updateImageUrl = (id, imageUrl) => {
+  return (dispatch) => {
+    request
+      .post(config.api.url + '/account/image')
+      .withCredentials()
+      .send({id, imageUrl})
+      .end((err) => {
+        if (err) dispatch(failed(false))
+        else dispatch(fetchAll())
+      })
+  }
+}
+
 export const destroy = () => {
   return (dispatch) => {
     request
@@ -69,7 +108,10 @@ export const actions = {
   failed,
   destroy,
   toggleCreateDialog,
-  closeCreateDialog
+  closeCreateDialog,
+  updateName,
+  updateEmail,
+  updateImageUrl
 }
 
 // ------------------------------------

@@ -6,10 +6,10 @@ import io.vertx.core.Handler;
 import io.vertx.core.json.Json;
 import io.vertx.rxjava.ext.web.RoutingContext;
 
-public class FixedAmountAccountAggregateHandler implements Handler<RoutingContext> {
+public class DonatableAggregateHandler implements Handler<RoutingContext> {
 	private final EventStore eventStore;
 
-	public FixedAmountAccountAggregateHandler(final EventStore eventStore) {
+	public DonatableAggregateHandler(final EventStore eventStore) {
 		this.eventStore = eventStore;
 	}
 

@@ -1,22 +1,14 @@
 package donatr.aggregate;
 
 import donatr.event.AccountCreatedEvent;
-import donatr.event.AccountCreditedEvent;
-import donatr.event.AccountDebitedEvent;
-import io.resx.core.Aggregate;
+import donatr.event.AccountEmailUpdatedEvent;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.math.BigDecimal;
-
 @Getter
 @Setter
-public class Account extends Aggregate {
-	private String id;
-	private String name;
+public class Account extends BaseAccount {
 	private String email;
-	private String imageUrl;
-	private BigDecimal balance = BigDecimal.ZERO;
 
 	public void on(final AccountCreatedEvent event) {
 		id = event.getId();
@@ -24,11 +16,7 @@ public class Account extends Aggregate {
 		email = event.getEmail();
 	}
 
-	public void on(final AccountCreditedEvent event) {
-		balance = balance.add(event.getAmount());
-	}
-
-	public void on(final AccountDebitedEvent event) {
-		balance = balance.subtract(event.getAmount());
+	public void on(final AccountEmailUpdatedEvent event) {
+		email = event.getEmail();
 	}
 }

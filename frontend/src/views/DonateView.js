@@ -4,23 +4,26 @@ import { actions as donatablesActions } from '../redux/modules/donatables'
 import { actions as navActions } from '../redux/modules/navigation'
 import { pushPath } from 'redux-simple-router'
 import GridList from 'material-ui/lib/grid-list/grid-list'
-import GridTile from 'material-ui/lib/grid-list/grid-tile'
 import _ from 'underscore'
+import Donatable from 'components/Donatable'
 
 const mapStateToProps = (state) => ({
   donatables: state.donatables,
+  session: state.session,
   currentAccount: _.findWhere(state.accounts.accounts, {id: state.session.currentAccount.id})
 })
 export class DonateView extends React.Component {
   static propTypes = {
     donatables: React.PropTypes.object.isRequired,
     dispatch: React.PropTypes.func.isRequired,
+    session: React.PropTypes.object,
     currentAccount: React.PropTypes.object
   }
 
   constructor (props) {
     super(props)
     this.componentWillMount = this.componentWillMount.bind(this)
+    this.componentWillReceiveProps = this.componentWillReceiveProps.bind(this)
   }
 
   componentWillMount () {
@@ -29,8 +32,8 @@ export class DonateView extends React.Component {
     this.props.dispatch(navActions.showCurrentAccount(true))
   }
 
-  donate = (donatable) => {
-    this.props.dispatch(donatablesActions.donate(this.props.currentAccount, donatable))
+  componentWillReceiveProps (props) {
+    if (!props.currentAccount && !props.session.editMode) this.props.dispatch(pushPath('/'))
   }
 
   render () {
@@ -39,16 +42,10 @@ export class DonateView extends React.Component {
         <GridList
           cols={3}
           cellHeight={160}>
-          {
-            this.props.donatables.donatables.map(donatable =>
-              <GridTile
-                key={donatable.id}
-                title={`${donatable.name} ${donatable.amount} €`}
-                onClick={() => this.donate(donatable)}>
-                {donatable.imageUrl
-                  ? <img src={donatable.imageUrl}/>
-                  : null }
-              </GridTile>)
+          { this.props.donatables.donatables.map(donatable =>
+            <Donatable key={donatable.id}
+                       donatable={donatable}
+                       currentAccount={this.props.currentAccount} />)
           }
         </GridList>
       </div>

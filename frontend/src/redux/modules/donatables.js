@@ -63,6 +63,19 @@ export const donate = (accountFrom, accountTo) => {
   }
 }
 
+export const updateAmount = (id, amount) => {
+  return (dispatch) => {
+    request
+      .post(config.api.url + '/donatable/amount')
+      .withCredentials()
+      .send({id, amount})
+      .end((err) => {
+        if (err) dispatch(failed(false))
+        else dispatch(fetchAll())
+      })
+  }
+}
+
 export const destroy = () => {
   return (dispatch) => {
     request
@@ -84,7 +97,8 @@ export const actions = {
   failed,
   destroy,
   toggleCreateDialog,
-  closeCreateDialog
+  closeCreateDialog,
+  updateAmount
 }
 
 // ------------------------------------

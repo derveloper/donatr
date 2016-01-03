@@ -26,7 +26,7 @@ class AppTopBar extends React.Component {
     const { dispatch, currentAccount } = this.props
     const topAccountInfo = currentAccount && this.props.navigation.currentAccountVisible
       ? <span>
-          <Avatar src={`http://www.gravatar.com/avatar/${md5(currentAccount.email)}?s=200&d=identicon&r=PG`} />
+          <Avatar src={`http://www.gravatar.com/avatar/${md5(currentAccount.email || currentAccount.id)}?s=200&d=identicon&r=PG`} />
           <span style={{ paddingLeft: 5, position: 'relative', top: -15 }}>
             { currentAccount.name} {currentAccount.balance} €
           </span>

@@ -7,7 +7,7 @@ import donatr.handler.command.*;
 import donatr.handler.query.AccountAggregateHandler;
 import donatr.handler.query.AccountListAggregateHandler;
 import donatr.handler.query.DonatableListAggregateHandler;
-import donatr.handler.query.FixedAmountAccountAggregateHandler;
+import donatr.handler.query.DonatableAggregateHandler;
 import io.resx.core.EventStore;
 import io.resx.core.SQLiteEventStore;
 import io.resx.core.command.Command;
@@ -64,14 +64,30 @@ public class DonatrRouter extends AbstractVerticle {
 		((io.vertx.core.eventbus.EventBus) eventBus.getDelegate())
 				.registerDefaultCodec(AccountCreatedEvent.class,
 						new DistributedEventMessageCodec<>(AccountCreatedEvent.class))
+
 				.registerDefaultCodec(AccountCreditedEvent.class,
 						new DistributedEventMessageCodec<>(AccountCreditedEvent.class))
+
 				.registerDefaultCodec(AccountDebitedEvent.class,
 						new DistributedEventMessageCodec<>(AccountDebitedEvent.class))
+
 				.registerDefaultCodec(TransactionCreatedEvent.class,
 						new DistributedEventMessageCodec<>(TransactionCreatedEvent.class))
+
 				.registerDefaultCodec(DonatableCreatedEvent.class,
 						new DistributedEventMessageCodec<>(DonatableCreatedEvent.class))
+
+				.registerDefaultCodec(AccountEmailUpdatedEvent.class,
+						new DistributedEventMessageCodec<>(AccountEmailUpdatedEvent.class))
+
+				.registerDefaultCodec(AccountNameUpdatedEvent.class,
+						new DistributedEventMessageCodec<>(AccountNameUpdatedEvent.class))
+
+				.registerDefaultCodec(AccountImageUrlUpdatedEvent.class,
+						new DistributedEventMessageCodec<>(AccountImageUrlUpdatedEvent.class))
+
+				.registerDefaultCodec(DonatableAmountUpdatedEvent.class,
+						new DistributedEventMessageCodec<>(DonatableAmountUpdatedEvent.class))
 		;
 		final EventStore eventStore = new SQLiteEventStore(vertx, eventBus, "donatr.db");
 
@@ -127,7 +143,7 @@ public class DonatrRouter extends AbstractVerticle {
 
 		apiRouter.get("/aggregate/account/:id").handler(new AccountAggregateHandler(eventStore));
 		apiRouter.get("/aggregate/account").handler(new AccountListAggregateHandler(eventStore));
-		apiRouter.get("/aggregate/donatable/:id").handler(new FixedAmountAccountAggregateHandler(eventStore));
+		apiRouter.get("/aggregate/donatable/:id").handler(new DonatableAggregateHandler(eventStore));
 		apiRouter.get("/aggregate/donatable").handler(new DonatableListAggregateHandler(eventStore));
 
 		apiRouter.post("/account").handler(new CreateAccountCommandHandler(eventStore));
@@ -136,8 +152,9 @@ public class DonatrRouter extends AbstractVerticle {
 		apiRouter.post("/transaction").handler(new CreateTransactionCommandHandler(eventStore));
 		apiRouter.post("/donatable").handler(new CreateDonatableCommandHandler(eventStore));
 		apiRouter.post("/donatable/amount").handler(new UpdateDonatableAmountCommandHandler(eventStore));
-		apiRouter.post("/donatable/image").handler(new UpdateDonatableImageUrlCommandHandler(eventStore));
-		apiRouter.post("/donatable/name").handler(new UpdateDonatableNameCommandHandler(eventStore));
+		apiRouter.post("/account/image").handler(new UpdateAccountImageUrlCommandHandler(eventStore));
+		apiRouter.post("/account/name").handler(new UpdateAccountNameCommandHandler(eventStore));
+		apiRouter.post("/account/email").handler(new UpdateAccountEmailCommandHandler(eventStore));
 
 		router.mountSubRouter("/api", apiRouter);
 

@@ -4,22 +4,44 @@ import Dialog from 'material-ui/lib/dialog'
 import FlatButton from 'material-ui/lib/flat-button'
 import TextField from 'material-ui/lib/text-field'
 import { actions as donatablesActions } from '../redux/modules/donatables'
+import { actions as sessionActions } from '../redux/modules/session'
+import { actions as accountActions } from '../redux/modules/accounts'
 
 const mapStateToProps = (state) => ({
+  session: state.session,
   isOpen: state.donatables.createDialogOpen || false
 })
 class CreateDonatableDialog extends React.Component {
   static propTypes = {
+    session: React.PropTypes.object.isRequired,
     isOpen: React.PropTypes.bool.isRequired,
-    dispatch: React.PropTypes.func.isRequired
+    dispatch: React.PropTypes.func.isRequired,
+    donatable: React.PropTypes.object
   }
 
   createDonatable = () => {
+    const { donatable, session, dispatch } = this.props
     const name = this.refs.nameInput.getValue()
     const amount = this.refs.amountInput.getValue()
     const imageUrl = this.refs.imageUrlInput.getValue()
-    this.props.dispatch(donatablesActions.create(name, amount, imageUrl))
-    this.props.dispatch(donatablesActions.closeCreateDialog())
+    const id = this.props.donatable.id
+
+    if (session.editMode) {
+      if (donatable.name !== name) {
+        dispatch(accountActions.updateName(id, name))
+      }
+      if (donatable.amount !== parseFloat(amount)) {
+        dispatch(donatablesActions.updateAmount(id, amount))
+      }
+      if (donatable.imageUrl !== imageUrl) {
+        dispatch(accountActions.updateImageUrl(id, imageUrl))
+      }
+    } else {
+      dispatch(donatablesActions.create(name, amount, imageUrl))
+    }
+
+    dispatch(donatablesActions.closeCreateDialog())
+    dispatch(sessionActions.currentAccount(false))
   }
 
   getActions = () => {
@@ -35,16 +57,16 @@ class CreateDonatableDialog extends React.Component {
   }
 
   render () {
-    const { dispatch, isOpen } = this.props
+    const { dispatch, isOpen, donatable } = this.props
     return <Dialog autoScrollBodyContent
       modal={false}
       title='Create donatable'
       actions={this.getActions()}
       onRequestClose={() => dispatch(donatablesActions.closeCreateDialog())}
       open={isOpen}>
-      <div><TextField floatingLabelText='Name' ref='nameInput'/></div>
-      <div><TextField floatingLabelText='Amount' ref='amountInput'/></div>
-      <div><TextField floatingLabelText='Image URL' ref='imageUrlInput'/></div>
+      <div><TextField defaultValue={donatable.name} floatingLabelText='Name' ref='nameInput'/></div>
+      <div><TextField defaultValue={donatable.amount} floatingLabelText='Amount' ref='amountInput'/></div>
+      <div><TextField defaultValue={donatable.imageUrl} floatingLabelText='Image URL' ref='imageUrlInput'/></div>
     </Dialog>
   }
 }
