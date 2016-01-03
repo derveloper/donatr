@@ -19,7 +19,7 @@ export const ACCOUNT_CLOSE_CREATE_DIALOG = 'ACCOUNT_CLOSE_CREATE_DIALOG'
 // ------------------------------------
 export const created = createAction(ACCOUNT_CREATED, (createdEvent) => createdEvent)
 export const failed = createAction(ACCOUNT_CREATE_FAILED)
-export const destroyed = createAction(ACCOUNT_DESTROYED)
+export const destroyed = createAction(ACCOUNT_DESTROYED, (id) => id)
 export const fetched = createAction(ACCOUNT_FETCHED, (result) => result)
 export const toggleCreateDialog = createAction(ACCOUNT_TOGGLE_CREATE_DIALOG)
 export const closeCreateDialog = createAction(ACCOUNT_CLOSE_CREATE_DIALOG)
@@ -89,14 +89,15 @@ export const updateImageUrl = (id, imageUrl) => {
   }
 }
 
-export const destroy = () => {
+export const destroy = (id) => {
   return (dispatch) => {
     request
       .del(config.api.url + '/account')
       .withCredentials()
+      .send({id})
       .end((err) => {
         if (err) dispatch(failed(false))
-        else dispatch(destroyed())
+        else dispatch(destroyed(id))
       })
   }
 }
@@ -144,7 +145,14 @@ export default handleActions({
     return Object.assign({}, state, {accounts})
   },
   [ACCOUNT_CREATE_FAILED]: (state) => state,
-  [ACCOUNT_DESTROYED]: (state) => state,
+  [ACCOUNT_DESTROYED]: (state, { payload }) => {
+    let accountId = _.findIndex(state.accounts, {id: payload})
+    let accounts = state.accounts
+    if (accountId > -1) {
+      accounts.splice(accountId, 1);
+    }
+    return Object.assign({}, state, {accounts: accounts})
+  },
   [ACCOUNT_FETCHED]: (state, { payload }) =>
     Object.assign({}, state, {accounts: payload.accounts}),
   [ACCOUNT_TOGGLE_CREATE_DIALOG]: (state) =>

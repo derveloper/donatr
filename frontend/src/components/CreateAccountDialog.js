@@ -39,15 +39,23 @@ class CreateAccountDialog extends React.Component {
     this.props.dispatch(accountActions.closeCreateDialog())
   }
 
+  destroy = () => {
+    this.props.dispatch(accountActions.destroy(this.props.account.id))
+    this.props.dispatch(accountActions.toggleCreateDialog())
+  }
+
   getActions = () => {
-    const { dispatch } = this.props
+    const { dispatch, session } = this.props
     return [
       <FlatButton label='Cancel'
                   onClick={() => dispatch(accountActions.toggleCreateDialog())}
                   secondary/>,
       <FlatButton label='Submit'
                   onClick={this.onSubmit}
-                  primary/>
+                  primary/>,
+      session.editMode ? <FlatButton label='Delete'
+                  onClick={this.destroy}
+                  secondary /> : null
     ]
   }
 

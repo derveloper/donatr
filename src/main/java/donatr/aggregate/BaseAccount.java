@@ -1,9 +1,6 @@
 package donatr.aggregate;
 
-import donatr.event.AccountCreditedEvent;
-import donatr.event.AccountDebitedEvent;
-import donatr.event.AccountImageUrlUpdatedEvent;
-import donatr.event.AccountNameUpdatedEvent;
+import donatr.event.*;
 import io.resx.core.Aggregate;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,6 +14,7 @@ public abstract class BaseAccount extends Aggregate {
 	protected String name;
 	protected String imageUrl;
 	protected BigDecimal balance = BigDecimal.ZERO;
+	protected boolean deleted = false;
 
 	public void on(final AccountCreditedEvent event) {
 		balance = balance.add(event.getAmount());
@@ -32,5 +30,9 @@ public abstract class BaseAccount extends Aggregate {
 
 	public void on(final AccountNameUpdatedEvent event) {
 		name = event.getName();
+	}
+
+	public void on(@SuppressWarnings("UnusedParameters") final AccountDeletedEvent event) {
+		deleted = true;
 	}
 }

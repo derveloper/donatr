@@ -5,6 +5,7 @@ public final class Constants {
 	* Account commands
 	*/
 	public static final String CREATE_ACCOUNT_COMMAND_ADDRESS = "create.account.command";
+	public static final String DELETE_ACCOUNT_COMMAND_ADDRESS = "delete.account.command";
 	public static final String DEBIT_ACCOUNT_COMMAND_ADDRESS = "debit.account.command";
 	public static final String CREDIT_ACCOUNT_COMMAND_ADDRESS = "credit.account.command";
 	public static final String UPDATE_ACCOUNT_NAME_COMMAND_ADDRESS = "update.account.name.command";
@@ -26,6 +27,7 @@ public final class Constants {
 	* Account events
 	*/
 	public static final String ACCOUNT_CREATED_EVENT_ADDRESS = "created.account.event";
+	public static final String ACCOUNT_DELETED_EVENT_ADDRESS = "deleted.account.event";
 	public static final String ACCOUNT_DEBITED_EVENT_ADDRESS = "debited.account.event";
 	public static final String ACCOUNT_CREDITED_EVENT_ADDRESS = "credited.account.event";
 	public static final String ACCOUNT_NAME_UPDATED_EVENT_ADDRESS = "updated.account.name.event";

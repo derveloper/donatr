@@ -1,6 +1,7 @@
 import { createAction, handleActions } from 'redux-actions'
 import request from 'superagent'
 import config from 'config'
+import _ from 'underscore'
 
 // ------------------------------------
 // Constants
@@ -19,7 +20,7 @@ export const DONATABLE_CLOSE_CREATE_DIALOG = 'DONATABLE_CLOSE_CREATE_DIALOG'
 export const created = createAction(DONATABLE_CREATED, (createdEvent) => createdEvent)
 export const donated = createAction(DONATABLE_DONATED, (donation) => donation)
 export const failed = createAction(DONATABLE_CREATE_FAILED)
-export const destroyed = createAction(DONATABLE_DESTROYED)
+export const destroyed = createAction(DONATABLE_DESTROYED, (id) => id)
 export const fetched = createAction(DONATABLE_FETCHED, (result) => result)
 export const toggleCreateDialog = createAction(DONATABLE_TOGGLE_CREATE_DIALOG)
 export const closeCreateDialog = createAction(DONATABLE_CLOSE_CREATE_DIALOG)
@@ -76,14 +77,15 @@ export const updateAmount = (id, amount) => {
   }
 }
 
-export const destroy = () => {
+export const destroy = (id) => {
   return (dispatch) => {
     request
-      .del(config.api.url + '/donatable')
+      .del(config.api.url + '/account')
       .withCredentials()
+      .send({id})
       .end((err) => {
         if (err) dispatch(failed(false))
-        else dispatch(destroyed())
+        else dispatch(destroyed(id))
       })
   }
 }
@@ -117,7 +119,14 @@ export default handleActions({
   },
   [DONATABLE_DONATED]: (state) => state,
   [DONATABLE_CREATE_FAILED]: (state) => state,
-  [DONATABLE_DESTROYED]: (state) => state,
+  [DONATABLE_DESTROYED]: (state, { payload }) => {
+    let donatableId = _.findIndex(state.donatables, {id: payload})
+    let donatables = state.donatables
+    if (donatableId > -1) {
+      donatables.splice(donatableId, 1);
+    }
+    return Object.assign({}, state, {donatables: donatables})
+  },
   [DONATABLE_FETCHED]: (state, { payload }) =>
     Object.assign({}, state, {donatables: payload.donatables}),
   [DONATABLE_TOGGLE_CREATE_DIALOG]: (state) =>

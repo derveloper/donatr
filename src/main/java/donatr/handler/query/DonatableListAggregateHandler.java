@@ -22,6 +22,7 @@ public class DonatableListAggregateHandler implements Handler<RoutingContext> {
 			final JsonArray array = new JsonArray();
 			Observable.from(donatables)
 					.flatMap(accountObservable -> accountObservable
+							.filter(donatable -> !donatable.isDeleted())
 							.doOnNext(donatable -> array.add(new JsonObject(Json.encode(donatable)))))
 					.doOnCompleted(() -> {
 						final JsonObject entries = new JsonObject().put("donatables", array);

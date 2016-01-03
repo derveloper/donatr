@@ -32,6 +32,13 @@ public class CommandHandler {
 					.subscribe(message::reply);
 		});
 
+		eventStore.consumer(DeleteAccountCommand.class, message -> {
+			final DeleteAccountCommand command = Json.decodeValue(message.body(), DeleteAccountCommand.class);
+			final AccountDeletedEvent event = new AccountDeletedEvent(command.getId());
+			eventStore.publishSourcedEvent(event, AccountDeletedEvent.class)
+					.subscribe(message::reply);
+		});
+
 		eventStore.consumer(UpdateAccountEmailCommand.class, message -> {
 			final UpdateAccountEmailCommand command = Json.decodeValue(message.body(), UpdateAccountEmailCommand.class);
 			final AccountEmailUpdatedEvent event = new AccountEmailUpdatedEvent(

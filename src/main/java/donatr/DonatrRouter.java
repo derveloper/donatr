@@ -88,6 +88,9 @@ public class DonatrRouter extends AbstractVerticle {
 
 				.registerDefaultCodec(DonatableAmountUpdatedEvent.class,
 						new DistributedEventMessageCodec<>(DonatableAmountUpdatedEvent.class))
+
+				.registerDefaultCodec(AccountDeletedEvent.class,
+						new DistributedEventMessageCodec<>(AccountDeletedEvent.class))
 		;
 		final EventStore eventStore = new SQLiteEventStore(vertx, eventBus, "donatr.db");
 
@@ -147,6 +150,7 @@ public class DonatrRouter extends AbstractVerticle {
 		apiRouter.get("/aggregate/donatable").handler(new DonatableListAggregateHandler(eventStore));
 
 		apiRouter.post("/account").handler(new CreateAccountCommandHandler(eventStore));
+		apiRouter.delete("/account").handler(new DeleteAccountCommandHandler(eventStore));
 		apiRouter.post("/account/credit").handler(new CreditAccountCommandHandler(eventStore));
 		apiRouter.post("/account/debit").handler(new DebitAccountCommandHandler(eventStore));
 		apiRouter.post("/transaction").handler(new CreateTransactionCommandHandler(eventStore));
