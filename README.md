@@ -12,8 +12,13 @@ then point your browser to `http://localhost:8080`.
 the default user is `test` and the password is also `test`.
 if you want to change it, you need to compile it by your self.
 
+### docker
+Run the docker image from docker hub
+```
+docker run -i -d -p 8080:8080 -v /path/to/db/folder:/data --name donatr vileda/donatr
+```
 
-You can also use docker, it will install all requirements
+You can also use docker to build an image, it will install all requirements
 ```
 docker build -t donatr .
 docker run -i -d -p 8080:8080 -v /path/to/db/folder:/data --name donatr donatr
