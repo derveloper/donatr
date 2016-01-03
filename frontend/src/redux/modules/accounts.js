@@ -149,7 +149,7 @@ export default handleActions({
     let accountId = _.findIndex(state.accounts, {id: payload})
     let accounts = state.accounts
     if (accountId > -1) {
-      accounts.splice(accountId, 1);
+      accounts.splice(accountId, 1)
     }
     return Object.assign({}, state, {accounts: accounts})
   },

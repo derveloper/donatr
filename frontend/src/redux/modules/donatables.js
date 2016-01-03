@@ -123,7 +123,7 @@ export default handleActions({
     let donatableId = _.findIndex(state.donatables, {id: payload})
     let donatables = state.donatables
     if (donatableId > -1) {
-      donatables.splice(donatableId, 1);
+      donatables.splice(donatableId, 1)
     }
     return Object.assign({}, state, {donatables: donatables})
   },
