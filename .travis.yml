@@ -4,3 +4,5 @@ jdk:
 before_script:
   - git clone https://github.com/res-x/resx.git
   - cd resx/resx-parent && mvn install
+script:
+  - mvn package
