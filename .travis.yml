@@ -1,8 +1,6 @@
 language: java
 jdk:
   - oraclejdk8
-before_script:
+before_install:
   - git clone https://github.com/res-x/resx.git
   - cd resx/resx-parent && mvn install
-script:
-  - mvn package
