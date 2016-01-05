@@ -3,4 +3,4 @@ jdk:
   - oraclejdk8
 before_install:
   - git clone https://github.com/res-x/resx.git
-  - cd resx/resx-parent && mvn install
+  - cd resx/resx-parent && mvn install && cd ../../
