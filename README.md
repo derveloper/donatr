@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/vileda/donatr.svg?branch=master)](https://travis-ci.org/vileda/donatr)
+
 # donatr
 track and collect donations
 
