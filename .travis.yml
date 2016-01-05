@@ -1,8 +1,6 @@
 language: java
 jdk:
   - oraclejdk8
-node_js:
-  - "4"
 env:
   - CXX=g++-4.8
 addons:
@@ -14,3 +12,6 @@ addons:
 before_install:
   - git clone https://github.com/res-x/resx.git
   - cd resx/resx-parent && mvn install && cd ../../
+  - curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.30.1/install.sh | bash
+  - nvm install 5.0
+  - nvm use 5.0
