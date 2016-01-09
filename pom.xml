@@ -110,6 +110,16 @@
 				<groupId>org.codehaus.mojo</groupId>
 				<executions>
 					<execution>
+						<id>Create Keystore</id>
+						<phase>test-compile</phase>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>${basedir}/mkkeystore.sh</executable>
+						</configuration>
+					</execution>
+					<execution>
 						<id>Compile Frontend</id>
 						<phase>test</phase>
 						<goals>
