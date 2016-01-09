@@ -6,7 +6,7 @@ run pacman-key --refresh-keys
 #install base system!
 run pacman -Syyu --noconfirm
 run pacman-db-upgrade
-run pacman -Sq --noconfirm --noprogressbar jdk8-openjdk java-runtime-common java-environment-common maven git nodejs
+run pacman -Sq --noconfirm --noprogressbar jdk8-openjdk java-runtime-common java-environment-common maven git nodejs npm
 run chmod +x /etc/profile.d/jre.sh && /etc/profile.d/jre.sh
 
 #install required java package
