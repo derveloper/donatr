@@ -15,7 +15,7 @@ export class LoginView extends React.Component {
     location: React.PropTypes.object.isRequired,
     params: React.PropTypes.object.isRequired,
     dispatch: React.PropTypes.func.isRequired
-  }
+  };
 
   constructor (props) {
     super(props)

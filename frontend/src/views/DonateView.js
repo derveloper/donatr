@@ -18,7 +18,7 @@ export class DonateView extends React.Component {
     dispatch: React.PropTypes.func.isRequired,
     session: React.PropTypes.object,
     currentAccount: React.PropTypes.object
-  }
+  };
 
   constructor (props) {
     super(props)

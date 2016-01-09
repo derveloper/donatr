@@ -12,13 +12,13 @@ export function requireAuthentication (Component) {
       isAuthenticated: React.PropTypes.bool.isRequired,
       location: React.PropTypes.object.isRequired,
       dispatch: React.PropTypes.func.isRequired
-    }
+    };
 
     componentWillMount () {
       this.checkAuth()
     }
 
-    componentWillReceiveProps (nextProps) {
+    componentWillReceiveProps () {
       this.checkAuth()
     }
 

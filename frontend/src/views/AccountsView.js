@@ -12,7 +12,7 @@ export class AccountsView extends React.Component {
   static propTypes = {
     accounts: React.PropTypes.object.isRequired,
     dispatch: React.PropTypes.func.isRequired
-  }
+  };
 
   constructor (props) {
     super(props)
