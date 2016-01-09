@@ -14,8 +14,7 @@ run git clone https://github.com/res-x/resx.git
 run cd resx/resx-parent && mvn install && cd ../..
 
 #install donatr
-run git clone https://github.com/vileda/donatr.git
-run cd donatr && mvn package
+run git clone https://github.com/vileda/donatr.git && cd donatr && mvn package
 
 expose 8080
 
