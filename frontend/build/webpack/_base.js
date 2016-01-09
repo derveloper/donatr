@@ -1,12 +1,12 @@
-import webpack from 'webpack'
-import cssnano from 'cssnano'
-import HtmlWebpackPlugin from 'html-webpack-plugin'
-import config from '../../config'
-import _debug from 'debug'
+import webpack from 'webpack';
+import cssnano from 'cssnano';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
+import config from '../../config';
+import _debug from 'debug';
 
-const paths = config.utils_paths
-const debug = _debug('app:webpack:_base')
-debug('Create configuration.')
+const paths = config.utils_paths;
+const debug = _debug('app:webpack:_base');
+debug('Create configuration.');
 
 const CSS_LOADER = !config.compiler_css_modules
   ? 'css?sourceMap'
@@ -15,7 +15,7 @@ const CSS_LOADER = !config.compiler_css_modules
     'sourceMap',
     'importLoaders=1',
     'localIdentName=[name]__[local]___[hash:base64:5]'
-  ].join('&')
+  ].join('&');
 
 const webpackConfig = {
   name: 'client',
@@ -127,16 +127,16 @@ const webpackConfig = {
   eslint: {
     configFile: paths.base('.eslintrc')
   }
-}
+};
 
 // NOTE: this is a temporary workaround. I don't know how to get Karma
 // to include the vendor bundle that webpack creates, so to get around that
 // we remove the bundle splitting when webpack is used with Karma.
 const commonChunkPlugin = new webpack.optimize.CommonsChunkPlugin({
   names: ['vendor']
-})
-commonChunkPlugin.__KARMA_IGNORE__ = true
+});
+commonChunkPlugin.__KARMA_IGNORE__ = true;
 
-webpackConfig.plugins.push(commonChunkPlugin)
+webpackConfig.plugins.push(commonChunkPlugin);
 
-export default webpackConfig
+export default webpackConfig;

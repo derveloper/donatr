@@ -1,13 +1,13 @@
-import React from 'react'
-import { connect } from 'react-redux'
-import { actions as accountActions } from '../redux/modules/accounts'
-import { actions as navActions } from '../redux/modules/navigation'
-import GridList from 'material-ui/lib/grid-list/grid-list'
-import Account from 'components/Account'
+import React from 'react';
+import { connect } from 'react-redux';
+import { actions as accountActions } from '../redux/modules/accounts';
+import { actions as navActions } from '../redux/modules/navigation';
+import GridList from 'material-ui/lib/grid-list/grid-list';
+import Account from 'components/Account';
 
 const mapStateToProps = (state) => ({
   accounts: state.accounts
-})
+});
 export class AccountsView extends React.Component {
   static propTypes = {
     accounts: React.PropTypes.object.isRequired,
@@ -15,13 +15,13 @@ export class AccountsView extends React.Component {
   };
 
   constructor (props) {
-    super(props)
-    this.componentWillMount = this.componentWillMount.bind(this)
+    super(props);
+    this.componentWillMount = this.componentWillMount.bind(this);
   }
 
   componentWillMount () {
-    this.props.dispatch(navActions.showCurrentAccount(false))
-    this.props.dispatch(accountActions.fetchAll())
+    this.props.dispatch(navActions.showCurrentAccount(false));
+    this.props.dispatch(accountActions.fetchAll());
   }
 
   render () {
@@ -38,8 +38,8 @@ export class AccountsView extends React.Component {
           }
         </GridList>
       </div>
-    )
+    );
   }
 }
 
-export default connect(mapStateToProps)(AccountsView)
+export default connect(mapStateToProps)(AccountsView);

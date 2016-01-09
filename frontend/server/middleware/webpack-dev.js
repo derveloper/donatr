@@ -1,11 +1,11 @@
-import WebpackDevMiddleware from 'webpack-dev-middleware'
-import config from '../../config'
+import WebpackDevMiddleware from 'webpack-dev-middleware';
+import config from '../../config';
 
-const paths = config.utils_paths
-const debug = require('debug')('app:server:webpack-dev')
+const paths = config.utils_paths;
+const debug = require('debug')('app:server:webpack-dev');
 
 export default function ({ compiler, publicPath }) {
-  debug('Enable Webpack dev middleware.')
+  debug('Enable Webpack dev middleware.');
 
   /* eslint key-spacing:0 */
   return WebpackDevMiddleware(compiler, {
@@ -16,5 +16,5 @@ export default function ({ compiler, publicPath }) {
     noInfo      : config.compiler_quiet,
     lazy        : false,
     stats       : config.compiler_stats
-  })
+  });
 }
