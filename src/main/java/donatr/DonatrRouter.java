@@ -195,7 +195,6 @@ public class DonatrRouter extends AbstractVerticle {
 	private Handler<RoutingContext> loginHandler(final JWTAuth authProvider) {
 		return routingContext -> {
 			final HttpServerResponse response = routingContext.response();
-
 			final String token = authProvider.generateToken(new JsonObject().put("username", "anon"), new JWTOptions());
 			final Cookie cookie = Cookie.cookie("auth", token);
 			cookie.setMaxAge(TimeUnit.HOURS.toSeconds(12));
