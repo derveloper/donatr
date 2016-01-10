@@ -6,7 +6,7 @@ run pacman-key --refresh-keys
 #install base system!
 run pacman -Syyu --noconfirm
 run pacman-db-upgrade
-run pacman -Sq --noconfirm --noprogressbar jdk8-openjdk java-runtime-common java-environment-common maven git nodejs npm base-devel
+run pacman -Sq --noconfirm --noprogressbar jdk8-openjdk java-runtime-common java-environment-common maven git nodejs npm base-devel phantomjs
 run chmod +x /etc/profile.d/jre.sh && /etc/profile.d/jre.sh
 
 #bust cache
