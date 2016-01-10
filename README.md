@@ -14,6 +14,9 @@ then point your browser to `http://localhost:8080`.
 the default user is `test` and the password is also `test`.
 if you want to change it, you need to compile it by your self.
 
+### demo
+you can find a demo at http://donatr-demo.vileda.cc/
+
 ### docker
 Run the docker image from docker hub
 ```
@@ -38,7 +41,7 @@ the intended purpose of this is to run at hackerspaces that want to collect dona
 but it is not tied to any hackerspace. anyone who wants to collect donations could use it.
 
 ## collect donations
-create accounts and donatables. accounts then tranfere money to donatables.
+create accounts and donatables. accounts then transfer money to donatables.
 accounts have a balance where the money is withdrawn from.
 deposits are made of negative amount donatables.
 one could use it like a prepaid system.
