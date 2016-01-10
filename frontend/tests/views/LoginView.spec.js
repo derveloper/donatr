@@ -1,6 +1,5 @@
 import React from 'react';
 import TestUtils from 'react-addons-test-utils';
-import { bindActionCreators } from 'redux';
 import { LoginView } from 'views/LoginView';
 
 function shallowRender (component) {

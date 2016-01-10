@@ -1,6 +1,6 @@
 import { argv } from 'yargs';
 import config from '../config';
-import webpackConfig from './webpack';
+import webpackConfig from './webpack.config';
 
 const debug = require('debug')('app:karma');
 debug('Create configuration.');
@@ -46,7 +46,8 @@ if (config.coverage_enabled) {
   karmaConfig.webpack.module.preLoaders = [{
     test: /\.(js|jsx)$/,
     include: new RegExp(config.dir_client),
-    loader: 'isparta'
+    loader: 'isparta',
+    exclude: /node_modules/
   }];
 }
 
