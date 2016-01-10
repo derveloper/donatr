@@ -6,7 +6,7 @@ let base = {
 
 const development = {
   api: {
-    url: 'http://mete.fnord.fnet/api'
+    url: 'http://localhost:8080/api'
   }
 };
 
