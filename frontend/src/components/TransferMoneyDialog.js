@@ -53,7 +53,7 @@ class TransferMoneyDialog extends React.Component {
     const { dispatch, isOpen } = this.props;
     return <Dialog autoScrollBodyContent
       modal={false}
-      title='Create new account'
+      title='Transfer money'
       actions={this.getActions()}
       onRequestClose={() => dispatch(transactionActions.closeCreateDialog())}
       open={isOpen}>
