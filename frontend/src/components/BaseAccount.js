@@ -35,7 +35,8 @@ class BaseAccount extends React.Component {
 
   render () {
     const { account } = this.props;
-    const imageUrl = account.imageUrl || `http://www.gravatar.com/avatar/${md5(account.email || account.id)}?s=200&d=identicon&r=PG`;
+    const id = (account.email || account.id).toLowerCase();
+    const imageUrl = account.imageUrl || `http://www.gravatar.com/avatar/${md5(id)}?s=200&d=identicon&r=PG`;
     const imgTag = <img src={imageUrl} />;
     return <GridTile
       style={this.getStyles()}
