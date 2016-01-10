@@ -46,7 +46,7 @@ one could use it like a prepaid system.
 ## track donations
 donatr is written using a eventsourced pattern. every action in the system is tracked by events.
 
-## technologies uses
+## technologies used
 the backend is implemented in java and vert.x using a CQRS/ES pattern.
 the frontend is implemented using reactjs+redux+material-ui.
 database is sqlite or mongodb (or whatever resx supports)
@@ -70,6 +70,10 @@ the backend is a java maven project located in `src/`
 the frontend client is located in `frontend`.
 you'll need nodejs >= 4.0.0 and npm.
 there is also a README.md in `frontend`.
+
+## roadmap
+* donate multiple times with one click
+* add legacy mete api for app compatibility
 
 ## license
 ```
