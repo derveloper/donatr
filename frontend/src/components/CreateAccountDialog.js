@@ -60,10 +60,11 @@ class CreateAccountDialog extends React.Component {
   };
 
   render () {
-    const { dispatch, isOpen } = this.props;
+    const { dispatch, isOpen, session } = this.props;
+    const title = session.editMode ? 'Edit account' : 'Create account';
     return <Dialog autoScrollBodyContent
       modal={false}
-      title='Create/Edit account'
+      title={title}
       actions={this.getActions()}
       onRequestClose={() => dispatch(accountActions.closeCreateDialog())}
       open={isOpen}>

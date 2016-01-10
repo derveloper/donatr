@@ -65,10 +65,11 @@ class CreateDonatableDialog extends React.Component {
   };
 
   render () {
-    const { dispatch, isOpen, donatable } = this.props;
+    const { dispatch, isOpen, donatable, session } = this.props;
+    const title = session.editMode ? 'Edit donatable' : 'Create donatable';
     return <Dialog autoScrollBodyContent
       modal={false}
-      title='Create donatable'
+      title={title}
       actions={this.getActions()}
       onRequestClose={() => dispatch(donatablesActions.closeCreateDialog())}
       open={isOpen}>
