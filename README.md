@@ -26,6 +26,13 @@ docker build -t donatr .
 docker run -i -d -p 8080:8080 -v /path/to/db/folder:/data --name donatr donatr
 ```
 
+## migrate from mete
+to migrate from mete, use the supplied script
+```
+cd mete2donatr
+./migrate.sh <old_mete_url> <dontr_api_url>
+```
+
 ## who should use it?
 the intended purpose of this is to run at hackerspaces that want to collect donations for the space infrastructure.
 but it is not tied to any hackerspace. anyone who wants to collect donations could use it.

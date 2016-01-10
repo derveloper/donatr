@@ -189,26 +189,19 @@ public class DonatrRouter extends AbstractVerticle {
 						.add("Authorization", "Bearer " + cookie2.getValue());
 			}
 		});
-		JWTAuthHandler.create(authProvider).handle(routingContext);
+		routingContext.next();
 	}
 
 	private Handler<RoutingContext> loginHandler(final JWTAuth authProvider) {
 		return routingContext -> {
-			final HttpServerRequest request = routingContext.request();
 			final HttpServerResponse response = routingContext.response();
-			final String username = request.getFormAttribute("username");
-			final String password = request.getFormAttribute("password");
 
-			if ("test".equals(username) && "test".equals(password)) {
-				final String token = authProvider.generateToken(new JsonObject().put("username", username), new JWTOptions());
-				final Cookie cookie = Cookie.cookie("auth", token);
-				cookie.setMaxAge(TimeUnit.HOURS.toSeconds(12));
-				cookie.setHttpOnly(true);
-				routingContext.addCookie(cookie);
-				response.setStatusCode(200).end(token);
-			} else {
-				response.setStatusCode(401).end();
-			}
+			final String token = authProvider.generateToken(new JsonObject().put("username", "anon"), new JWTOptions());
+			final Cookie cookie = Cookie.cookie("auth", token);
+			cookie.setMaxAge(TimeUnit.HOURS.toSeconds(12));
+			cookie.setHttpOnly(true);
+			routingContext.addCookie(cookie);
+			response.setStatusCode(200).end(token);
 		};
 	}
 
