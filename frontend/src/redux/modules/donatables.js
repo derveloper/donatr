@@ -112,7 +112,7 @@ export default handleActions({
     donatables.push({
       id: payload.id,
       name: payload.name,
-      amount: payload.amount,
+      amount: (payload.amount).toFixed(2),
       imageUrl: payload.imageUrl
     });
     return Object.assign({}, state, {donatables});
@@ -127,8 +127,13 @@ export default handleActions({
     }
     return Object.assign({}, state, {donatables: donatables});
   },
-  [DONATABLE_FETCHED]: (state, { payload }) =>
-    Object.assign({}, state, {donatables: payload.donatables}),
+  [DONATABLE_FETCHED]: (state, { payload }) => {
+    const donatables = payload.donatables.map((donatable) => {
+      donatable.amount = donatable.amount.toFixed(2);
+      return donatable;
+    });
+    return Object.assign({}, state, {donatables: donatables});
+  },
   [DONATABLE_TOGGLE_CREATE_DIALOG]: (state) =>
     Object.assign({}, state, {createDialogOpen: !state.createDialogOpen}),
   [DONATABLE_CLOSE_CREATE_DIALOG]: (state) =>

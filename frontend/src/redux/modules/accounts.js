@@ -153,8 +153,13 @@ export default handleActions({
     }
     return Object.assign({}, state, {accounts: accounts});
   },
-  [ACCOUNT_FETCHED]: (state, { payload }) =>
-    Object.assign({}, state, {accounts: payload.accounts}),
+  [ACCOUNT_FETCHED]: (state, { payload }) => {
+    const accounts = payload.accounts.map((account) => {
+      account.balance = parseFloat(account.balance).toFixed(2);
+      return account;
+    });
+    return Object.assign({}, state, {accounts: accounts});
+  },
   [ACCOUNT_TOGGLE_CREATE_DIALOG]: (state) =>
     Object.assign({}, state, {createDialogOpen: !state.createDialogOpen}),
   [ACCOUNT_CLOSE_CREATE_DIALOG]: (state) =>

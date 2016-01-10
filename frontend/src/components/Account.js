@@ -26,10 +26,11 @@ class Account extends React.Component {
 
   render () {
     const { account } = this.props;
+    const title = <p>{account.name}</p>;
     return <span>
       <BaseAccount
         key={account.id}
-        title={account.name}
+        title={title}
         account={account}
         onClick={this.onAccountClick} />
     </span>;
