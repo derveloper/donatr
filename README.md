@@ -77,6 +77,7 @@ there is also a README.md in `frontend`.
 ## roadmap
 * donate multiple times with one click
 * add legacy mete api for app compatibility
+* categories for donatables
 
 ## license
 ```
