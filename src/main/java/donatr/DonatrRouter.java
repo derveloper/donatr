@@ -93,16 +93,6 @@ public class DonatrRouter extends AbstractVerticle {
 		;
 		final EventStore eventStore = new SQLiteEventStore(vertx, eventBus, "donatr.db");
 
-		Reflections reflections = new Reflections("donatr.aggregate");
-
-		Set<Class<? extends Aggregate>> allClasses =
-				reflections.getSubTypesOf(Aggregate.class);
-
-		allClasses
-				.forEach(aClass -> eventStore.loadAll(aClass, false)
-						.subscribe(observables -> observables
-								.forEach(Observable::subscribe)));
-
 		new CommandHandler(eventStore);
 
 		authProvider = getJwtAuth();
