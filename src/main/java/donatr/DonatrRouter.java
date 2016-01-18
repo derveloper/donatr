@@ -8,6 +8,7 @@ import donatr.handler.query.AccountAggregateHandler;
 import donatr.handler.query.AccountListAggregateHandler;
 import donatr.handler.query.DonatableListAggregateHandler;
 import donatr.handler.query.DonatableAggregateHandler;
+import io.resx.core.Aggregate;
 import io.resx.core.EventStore;
 import io.resx.core.SQLiteEventStore;
 import io.resx.core.command.Command;
@@ -30,12 +31,10 @@ import io.vertx.rxjava.ext.web.RoutingContext;
 import io.vertx.rxjava.ext.web.handler.*;
 import io.vertx.rxjava.ext.web.handler.sockjs.SockJSHandler;
 import org.apache.commons.lang3.StringUtils;
+import org.reflections.Reflections;
 import rx.Observable;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class DonatrRouter extends AbstractVerticle {
@@ -93,6 +92,16 @@ public class DonatrRouter extends AbstractVerticle {
 						new DistributedEventMessageCodec<>(AccountDeletedEvent.class))
 		;
 		final EventStore eventStore = new SQLiteEventStore(vertx, eventBus, "donatr.db");
+
+		Reflections reflections = new Reflections("donatr.aggregate");
+
+		Set<Class<? extends Aggregate>> allClasses =
+				reflections.getSubTypesOf(Aggregate.class);
+
+		allClasses
+				.forEach(aClass -> eventStore.loadAll(aClass, false)
+						.subscribe(observables -> observables
+								.forEach(Observable::subscribe)));
 
 		new CommandHandler(eventStore);
 

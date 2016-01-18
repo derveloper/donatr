@@ -1,6 +1,8 @@
 package donatr.handler;
 
+import donatr.aggregate.Account;
 import donatr.aggregate.Donatable;
+import donatr.aggregate.Transaction;
 import donatr.command.*;
 import donatr.event.*;
 import io.resx.core.EventStore;
@@ -29,7 +31,12 @@ public class CommandHandler {
 					createCommand.getName(),
 					createCommand.getEmail());
 			eventStore.publishSourcedEvent(createdEvent, AccountCreatedEvent.class)
-					.subscribe(message::reply);
+					.subscribe(accountCreatedEvent -> {
+						Account account = new Account();
+						account.on(accountCreatedEvent);
+						eventStore.cacheAggregate(account);
+						message.reply(accountCreatedEvent);
+					});
 		});
 
 		eventStore.consumer(DeleteAccountCommand.class, message -> {
@@ -90,7 +97,12 @@ public class CommandHandler {
 					createCommand.getImageUrl(),
 					createCommand.getAmount());
 			eventStore.publishSourcedEvent(createdEvent, DonatableCreatedEvent.class)
-					.subscribe(message::reply);
+					.subscribe(donatableCreatedEvent -> {
+						Donatable donatable = new Donatable();
+						donatable.on(donatableCreatedEvent);
+						eventStore.cacheAggregate(donatable);
+						message.reply(donatableCreatedEvent);
+					});
 		});
 
 		eventStore.consumer(CreateTransactionCommand.class, message -> {
@@ -103,6 +115,10 @@ public class CommandHandler {
 			);
 			eventStore.publishSourcedEvent(createdEvent, TransactionCreatedEvent.class)
 					.subscribe(event -> {
+						Transaction transaction = new Transaction();
+						transaction.on(event);
+						eventStore.cacheAggregate(transaction);
+
 						final AccountCreditedEvent depositEvent = new AccountCreditedEvent();
 						depositEvent.setId(event.getAccountTo());
 						depositEvent.setAmount(event.getAmount());
