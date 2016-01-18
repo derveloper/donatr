@@ -115,10 +115,6 @@ public class CommandHandler {
 			);
 			eventStore.publishSourcedEvent(createdEvent, TransactionCreatedEvent.class)
 					.subscribe(event -> {
-						Transaction transaction = new Transaction();
-						transaction.on(event);
-						eventStore.cacheAggregate(transaction);
-
 						final AccountCreditedEvent depositEvent = new AccountCreditedEvent();
 						depositEvent.setId(event.getAccountTo());
 						depositEvent.setAmount(event.getAmount());
@@ -128,7 +124,7 @@ public class CommandHandler {
 						creditEvent.setAmount(event.getAmount());
 
 						eventStore
-								.load(event.getAccountTo(), Donatable.class)
+								.load(event.getAccountTo(), Donatable.class, false)
 								.subscribe(fixedAmountDonation1 -> {
 									if (fixedAmountDonation1 != null && fixedAmountDonation1.getId() != null) {
 										creditEvent.setAmount(fixedAmountDonation1.getAmount());
