@@ -26,8 +26,10 @@ class Donatable extends React.Component {
 
   render () {
     const { donatable } = this.props;
-    const amount = donatable.amount < 0 ? '' : `${donatable.amount} €`;
-    const title = <p>{donatable.name}<br/>{amount}</p>;
+    const amount = donatable.amount < 0 ? `+ ${Math.abs(donatable.amount)} €` : `${donatable.amount} €`;
+    const title = donatable.amount < 0
+      ? <p>{amount}</p>
+      : <p>{donatable.name}<br/>{amount}</p>;
     return <BaseAccount
       key={donatable.id}
       account={donatable}
