@@ -91,7 +91,16 @@ public class DonatrRouter extends AbstractVerticle {
 				.registerDefaultCodec(AccountDeletedEvent.class,
 						new DistributedEventMessageCodec<>(AccountDeletedEvent.class))
 		;
+
 		final EventStore eventStore = new SQLiteEventStore(vertx, eventBus, "donatr.db");
+
+		Reflections reflections = new Reflections("donatr.aggregate");
+
+		reflections.getSubTypesOf(Aggregate.class)
+				.forEach(aClass -> eventStore.loadAll(aClass, false)
+						.subscribe(observables -> observables
+								.forEach(observable -> observable
+										.subscribe(o -> System.out.printf("loaded %s with id %s %n", o.getClass(), o.getId())))));
 
 		new CommandHandler(eventStore);
 

@@ -157,6 +157,23 @@ public class CreateAccountCommandHandlerTest {
 				.anyMatch(entries -> account.getName().equals(entries.getString("name"))));
 	}
 
+	@Test
+	public void testGetDonatableList() throws IOException {
+		final String name = UUID.randomUUID().toString();
+		final DonatableCreatedEvent donatable = Json.decodeValue(responseString(createFixedAmountDonation(name, 13.37)), DonatableCreatedEvent.class);
+		final HttpResponse response = get("/api/aggregate/donatable", responseString(login("test", "test")));
+		final JsonObject accounts = new JsonObject(responseString(response));
+		final JsonArray jsonArray = accounts.getJsonArray("donatables");
+		assertThat(jsonArray.size(), not(0));
+
+		assertTrue(jsonArray.stream()
+				.map(o -> (JsonObject) o)
+				.anyMatch(entries ->
+						donatable.getName().equals(entries.getString("name"))
+								&& donatable.getAmount()
+								.equals(BigDecimal.valueOf(entries.getDouble("amount")).setScale(2, BigDecimal.ROUND_HALF_UP))));
+	}
+
 	private String responseString(final HttpResponse execute) throws IOException {
 		return IOUtils.toString(execute.getEntity().getContent());
 	}
