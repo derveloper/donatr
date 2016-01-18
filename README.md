@@ -75,9 +75,10 @@ you'll need nodejs >= 4.0.0 and npm.
 there is also a README.md in `frontend`.
 
 ## roadmap
-* donate multiple times with one click
-* add legacy mete api for app compatibility
-* categories for donatables
+- [x] implement caching
+- [ ] donate multiple times with one click
+- [ ] add legacy mete api for app compatibility
+- [ ] categories for donatables
 
 ## license
 ```
