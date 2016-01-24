@@ -61,22 +61,7 @@ public class DonatrRouter extends AbstractVerticle {
 	public void start() {
 		final EventBus eventBus = vertx.eventBus();
 
-		final Reflections eventClasses = new Reflections("donatr.event");
-		Arrays.asList(SourcedEvent.class, DistributedEvent.class)
-				.forEach(aClass1 -> eventClasses.getSubTypesOf(aClass1)
-						.forEach(aClass ->
-								((io.vertx.core.eventbus.EventBus) eventBus.getDelegate())
-										.registerDefaultCodec(aClass,
-												new DistributedEventMessageCodec<>(aClass))));
-
-		final EventStore eventStore = new SQLiteEventStore(vertx, eventBus, "donatr.db");
-
-		final Reflections reflections = new Reflections("donatr.aggregate");
-
-		reflections.getSubTypesOf(Aggregate.class)
-				.forEach(aClass -> eventStore.loadAll(aClass, false)
-						.subscribe(observables -> observables
-								.forEach(Observable::subscribe)));
+		final EventStore eventStore = new SQLiteEventStore(vertx, eventBus, "donatr.db", "donatr.aggregate", "donatr.event");
 
 		new CommandHandler(eventStore);
 
