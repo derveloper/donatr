@@ -7,9 +7,9 @@ import io.vertx.core.eventbus.MessageCodec;
 import io.vertx.core.json.Json;
 
 public class DistributedEventMessageCodec<T extends DistributedEvent> implements MessageCodec<T, String> {
-	private final Class<T> clazz;
+	private final Class<? extends DistributedEvent> clazz;
 
-	public DistributedEventMessageCodec(final Class<T> clazz) {
+	public DistributedEventMessageCodec(final Class<? extends DistributedEvent> clazz) {
 		this.clazz = clazz;
 	}
 

@@ -1,17 +1,18 @@
 package donatr;
 
-import donatr.event.*;
 import donatr.handler.CommandHandler;
 import donatr.handler.WebsocketHandler;
 import donatr.handler.command.*;
 import donatr.handler.query.AccountAggregateHandler;
 import donatr.handler.query.AccountListAggregateHandler;
-import donatr.handler.query.DonatableListAggregateHandler;
 import donatr.handler.query.DonatableAggregateHandler;
+import donatr.handler.query.DonatableListAggregateHandler;
 import io.resx.core.Aggregate;
 import io.resx.core.EventStore;
 import io.resx.core.SQLiteEventStore;
 import io.resx.core.command.Command;
+import io.resx.core.event.DistributedEvent;
+import io.resx.core.event.SourcedEvent;
 import io.vertx.core.Handler;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.Json;
@@ -22,7 +23,6 @@ import io.vertx.rxjava.core.AbstractVerticle;
 import io.vertx.rxjava.core.eventbus.EventBus;
 import io.vertx.rxjava.core.eventbus.MessageConsumer;
 import io.vertx.rxjava.core.http.HttpServer;
-import io.vertx.rxjava.core.http.HttpServerRequest;
 import io.vertx.rxjava.core.http.HttpServerResponse;
 import io.vertx.rxjava.ext.auth.jwt.JWTAuth;
 import io.vertx.rxjava.ext.web.Cookie;
@@ -34,13 +34,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.reflections.Reflections;
 import rx.Observable;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class DonatrRouter extends AbstractVerticle {
-
-	private JWTAuthHandler jwtAuthHandler;
-	private JWTAuth authProvider;
 
 	public static <T extends Command, R> void publishCommand(final T payload, final EventStore eventStore, final RoutingContext routingContext, final Class<R> clazz) {
 		final HttpServerResponse response = routingContext.response();
@@ -60,51 +60,27 @@ public class DonatrRouter extends AbstractVerticle {
 
 	public void start() {
 		final EventBus eventBus = vertx.eventBus();
-		((io.vertx.core.eventbus.EventBus) eventBus.getDelegate())
-				.registerDefaultCodec(AccountCreatedEvent.class,
-						new DistributedEventMessageCodec<>(AccountCreatedEvent.class))
 
-				.registerDefaultCodec(AccountCreditedEvent.class,
-						new DistributedEventMessageCodec<>(AccountCreditedEvent.class))
-
-				.registerDefaultCodec(AccountDebitedEvent.class,
-						new DistributedEventMessageCodec<>(AccountDebitedEvent.class))
-
-				.registerDefaultCodec(TransactionCreatedEvent.class,
-						new DistributedEventMessageCodec<>(TransactionCreatedEvent.class))
-
-				.registerDefaultCodec(DonatableCreatedEvent.class,
-						new DistributedEventMessageCodec<>(DonatableCreatedEvent.class))
-
-				.registerDefaultCodec(AccountEmailUpdatedEvent.class,
-						new DistributedEventMessageCodec<>(AccountEmailUpdatedEvent.class))
-
-				.registerDefaultCodec(AccountNameUpdatedEvent.class,
-						new DistributedEventMessageCodec<>(AccountNameUpdatedEvent.class))
-
-				.registerDefaultCodec(AccountImageUrlUpdatedEvent.class,
-						new DistributedEventMessageCodec<>(AccountImageUrlUpdatedEvent.class))
-
-				.registerDefaultCodec(DonatableAmountUpdatedEvent.class,
-						new DistributedEventMessageCodec<>(DonatableAmountUpdatedEvent.class))
-
-				.registerDefaultCodec(AccountDeletedEvent.class,
-						new DistributedEventMessageCodec<>(AccountDeletedEvent.class))
-		;
+		final Reflections eventClasses = new Reflections("donatr.event");
+		Arrays.asList(SourcedEvent.class, DistributedEvent.class)
+				.forEach(aClass1 -> eventClasses.getSubTypesOf(aClass1)
+						.forEach(aClass ->
+								((io.vertx.core.eventbus.EventBus) eventBus.getDelegate())
+										.registerDefaultCodec(aClass,
+												new DistributedEventMessageCodec<>(aClass))));
 
 		final EventStore eventStore = new SQLiteEventStore(vertx, eventBus, "donatr.db");
 
-		Reflections reflections = new Reflections("donatr.aggregate");
+		final Reflections reflections = new Reflections("donatr.aggregate");
 
 		reflections.getSubTypesOf(Aggregate.class)
 				.forEach(aClass -> eventStore.loadAll(aClass, false)
 						.subscribe(observables -> observables
-								.forEach(observable -> observable
-										.subscribe(o -> System.out.printf("loaded %s with id %s %n", o.getClass(), o.getId())))));
+								.forEach(Observable::subscribe)));
 
 		new CommandHandler(eventStore);
 
-		authProvider = getJwtAuth();
+		final JWTAuth authProvider = getJwtAuth();
 
 		final HttpServer server = vertx.createHttpServer();
 
@@ -127,8 +103,6 @@ public class DonatrRouter extends AbstractVerticle {
 		router.route().handler(BodyHandler.create());
 
 		apiRouter.post("/session").handler(loginHandler(authProvider));
-
-		jwtAuthHandler = JWTAuthHandler.create(authProvider);
 
 		apiRouter.get("/session").handler(this::mapAuthCookieToHeader);
 		apiRouter.get("/session").handler(routingContext -> {
