@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="DEBUG">
+<Configuration status="WARN">
   <Appenders>
     <Console name="Console" target="SYSTEM_OUT">
-      <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+      <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36}:%line - %msg%n"/>
     </Console>
   </Appenders>
   <Loggers>
+    <Logger name="donatr" level="TRACE" additivity="false">
+      <AppenderRef ref="Console"/>
+    </Logger>
+	  <Logger name="io.resx.core" level="INFO" additivity="false">
+		  <AppenderRef ref="Console"/>
+	  </Logger>
     <Root level="error">
       <AppenderRef ref="Console"/>
     </Root>
