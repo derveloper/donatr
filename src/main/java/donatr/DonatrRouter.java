@@ -59,9 +59,7 @@ public class DonatrRouter extends AbstractVerticle {
 	}
 
 	public void start() {
-		final EventBus eventBus = vertx.eventBus();
-
-		final EventStore eventStore = new SQLiteEventStore(vertx, eventBus, "donatr.db", "donatr.aggregate", "donatr.event");
+		final EventStore eventStore = new SQLiteEventStore(vertx, "donatr.db", "donatr.aggregate", "donatr.event");
 
 		new CommandHandler(eventStore);
 

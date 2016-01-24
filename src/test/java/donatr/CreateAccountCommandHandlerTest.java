@@ -100,21 +100,22 @@ public class CreateAccountCommandHandlerTest {
 	@Test
 	public void testTransactionWithFixedAmountDonation() throws Exception {
 		final SecureRandom rng = new SecureRandom();
-		final int rounds = 10;
-		LocalDateTime startTime = LocalDateTime.now();
-		LocalDateTime startTime2 = LocalDateTime.now();
-		for (int t = 0; t < rounds; t++) {
+		final int donatableCount = 20;
+		LocalDateTime startTimeDonatables = LocalDateTime.now();
+		LocalDateTime startTime2Transactions = LocalDateTime.now();
+		for (int t = 0; t < donatableCount; t++) {
 			final double amount = BigDecimal.valueOf(rng.nextDouble()).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-			final HttpResponse accountTo = createFixedAmountDonation("mate", amount);
+			final HttpResponse accountTo = createFixedAmountDonation(UUID.randomUUID().toString(), amount);
 			final DonatableCreatedEvent toAccountEvent = Json.decodeValue(responseString(accountTo), DonatableCreatedEvent.class);
 			assertThat(accountTo.getStatusLine().getStatusCode(), is(200));
 			assertThat(toAccountEvent.getAmount(), is(BigDecimal.valueOf(amount).setScale(2, BigDecimal.ROUND_HALF_UP)));
 
-			final String accountName = "foobar";
+			final String accountName = UUID.randomUUID().toString();
 			final HttpResponse accountFrom = createAccount(accountName);
 			final AccountCreatedEvent fromAccountEvent = Json.decodeValue(responseString(accountFrom), AccountCreatedEvent.class);
 
-			for (int i = 0; i < rounds; i++) {
+			final int transactionCount = 10;
+			for (int i = 0; i < transactionCount; i++) {
 				final HttpResponse transaction = createTransactionWithDonation(
 						fromAccountEvent.getId(),
 						toAccountEvent.getId(),
@@ -122,21 +123,21 @@ public class CreateAccountCommandHandlerTest {
 
 				assertThat(transaction.getStatusLine().getStatusCode(), is(200));
 
-				if(i % 10 == 0) {
-					System.out.println(i);
-					System.out.println(ChronoUnit.MILLIS.between(startTime2, LocalDateTime.now()));
-					startTime2 = LocalDateTime.now();
+				if((i+1) % 10 == 0) {
+					final long between = ChronoUnit.MILLIS.between(startTime2Transactions, LocalDateTime.now());
+					System.out.println("created " + (i+1) + " transactions in " + between + "ms");
+					startTime2Transactions = LocalDateTime.now();
 				}
 			}
 
-			if(t % 10 == 0) {
-				System.out.println(t);
-				System.out.println(ChronoUnit.MINUTES.between(startTime, LocalDateTime.now()));
-				startTime = LocalDateTime.now();
+			if((t+1) % 10 == 0) {
+				final long between = ChronoUnit.MILLIS.between(startTimeDonatables, LocalDateTime.now());
+				System.out.println("created " + (t+1) + " donatables   in " + between + "ms");
+				startTimeDonatables = LocalDateTime.now();
 			}
 
-			assertGetAccount(BigDecimal.valueOf(-(amount * rounds)), fromAccountEvent.getId());
-			assertGetFixedAmountAccount(BigDecimal.valueOf((amount * rounds)), toAccountEvent.getId());
+			assertGetAccount(BigDecimal.valueOf(-(amount * transactionCount)), fromAccountEvent.getId());
+			assertGetFixedAmountAccount(BigDecimal.valueOf((amount * transactionCount)), toAccountEvent.getId());
 		}
 	}
 
