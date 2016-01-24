@@ -3,9 +3,13 @@ package donatr;
 import donatr.command.*;
 import donatr.event.AccountCreatedEvent;
 import donatr.event.DonatableCreatedEvent;
+import io.vertx.core.AsyncResult;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.unit.Async;
+import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.unit.junit.VertxUnitRunner;
 import io.vertx.rxjava.core.Vertx;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -20,6 +24,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -36,12 +41,21 @@ import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+@RunWith(VertxUnitRunner.class)
 public class CreateAccountCommandHandlerTest {
 
 	@BeforeClass
-	public static void beforeClass() throws InterruptedException {
-		new DonatrMain().run(Vertx.vertx());
-		Thread.sleep(2500);
+	public static void beforeClass(TestContext context) throws InterruptedException {
+		final Vertx vertx = Vertx.vertx();
+		Async async = context.async();
+		vertx.deployVerticle("donatr.DonatrRouter", ar -> {
+			if (ar.succeeded()) {
+				async.complete();
+			} else {
+				context.fail(ar.cause());
+			}
+		});
+		async.awaitSuccess();
 	}
 
 	@Test
