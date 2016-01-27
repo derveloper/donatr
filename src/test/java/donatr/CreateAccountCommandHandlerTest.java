@@ -114,7 +114,7 @@ public class CreateAccountCommandHandlerTest {
 	@Test
 	public void testTransactionWithFixedAmountDonation() throws Exception {
 		final SecureRandom rng = new SecureRandom();
-		final int donatableCount = 20;
+		final int donatableCount = 3;
 		LocalDateTime startTimeDonatables = LocalDateTime.now();
 		LocalDateTime startTime2Transactions = LocalDateTime.now();
 		for (int t = 0; t < donatableCount; t++) {
@@ -128,7 +128,7 @@ public class CreateAccountCommandHandlerTest {
 			final HttpResponse accountFrom = createAccount(accountName);
 			final AccountCreatedEvent fromAccountEvent = Json.decodeValue(responseString(accountFrom), AccountCreatedEvent.class);
 
-			final int transactionCount = 10;
+			final int transactionCount = 3;
 			for (int i = 0; i < transactionCount; i++) {
 				final HttpResponse transaction = createTransactionWithDonation(
 						fromAccountEvent.getId(),
