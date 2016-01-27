@@ -117,7 +117,15 @@ export default handleActions({
     });
     return Object.assign({}, state, {donatables});
   },
-  [DONATABLE_DONATED]: (state) => state,
+  [DONATABLE_DONATED]: (state, { payload }) => {
+    let donatables = state.donatables;
+    let toDonatableIndex = _.findIndex(donatables, {id: payload.accountTo});
+
+    if (toDonatableIndex !== -1) {
+      donatables[toDonatableIndex].timesDonated++;
+    }
+    return Object.assign({}, state, {donatables});
+  },
   [DONATABLE_CREATE_FAILED]: (state) => state,
   [DONATABLE_DESTROYED]: (state, { payload }) => {
     let donatableId = _.findIndex(state.donatables, {id: payload});

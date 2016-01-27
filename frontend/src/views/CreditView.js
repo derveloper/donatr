@@ -8,7 +8,7 @@ import _ from 'underscore';
 import Donatable from 'components/Donatable';
 
 const mapStateToProps = (state) => ({
-  donatables: _.filter(state.donatables.donatables, (donatable) => donatable.amount < 0).reverse(),
+  donatables: _.sortBy(_.filter(state.donatables.donatables, (donatable) => donatable.amount < 0), (d) => Math.abs(d.amount)),
   session: state.session,
   currentAccount: _.findWhere(state.accounts.accounts, {id: state.session.currentAccount.id})
 });
