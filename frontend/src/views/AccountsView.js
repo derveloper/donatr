@@ -4,13 +4,14 @@ import { actions as accountActions } from '../redux/modules/accounts';
 import { actions as navActions } from '../redux/modules/navigation';
 import GridList from 'material-ui/lib/grid-list/grid-list';
 import Account from 'components/Account';
+import _ from 'underscore';
 
 const mapStateToProps = (state) => ({
-  accounts: state.accounts
+  accounts: _.sortBy(state.accounts.accounts, (a) => a.name)
 });
 export class AccountsView extends React.Component {
   static propTypes = {
-    accounts: React.PropTypes.object.isRequired,
+    accounts: React.PropTypes.array.isRequired,
     dispatch: React.PropTypes.func.isRequired
   };
 
@@ -31,7 +32,7 @@ export class AccountsView extends React.Component {
           cols={3}
           cellHeight={160}>
           {
-            this.props.accounts.accounts.map(account =>
+            this.props.accounts.map(account =>
               <Account
                 key={account.id}
                 account={account} />)
