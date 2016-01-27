@@ -2,5 +2,5 @@
 
 rm -Rf webroot
 rm -Rf dist && mkdir dist
-cd frontend && npm install && NODE_ENV='production' npm run deploy
+cd frontend && npm set progress=false && npm install && NODE_ENV='production' npm run deploy
 cd ..
