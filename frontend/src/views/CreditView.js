@@ -8,11 +8,11 @@ import _ from 'underscore';
 import Donatable from 'components/Donatable';
 
 const mapStateToProps = (state) => ({
-  donatables: _.sortBy(_.filter(state.donatables.donatables, (donatable) => donatable.amount >= 0), (d) => d.timesDonated).reverse(),
+  donatables: _.filter(state.donatables.donatables, (donatable) => donatable.amount < 0).reverse(),
   session: state.session,
   currentAccount: _.findWhere(state.accounts.accounts, {id: state.session.currentAccount.id})
 });
-export class DonateView extends React.Component {
+export class CreditView extends React.Component {
   static propTypes = {
     donatables: React.PropTypes.array.isRequired,
     dispatch: React.PropTypes.func.isRequired,
@@ -42,11 +42,10 @@ export class DonateView extends React.Component {
         <GridList
           cols={3}
           cellHeight={160}>
-          { this.props.donatables ? this.props.donatables.map(donatable =>
+          { this.props.donatables.map(donatable =>
             <Donatable key={donatable.id}
                        donatable={donatable}
                        currentAccount={this.props.currentAccount} />)
-            : null
           }
         </GridList>
       </div>
@@ -54,4 +53,4 @@ export class DonateView extends React.Component {
   }
 }
 
-export default connect(mapStateToProps)(DonateView);
+export default connect(mapStateToProps)(CreditView);

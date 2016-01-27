@@ -5,6 +5,7 @@ import LeftNav from 'material-ui/lib/left-nav';
 import CreateAccountDialog from 'components/CreateAccountDialog';
 import CreateDonatableDialog from 'components/CreateDonatableDialog';
 import TransferMoneyDialog from 'components/TransferMoneyDialog';
+import _ from 'underscore';
 import { pushPath } from 'redux-simple-router';
 import { actions as navActions } from '../redux/modules/navigation';
 import { actions as accountActions } from '../redux/modules/accounts';
@@ -14,13 +15,15 @@ import { actions as transactionActions } from '../redux/modules/transactions';
 
 const mapStateToProps = (state) => ({
   isOpen: state.navigation.isOpen || false,
-  session: state.session
+  session: state.session,
+  currentAccount: _.findWhere(state.accounts.accounts, {id: state.session.currentAccount.id})
 });
 class Navigation extends React.Component {
   static propTypes = {
     isOpen: React.PropTypes.bool.isRequired,
     session: React.PropTypes.object.isRequired,
-    dispatch: React.PropTypes.func.isRequired
+    dispatch: React.PropTypes.func.isRequired,
+    currentAccount: React.PropTypes.object
   };
 
   toggleCreateAccountDialog = () => {
@@ -43,6 +46,11 @@ class Navigation extends React.Component {
     this.props.dispatch(pushPath('/'));
   };
 
+  goToCredit = () => {
+    this.props.dispatch(navActions.toggle());
+    this.props.dispatch(pushPath('/credit'));
+  };
+
   toggleEditMode = () => {
     this.props.dispatch(sessionActions.toggleEditMode());
     this.props.dispatch(navActions.toggle());
@@ -50,7 +58,7 @@ class Navigation extends React.Component {
 
   render () {
     if (!this.props.session.isAuthenticated) return null;
-    const { dispatch, session } = this.props;
+    const { dispatch, session, currentAccount } = this.props;
     return <span>
       <CreateAccountDialog account={session.editMode ? (session.currentAccount || {}) : {}} />
       <CreateDonatableDialog donatable={session.editMode ? (session.currentAccount || {}) : {}} />
@@ -64,6 +72,7 @@ class Navigation extends React.Component {
         <MenuItem onClick={this.toggleCreateAccountDialog} primaryText='Add account'/>
         <MenuItem onClick={this.toggleTransferMoneyDialog} primaryText='Transfer money'/>
         <MenuItem onClick={this.toggleCreateDonatableDialog} primaryText='Add donatable'/>
+        { currentAccount ? <MenuItem onClick={this.goToCredit} primaryText='Add credit'/> : null }
         <MenuItem onClick={this.toggleEditMode} primaryText={`Toggle edit mode ${session.editMode ? 'off' : 'on'}`}/>
         <MenuItem onClick={() => dispatch(sessionActions.destroy())} primaryText='Logout'/>
       </LeftNav>
