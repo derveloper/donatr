@@ -99,7 +99,7 @@ export default handleActions({
     return Object.assign({}, state, {editMode: !state.editMode});
   },
   [DONATABLE_DONATED]: (state, { payload }) => {
-    return Object.assign({}, state, {snackbarMessage: payload.accountTo});
+    return Object.assign({}, state, {snackbarMessageId: payload.id, snackbarMessage: payload.accountTo});
   }
 }, {
   isAuthenticated: false,
@@ -107,5 +107,6 @@ export default handleActions({
   triedToAuthenticate: false,
   currentAccount: false,
   editMode: false,
-  snackbarMessage: null
+  snackbarMessage: null,
+  snackbarMessageId: null
 });

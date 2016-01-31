@@ -3,17 +3,19 @@ import Snackbar from 'material-ui/lib/snackbar';
 import { connect } from 'react-redux';
 import _ from 'underscore';
 
-function buildMessage (donatables, account) {
+function buildMessage (donatables, account, snackbarMessageId) {
   if (!donatables || !donatables.length) return null;
   if (!account) return null;
 
   let toDonatableIndex = _.findIndex(donatables, {id: account});
   const donatable = donatables[toDonatableIndex];
-  return `Donated ${donatable.amount}€ to ${donatable.name}`;
+  const id = snackbarMessageId.split('-')[0];
+  return `Donated ${donatable.amount}€ to ${donatable.name} -- ${id}`;
 }
 
 const mapStateToProps = (state) => ({
-  snackbarMessage: buildMessage(state.donatables.donatables, state.session.snackbarMessage)
+  snackbarMessageId: state.session.snackbarMessageId,
+  snackbarMessage: buildMessage(state.donatables.donatables, state.session.snackbarMessage, state.session.snackbarMessageId)
 });
 
 export default class TransactionSnackbar extends React.Component {
@@ -29,7 +31,6 @@ export default class TransactionSnackbar extends React.Component {
   }
 
   componentWillReceiveProps (props) {
-    console.log(this.props.snackbarMessage !== props.snackbarMessage);
     this.setState({open: this.props.snackbarMessage !== props.snackbarMessage});
   }
 
