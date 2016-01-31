@@ -1,6 +1,7 @@
 import { createAction, handleActions } from 'redux-actions';
 import request from 'superagent';
 import config from 'config';
+import { DONATABLE_DONATED } from './donatables';
 
 // ------------------------------------
 // Constants
@@ -79,22 +80,32 @@ export const actions = {
 // ------------------------------------
 export default handleActions({
   [SESSION_CREATED]: (state, { payload }) => {
-    return {isAuthenticated: payload, loginFailed: false, triedToAuthenticate: true, currentAccount: false};
+    return Object.assign({}, state, {isAuthenticated: payload, loginFailed: false, triedToAuthenticate: true, currentAccount: false});
   },
   [SESSION_CREATE_FAILED]: (state, { payload }) => {
-    return {isAuthenticated: payload, loginFailed: true, triedToAuthenticate: true, currentAccount: false};
+    return Object.assign({}, state, {isAuthenticated: payload, loginFailed: true, triedToAuthenticate: true, currentAccount: false});
   },
-  [SESSION_DESTROYED]: (reload) => {
-    if (reload) window.location.reload();
-    return {isAuthenticated: false, loginFailed: false, triedToAuthenticate: true, currentAccount: false};
+  [SESSION_DESTROYED]: (state, { payload }) => {
+    if (payload) window.location.reload();
+    return Object.assign({}, state, {isAuthenticated: false, loginFailed: false, triedToAuthenticate: true, currentAccount: false});
   },
-  [SESSION_LOGGED_OUT]: () => {
-    return {isAuthenticated: false, loginFailed: false, triedToAuthenticate: true, currentAccount: false};
+  [SESSION_LOGGED_OUT]: (state) => {
+    return Object.assign({}, state, {isAuthenticated: false, loginFailed: false, triedToAuthenticate: true, currentAccount: false});
   },
   [SESSION_SET_CURRENT_ACCOUNT]: (state, { payload }) => {
     return Object.assign({}, state, {currentAccount: payload});
   },
   [SESSION_TOGGLE_EDIT_MODE]: (state) => {
     return Object.assign({}, state, {editMode: !state.editMode});
+  },
+  [DONATABLE_DONATED]: (state, { payload }) => {
+    return Object.assign({}, state, {snackbarMessage: payload.accountTo});
   }
-}, {isAuthenticated: false, loginFailed: false, triedToAuthenticate: false, currentAccount: false, editMode: false});
+}, {
+  isAuthenticated: false,
+  loginFailed: false,
+  triedToAuthenticate: false,
+  currentAccount: false,
+  editMode: false,
+  snackbarMessage: null
+});

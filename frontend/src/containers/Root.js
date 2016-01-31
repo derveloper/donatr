@@ -5,6 +5,7 @@ import { Provider } from 'react-redux';
 import { Router } from 'react-router';
 import Navigation from 'components/Navigation';
 import AppTopBar from 'components/AppTopBar';
+import TransactionSnackbar from 'components/TransactionSnackbar';
 
 export default class Root extends React.Component {
   static propTypes = {
@@ -56,6 +57,7 @@ export default class Root extends React.Component {
         <div style={{ height: '100%' }}>
           <Navigation ref='leftNav'/>
           <AppTopBar />
+          <TransactionSnackbar />
           <div style={{ padding: '70px 2px 0 2px' }}>
             {this.content}
           </div>

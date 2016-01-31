@@ -7,7 +7,7 @@ import Account from 'components/Account';
 import _ from 'underscore';
 
 const mapStateToProps = (state) => ({
-  accounts: _.sortBy(state.accounts.accounts, (a) => a.name)
+  accounts: _.sortBy(state.accounts.accounts, (a) => a.name.trim().toLowerCase())
 });
 export class AccountsView extends React.Component {
   static propTypes = {
