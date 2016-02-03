@@ -136,10 +136,11 @@ export default handleActions({
     return Object.assign({}, state, {donatables: donatables});
   },
   [DONATABLE_FETCHED]: (state, { payload }) => {
-    const donatables = payload.donatables.map((donatable) => {
+    let donatables = payload.donatables.map((donatable) => {
       donatable.amount = donatable.amount.toFixed(2);
       return donatable;
     });
+    donatables = _.sortBy(_.filter(donatables, (donatable) => donatable.amount >= 0), (d) => d.timesDonated).reverse();
     return Object.assign({}, state, {donatables: donatables});
   },
   [DONATABLE_TOGGLE_CREATE_DIALOG]: (state) =>
