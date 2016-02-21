@@ -8,13 +8,13 @@ import _ from 'underscore';
 import Donatable from 'components/Donatable';
 
 const mapStateToProps = (state) => ({
-  donatables: _.sortBy(_.filter(state.donatables.donatables, (donatable) => donatable.amount < 0), (d) => Math.abs(d.amount)),
+  creditables: state.donatables.creditables,
   session: state.session,
   currentAccount: _.findWhere(state.accounts.accounts, {id: state.session.currentAccount.id})
 });
 export class CreditView extends React.Component {
   static propTypes = {
-    donatables: React.PropTypes.array.isRequired,
+    creditables: React.PropTypes.array.isRequired,
     dispatch: React.PropTypes.func.isRequired,
     session: React.PropTypes.object,
     currentAccount: React.PropTypes.object
@@ -42,9 +42,9 @@ export class CreditView extends React.Component {
         <GridList
           cols={3}
           cellHeight={160}>
-          { this.props.donatables.map(donatable =>
-            <Donatable key={donatable.id}
-                       donatable={donatable}
+          { this.props.creditables.map(creditable =>
+            <Donatable key={creditable.id}
+                       donatable={creditable}
                        currentAccount={this.props.currentAccount} />)
           }
         </GridList>

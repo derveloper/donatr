@@ -112,7 +112,7 @@ export default handleActions({
     donatables.push({
       id: payload.id,
       name: payload.name,
-      amount: (payload.amount).toFixed(2),
+      amount: parseFloat(payload.amount).toFixed(2),
       imageUrl: payload.imageUrl
     });
     return Object.assign({}, state, {donatables});
@@ -137,14 +137,15 @@ export default handleActions({
   },
   [DONATABLE_FETCHED]: (state, { payload }) => {
     let donatables = payload.donatables.map((donatable) => {
-      donatable.amount = donatable.amount.toFixed(2);
+      donatable.amount = parseFloat(donatable.amount).toFixed(2);
       return donatable;
     });
-    donatables = _.sortBy(_.filter(donatables, (donatable) => donatable.amount >= 0), (d) => d.timesDonated).reverse();
-    return Object.assign({}, state, {donatables: donatables});
+    const creditables = _.sortBy(_.filter(donatables, (donatable) => donatable.amount < 0), (d) => Math.abs(d.amount)).reverse();
+    donatables = _.sortBy(_.filter(donatables, (donatable) => donatable.amount >= 0), (d) => d.balance).reverse();
+    return Object.assign({}, state, {donatables, creditables});
   },
   [DONATABLE_TOGGLE_CREATE_DIALOG]: (state) =>
     Object.assign({}, state, {createDialogOpen: !state.createDialogOpen}),
   [DONATABLE_CLOSE_CREATE_DIALOG]: (state) =>
     Object.assign({}, state, {createDialogOpen: false})
-}, {donatables: [], createDialogOpen: false});
+}, {donatables: [], creditables: [], createDialogOpen: false});
