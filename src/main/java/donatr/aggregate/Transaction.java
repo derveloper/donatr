@@ -18,5 +18,7 @@ public class Transaction extends Aggregate {
 	public void on(final TransactionCreatedEvent event) {
 		id = event.getId();
 		amount = event.getAmount();
+		accountFrom = event.getAccountFrom();
+		accountTo = event.getAccountTo();
 	}
 }
