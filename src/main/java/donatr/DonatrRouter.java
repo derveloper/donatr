@@ -3,10 +3,7 @@ package donatr;
 import donatr.handler.CommandHandler;
 import donatr.handler.WebsocketHandler;
 import donatr.handler.command.*;
-import donatr.handler.query.AccountAggregateHandler;
-import donatr.handler.query.AccountListAggregateHandler;
-import donatr.handler.query.DonatableAggregateHandler;
-import donatr.handler.query.DonatableListAggregateHandler;
+import donatr.handler.query.*;
 import io.resx.core.Aggregate;
 import io.resx.core.EventStore;
 import io.resx.core.SQLiteEventStore;
@@ -113,6 +110,7 @@ public class DonatrRouter extends AbstractVerticle {
 		apiRouter.get("/aggregate/account").handler(new AccountListAggregateHandler(eventStore));
 		apiRouter.get("/aggregate/donatable/:id").handler(new DonatableAggregateHandler(eventStore));
 		apiRouter.get("/aggregate/donatable").handler(new DonatableListAggregateHandler(eventStore));
+		apiRouter.get("/aggregate/transaction").handler(new TransactionListAggregateHandler(eventStore));
 
 		apiRouter.post("/account").handler(new CreateAccountCommandHandler(eventStore));
 		apiRouter.delete("/account").handler(new DeleteAccountCommandHandler(eventStore));
