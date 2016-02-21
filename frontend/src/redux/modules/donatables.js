@@ -140,7 +140,7 @@ export default handleActions({
       donatable.amount = parseFloat(donatable.amount).toFixed(2);
       return donatable;
     });
-    const creditables = _.sortBy(_.filter(donatables, (donatable) => donatable.amount < 0), (d) => Math.abs(d.amount)).reverse();
+    const creditables = _.sortBy(_.filter(donatables, (donatable) => donatable.amount < 0), (d) => Math.abs(d.amount));
     donatables = _.sortBy(_.filter(donatables, (donatable) => donatable.amount >= 0), (d) => d.balance).reverse();
     return Object.assign({}, state, {donatables, creditables});
   },
