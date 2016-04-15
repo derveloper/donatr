@@ -53,13 +53,13 @@ class CreateDonatableDialog extends React.Component {
     const { dispatch, session } = this.props;
     return [
       <FlatButton label='Cancel'
-                  onClick={() => dispatch(donatablesActions.toggleCreateDialog())}
+                  onTouchTap={() => dispatch(donatablesActions.toggleCreateDialog())}
                   secondary/>,
       <FlatButton label='Submit'
-                  onClick={this.createDonatable}
+                  onTouchTap={this.createDonatable}
                   primary/>,
       session.editMode ? <FlatButton label='Delete'
-                                     onClick={this.destroy}
+                                     onTouchTap={this.destroy}
                                      secondary /> : null
     ];
   };

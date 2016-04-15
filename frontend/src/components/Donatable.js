@@ -34,7 +34,7 @@ class Donatable extends React.Component {
       key={donatable.id}
       account={donatable}
       title={title}
-      onClick={this.onDonatableClick} />;
+      handleClick={this.onDonatableClick} />;
   }
 }
 

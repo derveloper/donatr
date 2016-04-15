@@ -35,10 +35,10 @@ class TransferMoneyDialog extends React.Component {
     const { dispatch } = this.props;
     return [
       <FlatButton label='Cancel'
-                  onClick={() => dispatch(transactionActions.toggleCreateDialog())}
+                  onTouchTap={() => dispatch(transactionActions.toggleCreateDialog())}
                   secondary/>,
       <FlatButton label='Submit'
-                  onClick={this.createTransaction}
+                  onTouchTap={this.createTransaction}
                   primary/>
     ];
   };

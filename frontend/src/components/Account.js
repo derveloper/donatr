@@ -32,7 +32,7 @@ class Account extends React.Component {
         key={account.id}
         title={title}
         account={account}
-        onClick={this.onAccountClick} />
+        handleClick={this.onAccountClick} />
     </span>;
   }
 }

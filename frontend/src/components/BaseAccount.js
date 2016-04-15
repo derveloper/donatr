@@ -5,7 +5,7 @@ import GridTile from 'material-ui/lib/grid-list/grid-tile';
 class BaseAccount extends React.Component {
   static propTypes = {
     account: React.PropTypes.object.isRequired,
-    onClick: React.PropTypes.func.isRequired,
+    handleClick: React.PropTypes.func.isRequired,
     title: React.PropTypes.object.isRequired
   };
 
@@ -14,8 +14,8 @@ class BaseAccount extends React.Component {
     this.state = {mouseDown: false};
   }
 
-  onClick = (e) => {
-    this.props.onClick(e);
+  handleClick = (e) => {
+    this.props.handleClick(e);
   };
 
   getStyles = () => {
@@ -42,7 +42,7 @@ class BaseAccount extends React.Component {
       style={this.getStyles()}
       onMouseDown={this.handleMouseDown}
       onMouseUp={this.handleMouseUp}
-      onClick={this.onClick} {...this.props}>
+      onTouchTap={this.handleClick} {...this.props}>
       { imgTag }
     </GridTile>;
   }

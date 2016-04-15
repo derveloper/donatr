@@ -68,13 +68,13 @@ class Navigation extends React.Component {
         open={this.props.isOpen}
         onRequestChange={open => dispatch(navActions.open(open))}
         ref='leftNav'>
-        <MenuItem onClick={this.goToAccounts} primaryText='Accounts'/>
-        <MenuItem onClick={this.toggleCreateAccountDialog} primaryText='Add account'/>
-        <MenuItem onClick={this.toggleTransferMoneyDialog} primaryText='Transfer money'/>
-        <MenuItem onClick={this.toggleCreateDonatableDialog} primaryText='Add donatable'/>
-        { currentAccount ? <MenuItem onClick={this.goToCredit} primaryText='Add credit'/> : null }
-        <MenuItem onClick={this.toggleEditMode} primaryText={`Toggle edit mode ${session.editMode ? 'off' : 'on'}`}/>
-        <MenuItem onClick={() => dispatch(sessionActions.destroy())} primaryText='Logout'/>
+        <MenuItem onTouchTap={this.goToAccounts} primaryText='Accounts'/>
+        <MenuItem onTouchTap={this.toggleCreateAccountDialog} primaryText='Add account'/>
+        <MenuItem onTouchTap={this.toggleTransferMoneyDialog} primaryText='Transfer money'/>
+        <MenuItem onTouchTap={this.toggleCreateDonatableDialog} primaryText='Add donatable'/>
+        { currentAccount ? <MenuItem onTouchTap={this.goToCredit} primaryText='Add credit'/> : null }
+        <MenuItem onTouchTap={this.toggleEditMode} primaryText={`Toggle edit mode ${session.editMode ? 'off' : 'on'}`}/>
+        <MenuItem onTouchTap={() => dispatch(sessionActions.destroy())} primaryText='Logout'/>
       </LeftNav>
     </span>;
   }
