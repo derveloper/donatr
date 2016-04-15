@@ -21,6 +21,21 @@ class AppTopBar extends React.Component {
     dispatch: React.PropTypes.func.isRequired
   };
 
+  getAppBarStyle() {
+    const style = {
+      position: 'fixed'
+    };
+
+    if(this.props.session.editMode) {
+      return {
+        backgroundColor: 'red',
+        ...style
+      }
+    }
+
+    return style;
+  }
+
   render () {
     if (!this.props.session.isAuthenticated) return null;
     const { dispatch, currentAccount } = this.props;
@@ -33,10 +48,10 @@ class AppTopBar extends React.Component {
         </span>
       : null;
     return <AppBar
-      style={{ position: 'fixed' }}
+      style={this.getAppBarStyle()}
       onLeftIconButtonTouchTap={() => dispatch(navActions.toggle())}
       iconElementRight={topAccountInfo}
-      title='donatr' />;
+      title={this.props.session.editMode ? 'edit mode' : 'donatr'} />;
   }
 }
 
