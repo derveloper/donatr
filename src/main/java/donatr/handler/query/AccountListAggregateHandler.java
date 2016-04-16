@@ -22,6 +22,7 @@ public class AccountListAggregateHandler implements Handler<RoutingContext> {
 			final JsonArray array = new JsonArray();
 			Observable.from(accounts)
 					.flatMap(accountObservable -> accountObservable
+							.filter(account -> !account.isDeleted())
 							.doOnNext(account -> array.add(new JsonObject(Json.encode(account)))))
 					.doOnCompleted(() -> {
 						final JsonObject entries = new JsonObject().put("accounts", array);

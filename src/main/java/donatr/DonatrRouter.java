@@ -1,16 +1,15 @@
 package donatr;
 
-import donatr.event.*;
 import donatr.handler.CommandHandler;
 import donatr.handler.WebsocketHandler;
 import donatr.handler.command.*;
-import donatr.handler.query.AccountAggregateHandler;
-import donatr.handler.query.AccountListAggregateHandler;
-import donatr.handler.query.DonatableListAggregateHandler;
-import donatr.handler.query.FixedAmountAccountAggregateHandler;
+import donatr.handler.query.*;
+import io.resx.core.Aggregate;
 import io.resx.core.EventStore;
 import io.resx.core.SQLiteEventStore;
 import io.resx.core.command.Command;
+import io.resx.core.event.DistributedEvent;
+import io.resx.core.event.SourcedEvent;
 import io.vertx.core.Handler;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.Json;
@@ -21,7 +20,6 @@ import io.vertx.rxjava.core.AbstractVerticle;
 import io.vertx.rxjava.core.eventbus.EventBus;
 import io.vertx.rxjava.core.eventbus.MessageConsumer;
 import io.vertx.rxjava.core.http.HttpServer;
-import io.vertx.rxjava.core.http.HttpServerRequest;
 import io.vertx.rxjava.core.http.HttpServerResponse;
 import io.vertx.rxjava.ext.auth.jwt.JWTAuth;
 import io.vertx.rxjava.ext.web.Cookie;
@@ -30,6 +28,7 @@ import io.vertx.rxjava.ext.web.RoutingContext;
 import io.vertx.rxjava.ext.web.handler.*;
 import io.vertx.rxjava.ext.web.handler.sockjs.SockJSHandler;
 import org.apache.commons.lang3.StringUtils;
+import org.reflections.Reflections;
 import rx.Observable;
 
 import java.util.Arrays;
@@ -39,9 +38,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class DonatrRouter extends AbstractVerticle {
-
-	private JWTAuthHandler jwtAuthHandler;
-	private JWTAuth authProvider;
 
 	public static <T extends Command, R> void publishCommand(final T payload, final EventStore eventStore, final RoutingContext routingContext, final Class<R> clazz) {
 		final HttpServerResponse response = routingContext.response();
@@ -60,24 +56,11 @@ public class DonatrRouter extends AbstractVerticle {
 	}
 
 	public void start() {
-		final EventBus eventBus = vertx.eventBus();
-		((io.vertx.core.eventbus.EventBus) eventBus.getDelegate())
-				.registerDefaultCodec(AccountCreatedEvent.class,
-						new DistributedEventMessageCodec<>(AccountCreatedEvent.class))
-				.registerDefaultCodec(AccountCreditedEvent.class,
-						new DistributedEventMessageCodec<>(AccountCreditedEvent.class))
-				.registerDefaultCodec(AccountDebitedEvent.class,
-						new DistributedEventMessageCodec<>(AccountDebitedEvent.class))
-				.registerDefaultCodec(TransactionCreatedEvent.class,
-						new DistributedEventMessageCodec<>(TransactionCreatedEvent.class))
-				.registerDefaultCodec(DonatableCreatedEvent.class,
-						new DistributedEventMessageCodec<>(DonatableCreatedEvent.class))
-		;
-		final EventStore eventStore = new SQLiteEventStore(vertx, eventBus, "donatr.db");
+		final EventStore eventStore = new SQLiteEventStore(vertx, "donatr.db", "donatr.aggregate", "donatr.event");
 
 		new CommandHandler(eventStore);
 
-		authProvider = getJwtAuth();
+		final JWTAuth authProvider = getJwtAuth();
 
 		final HttpServer server = vertx.createHttpServer();
 
@@ -100,8 +83,6 @@ public class DonatrRouter extends AbstractVerticle {
 		router.route().handler(BodyHandler.create());
 
 		apiRouter.post("/session").handler(loginHandler(authProvider));
-
-		jwtAuthHandler = JWTAuthHandler.create(authProvider);
 
 		apiRouter.get("/session").handler(this::mapAuthCookieToHeader);
 		apiRouter.get("/session").handler(routingContext -> {
@@ -127,17 +108,20 @@ public class DonatrRouter extends AbstractVerticle {
 
 		apiRouter.get("/aggregate/account/:id").handler(new AccountAggregateHandler(eventStore));
 		apiRouter.get("/aggregate/account").handler(new AccountListAggregateHandler(eventStore));
-		apiRouter.get("/aggregate/donatable/:id").handler(new FixedAmountAccountAggregateHandler(eventStore));
+		apiRouter.get("/aggregate/donatable/:id").handler(new DonatableAggregateHandler(eventStore));
 		apiRouter.get("/aggregate/donatable").handler(new DonatableListAggregateHandler(eventStore));
+		apiRouter.get("/aggregate/transaction").handler(new TransactionListAggregateHandler(eventStore));
 
 		apiRouter.post("/account").handler(new CreateAccountCommandHandler(eventStore));
+		apiRouter.delete("/account").handler(new DeleteAccountCommandHandler(eventStore));
 		apiRouter.post("/account/credit").handler(new CreditAccountCommandHandler(eventStore));
 		apiRouter.post("/account/debit").handler(new DebitAccountCommandHandler(eventStore));
 		apiRouter.post("/transaction").handler(new CreateTransactionCommandHandler(eventStore));
 		apiRouter.post("/donatable").handler(new CreateDonatableCommandHandler(eventStore));
 		apiRouter.post("/donatable/amount").handler(new UpdateDonatableAmountCommandHandler(eventStore));
-		apiRouter.post("/donatable/image").handler(new UpdateDonatableImageUrlCommandHandler(eventStore));
-		apiRouter.post("/donatable/name").handler(new UpdateDonatableNameCommandHandler(eventStore));
+		apiRouter.post("/account/image").handler(new UpdateAccountImageUrlCommandHandler(eventStore));
+		apiRouter.post("/account/name").handler(new UpdateAccountNameCommandHandler(eventStore));
+		apiRouter.post("/account/email").handler(new UpdateAccountEmailCommandHandler(eventStore));
 
 		router.mountSubRouter("/api", apiRouter);
 
@@ -168,26 +152,18 @@ public class DonatrRouter extends AbstractVerticle {
 						.add("Authorization", "Bearer " + cookie2.getValue());
 			}
 		});
-		JWTAuthHandler.create(authProvider).handle(routingContext);
+		routingContext.next();
 	}
 
 	private Handler<RoutingContext> loginHandler(final JWTAuth authProvider) {
 		return routingContext -> {
-			final HttpServerRequest request = routingContext.request();
 			final HttpServerResponse response = routingContext.response();
-			final String username = request.getFormAttribute("username");
-			final String password = request.getFormAttribute("password");
-
-			if ("test".equals(username) && "test".equals(password)) {
-				final String token = authProvider.generateToken(new JsonObject().put("username", username), new JWTOptions());
-				final Cookie cookie = Cookie.cookie("auth", token);
-				cookie.setMaxAge(TimeUnit.HOURS.toSeconds(12));
-				cookie.setHttpOnly(true);
-				routingContext.addCookie(cookie);
-				response.setStatusCode(200).end(token);
-			} else {
-				response.setStatusCode(401).end();
-			}
+			final String token = authProvider.generateToken(new JsonObject().put("username", "anon"), new JWTOptions());
+			final Cookie cookie = Cookie.cookie("auth", token);
+			cookie.setMaxAge(TimeUnit.HOURS.toSeconds(12));
+			cookie.setHttpOnly(true);
+			routingContext.addCookie(cookie);
+			response.setStatusCode(200).end(token);
 		};
 	}
 

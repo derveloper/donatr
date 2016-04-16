@@ -1,0 +1,14 @@
+{
+  "name": "mete2donatr",
+  "version": "1.0.0",
+  "description": "migrate mete to donatr",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "superagent": "^1.6.1"
+  }
+}

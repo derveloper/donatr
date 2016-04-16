@@ -9,12 +9,8 @@ import java.math.BigDecimal;
 
 @Getter
 @Setter
-public class Donatable extends Aggregate {
-	private String id;
-	private String name;
-	private String imageUrl;
+public class Donatable extends BaseAccount {
 	private BigDecimal amount = BigDecimal.ZERO;
-	private BigDecimal balance = BigDecimal.ZERO;
 	private int timesDonated = 0;
 
 	public void on(final DonatableCreatedEvent event) {
@@ -24,24 +20,13 @@ public class Donatable extends Aggregate {
 		amount = event.getAmount();
 	}
 
-	public void on(final AccountCreditedEvent event) {
-		balance = balance.add(event.getAmount());
-		timesDonated = timesDonated + 1;
-	}
-
-	public void on(final AccountDebitedEvent event) {
-		balance = balance.subtract(event.getAmount());
-	}
-
 	public void on(final DonatableAmountUpdatedEvent event) {
 		amount = event.getAmount();
 	}
 
-	public void on(final DonatableImageUrlUpdatedEvent event) {
-		imageUrl = event.getImageUrl();
-	}
-
-	public void on(final DonatableNameUpdatedEvent event) {
-		name = event.getName();
+	@Override
+	public void on(AccountCreditedEvent event) {
+		super.on(event);
+		timesDonated++;
 	}
 }

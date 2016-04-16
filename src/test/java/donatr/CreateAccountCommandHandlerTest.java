@@ -3,16 +3,19 @@ package donatr;
 import donatr.command.*;
 import donatr.event.AccountCreatedEvent;
 import donatr.event.DonatableCreatedEvent;
+import io.vertx.core.AsyncResult;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.unit.Async;
+import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.unit.junit.VertxUnitRunner;
 import io.vertx.rxjava.core.Vertx;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -21,10 +24,13 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.security.SecureRandom;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -35,11 +41,21 @@ import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+@RunWith(VertxUnitRunner.class)
 public class CreateAccountCommandHandlerTest {
+
 	@BeforeClass
-	public static void beforeClass() throws InterruptedException {
-		new DonatrMain().run(Vertx.vertx());
-		Thread.sleep(2500);
+	public static void beforeClass(TestContext context) throws InterruptedException {
+		final Vertx vertx = Vertx.vertx();
+		Async async = context.async();
+		vertx.deployVerticle("donatr.DonatrRouter", ar -> {
+			if (ar.succeeded()) {
+				async.complete();
+			} else {
+				context.fail(ar.cause());
+			}
+		});
+		async.awaitSuccess();
 	}
 
 	@Test
@@ -98,14 +114,17 @@ public class CreateAccountCommandHandlerTest {
 	@Test
 	public void testTransactionWithFixedAmountDonation() throws Exception {
 		final SecureRandom rng = new SecureRandom();
-		for (int t = 0; t < 3; t++) {
+		final int donatableCount = 3;
+		LocalDateTime startTimeDonatables = LocalDateTime.now();
+		LocalDateTime startTime2Transactions = LocalDateTime.now();
+		for (int t = 0; t < donatableCount; t++) {
 			final double amount = BigDecimal.valueOf(rng.nextDouble()).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-			final HttpResponse accountTo = createFixedAmountDonation("mate", amount);
+			final HttpResponse accountTo = createFixedAmountDonation(UUID.randomUUID().toString(), amount);
 			final DonatableCreatedEvent toAccountEvent = Json.decodeValue(responseString(accountTo), DonatableCreatedEvent.class);
 			assertThat(accountTo.getStatusLine().getStatusCode(), is(200));
 			assertThat(toAccountEvent.getAmount(), is(BigDecimal.valueOf(amount).setScale(2, BigDecimal.ROUND_HALF_UP)));
 
-			final String accountName = "foobar";
+			final String accountName = UUID.randomUUID().toString();
 			final HttpResponse accountFrom = createAccount(accountName);
 			final AccountCreatedEvent fromAccountEvent = Json.decodeValue(responseString(accountFrom), AccountCreatedEvent.class);
 
@@ -117,6 +136,18 @@ public class CreateAccountCommandHandlerTest {
 						13.37);
 
 				assertThat(transaction.getStatusLine().getStatusCode(), is(200));
+
+				if((i+1) % 10 == 0) {
+					final long between = ChronoUnit.MILLIS.between(startTime2Transactions, LocalDateTime.now());
+					System.out.println("created " + (i+1) + " transactions in " + between + "ms");
+					startTime2Transactions = LocalDateTime.now();
+				}
+			}
+
+			if((t+1) % 10 == 0) {
+				final long between = ChronoUnit.MILLIS.between(startTimeDonatables, LocalDateTime.now());
+				System.out.println("created " + (t+1) + " donatables   in " + between + "ms");
+				startTimeDonatables = LocalDateTime.now();
 			}
 
 			assertGetAccount(BigDecimal.valueOf(-(amount * transactionCount)), fromAccountEvent.getId());
@@ -155,6 +186,23 @@ public class CreateAccountCommandHandlerTest {
 		assertTrue(jsonArray.stream()
 				.map(o -> (JsonObject) o)
 				.anyMatch(entries -> account.getName().equals(entries.getString("name"))));
+	}
+
+	@Test
+	public void testGetDonatableList() throws IOException {
+		final String name = UUID.randomUUID().toString();
+		final DonatableCreatedEvent donatable = Json.decodeValue(responseString(createFixedAmountDonation(name, 13.37)), DonatableCreatedEvent.class);
+		final HttpResponse response = get("/api/aggregate/donatable", responseString(login("test", "test")));
+		final JsonObject accounts = new JsonObject(responseString(response));
+		final JsonArray jsonArray = accounts.getJsonArray("donatables");
+		assertThat(jsonArray.size(), not(0));
+
+		assertTrue(jsonArray.stream()
+				.map(o -> (JsonObject) o)
+				.anyMatch(entries ->
+						donatable.getName().equals(entries.getString("name"))
+								&& donatable.getAmount()
+								.equals(BigDecimal.valueOf(entries.getDouble("amount")).setScale(2, BigDecimal.ROUND_HALF_UP))));
 	}
 
 	private String responseString(final HttpResponse execute) throws IOException {
@@ -255,11 +303,10 @@ public class CreateAccountCommandHandlerTest {
 	}
 
 	private HttpResponse executePost(final String path, final HttpEntity entity, final String token) throws IOException {
-		final HttpClient httpclient = HttpClientBuilder.create().build();
 		final HttpPost httpPost = new HttpPost("http://localhost:8080" + path);
 		if (StringUtils.isNotEmpty(token)) httpPost.addHeader("Authorization", "Bearer " + token);
 		httpPost.setEntity(entity);
-		return httpclient.execute(httpPost);
+		return HttpClientBuilder.create().disableCookieManagement().build().execute(httpPost);
 	}
 
 	private HttpResponse post(final String path, final List<NameValuePair> params) throws IOException {
@@ -267,10 +314,9 @@ public class CreateAccountCommandHandlerTest {
 	}
 
 	private HttpResponse get(final String path, final String token) throws IOException {
-		final HttpClient httpclient = HttpClientBuilder.create().build();
 		final String uri = "http://localhost:8080" + path;
 		final HttpGet httpGet = new HttpGet(uri);
 		if (StringUtils.isNotEmpty(token)) httpGet.addHeader("Authorization", "Bearer " + token);
-		return httpclient.execute(httpGet);
+		return HttpClientBuilder.create().disableCookieManagement().build().execute(httpGet);
 	}
 }
