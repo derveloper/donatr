@@ -23,6 +23,15 @@ object DonatrServer extends TwitterServer {
     }
   }
 
+  def postFixedValueDonatable: Endpoint[Unit] = post("fixedvaluedonatables" :: jsonBody[FixedValueDonatable]) { d: FixedValueDonatable =>
+    DonatrCore.processCommand(CreateFixedValueDonatable(d)) match {
+      case EventOrFailure(Some(FixedValueDonatableCreated(FixedValueDonatable(Some(id), _, _, _))), None) =>
+        Output.unit(Status.Created).withHeader("Location" -> s"/fixedvaluedonatables/$id")
+      case EventOrFailure(None, Some(failure)) =>
+        throw failure
+    }
+  }
+
   def getDonatable: Endpoint[Donatable] = get("donatables" :: uuid) { id: UUID =>
     val filtered = DonatrCore.state.donatables.filter(d => d.id.get == id)
     filtered.length match {
@@ -37,8 +46,22 @@ object DonatrServer extends TwitterServer {
     }
   }
 
+  def getFixedValueDonatable: Endpoint[FixedValueDonatable] = get("fixedvaluedonatables" :: uuid) { id: UUID =>
+    val filtered = DonatrCore.state.donatables.filter(d => d.id.get == id)
+    filtered.length match {
+      case 1 =>
+        filtered.head match {
+          case d: FixedValueDonatable =>
+            Ok(d)
+          case _ =>
+            NotFound(new RuntimeException())
+        }
+      case _ => NotFound(new RuntimeException())
+    }
+  }
+
   val api: Service[Request, Response] = (
-      postDonatable :+: getDonatable
+      postDonatable :+: getDonatable :+: postFixedValueDonatable
     ).handle({
       case e: UnknownCommand => BadRequest(e)
       case e: DonatableNameTaken => BadRequest(e)

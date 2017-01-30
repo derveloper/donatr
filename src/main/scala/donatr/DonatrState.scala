@@ -16,9 +16,20 @@ case class DonatrState(
     }
   }
 
+  def handleCreate(event: FixedValueDonatableCreated): DonatrState = {
+    donatables.count(d => d.name == event.donatable.name) match {
+      case 0 =>
+        copy(donatables :+ event.donatable)
+      case _ =>
+        this
+    }
+  }
+
   def apply(event: Event): DonatrState = event match {
     case DonatableCreated(Donatable(id, name, balance)) =>
       handleCreate(DonatableCreated(Donatable(id, name, balance)))
+    case FixedValueDonatableCreated(FixedValueDonatable(id, name, value, balance)) =>
+      handleCreate(FixedValueDonatableCreated(FixedValueDonatable(id, name, value, balance)))
     case _ => this
   }
 }

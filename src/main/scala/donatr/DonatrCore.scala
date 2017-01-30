@@ -17,6 +17,7 @@ object DonatrCore {
   def processCommand(command: Command): EventOrFailure = {
     val result = command match {
       case CreateDonatable(Donatable(_, newName, balance)) => handleCreate(newName, balance)
+      case CreateFixedValueDonatable(FixedValueDonatable(_, newName, value, balance)) => handleCreate(newName, value, balance)
       case _ => EventOrFailure(None, Some(UnknownCommand(command)))
     }
     result match {
@@ -32,6 +33,17 @@ object DonatrCore {
       case 0 =>
         val newId = UUID.randomUUID()
         val created = DonatableCreated(Donatable(Some(newId), name, balance))
+        state = state.apply(created)
+        EventOrFailure(Some(created))
+      case _ => EventOrFailure(None, Some(DonatableNameTaken()))
+    }
+  }
+
+  private def handleCreate(name: String, value: BigDecimal, balance: BigDecimal) = {
+    state.donatables.count(d => d.name == name) match {
+      case 0 =>
+        val newId = UUID.randomUUID()
+        val created = FixedValueDonatableCreated(FixedValueDonatable(Some(newId), name, value, balance))
         state = state.apply(created)
         EventOrFailure(Some(created))
       case _ => EventOrFailure(None, Some(DonatableNameTaken()))
