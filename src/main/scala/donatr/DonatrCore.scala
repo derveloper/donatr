@@ -4,7 +4,7 @@ import java.util.UUID
 
 import scala.concurrent.ExecutionContext
 
-object Donatr {
+object DonatrCore {
   val eventStore = new EventStore()
   var state = DonatrState()
 

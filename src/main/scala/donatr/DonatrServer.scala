@@ -15,7 +15,7 @@ import scala.concurrent.ExecutionContext
 
 object DonatrServer extends TwitterServer {
   def postDonatable: Endpoint[Unit] = post("donatables" :: jsonBody[Donatable]) { d: Donatable =>
-    Donatr.processCommand(CreateDonatable(d)) match {
+    DonatrCore.processCommand(CreateDonatable(d)) match {
       case EventOrFailure(Some(DonatableCreated(Donatable(Some(id), _, _))), None) =>
         Output.unit(Status.Created).withHeader("Location" -> s"/donatables/$id")
       case EventOrFailure(None, Some(failure)) =>
@@ -24,7 +24,7 @@ object DonatrServer extends TwitterServer {
   }
 
   def getDonatable: Endpoint[Donatable] = get("donatables" :: uuid) { id: UUID =>
-    val filtered = Donatr.state.donatables.filter(d => d.id.get == id)
+    val filtered = DonatrCore.state.donatables.filter(d => d.id.get == id)
     filtered.length match {
       case 1 =>
         filtered.head match {
@@ -46,7 +46,7 @@ object DonatrServer extends TwitterServer {
 
   def main(): Unit = {
     import ExecutionContext.Implicits.global
-    Donatr.rebuildState
+    DonatrCore.rebuildState
     val server = Http.server
       .serve(":8080", api)
 
