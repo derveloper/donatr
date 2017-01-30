@@ -17,7 +17,7 @@ lazy val root = (project in file(".")).
       "io.circe" %% "circe-generic" % "0.7.0",
       "io.circe" %% "circe-parser" % "0.7.0",
       "com.twitter" %% "twitter-server" % "1.26.0",
-      "com.typesafe.slick" %% "slick" % "3.0.0",
+      "com.typesafe.slick" %% "slick" % "3.1.1",
       "org.slf4j" % "slf4j-nop" % "1.6.4",
       "com.h2database" % "h2" % "1.4.193",
       scalaTest % Test
