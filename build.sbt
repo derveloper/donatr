@@ -3,12 +3,12 @@ import Dependencies._
 lazy val root = (project in file(".")).
   settings(
     inThisBuild(List(
-      organization := "com.donatr",
+      organization := "de.fnordeingang",
       scalaVersion := "2.11.8",
       version      := "0.1.0-SNAPSHOT",
       scalacOptions ++= Seq("-deprecation")
     )),
-    name := "Donatr",
+    name := "DonatrServer",
     resolvers += "twttr" at "https://maven.twttr.com/",
     libraryDependencies ++= Seq(
       "com.github.finagle" %% "finch-core" % "0.12.0",
