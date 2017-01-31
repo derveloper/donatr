@@ -5,7 +5,6 @@ import java.util.UUID
 
 import com.twitter.finagle.http.Status
 import io.finch.{Application, Input}
-import org.scalacheck._
 import org.scalatest._
 import org.scalatest.prop.Checkers
 
@@ -13,20 +12,9 @@ class FundableSpec extends FlatSpec with Matchers with Checkers {
   behavior of "the fundables endpoint"
 
   import DonatrServer._
+  import Mocks._
   import io.circe.generic.auto._
   import io.finch.circe._
-
-  case class FundableWithoutId(name: String,
-                               fundingTarget: BigDecimal,
-                               balance: BigDecimal)
-
-  def genFundableWithoutId: Gen[FundableWithoutId] = for {
-    n <- Gen.listOfN(12, Gen.alphaChar).map(_.mkString)
-    m <- Gen.choose(Double.MinValue, Double.MaxValue)
-    b <- Gen.choose(Double.MinValue, Double.MaxValue)
-  } yield FundableWithoutId(n, m, b)
-
-  implicit def arbitraryFundableWithoutId: Arbitrary[FundableWithoutId] = Arbitrary(genFundableWithoutId)
 
   it should "respond with 404 on random uuid" in {
     val req = Input.get(s"/fundables/${UUID.randomUUID().toString}")
@@ -34,7 +22,7 @@ class FundableSpec extends FlatSpec with Matchers with Checkers {
   }
 
   it should "create a fundable" in {
-    check { (fundableWithoutId: FundableWithoutId) =>
+    check { (fundableWithoutId: Mocks.FundableWithoutId) =>
       val input = Input.post("/fundables")
         .withBody[Application.Json](fundableWithoutId, Some(StandardCharsets.UTF_8))
 

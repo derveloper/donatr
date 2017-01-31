@@ -15,18 +15,7 @@ class DonatersSpec extends FlatSpec with Matchers with Checkers{
   import DonatrServer._
   import io.circe.generic.auto._
   import io.finch.circe._
-
-  case class DonaterWithoutId(name: String,
-                              email: String,
-                              balance: BigDecimal)
-
-  def genDonaterWithoutId: Gen[DonaterWithoutId] = for {
-    n <- Gen.listOfN(12, Gen.alphaChar).map(_.mkString)
-    e <- Gen.listOfN(14, Gen.alphaChar).map(_.mkString)
-    b <- Gen.choose(Double.MinValue, Double.MaxValue)
-  } yield DonaterWithoutId(n, e, b)
-
-  implicit def arbitraryDonaterWithoutId: Arbitrary[DonaterWithoutId] = Arbitrary(genDonaterWithoutId)
+  import Mocks._
 
   it should "respond with 404 on random uuid" in {
     val req = Input.get(s"/donaters/${UUID.randomUUID().toString}")
@@ -34,7 +23,7 @@ class DonatersSpec extends FlatSpec with Matchers with Checkers{
   }
 
   it should "create a donater" in {
-    check { (donaterWithoutId: DonaterWithoutId) =>
+    check { (donaterWithoutId: Mocks.DonaterWithoutId) =>
       val input = Input.post("/donaters")
         .withBody[Application.Json](donaterWithoutId, Some(StandardCharsets.UTF_8))
 
@@ -57,7 +46,7 @@ class DonatersSpec extends FlatSpec with Matchers with Checkers{
   it should "create two donaters" in {
     val first = arbitraryDonaterWithoutId.arbitrary.sample.get
     val second = arbitraryDonaterWithoutId.arbitrary.sample.get
-    
+
     val firstInput = Input.post("/donaters")
       .withBody[Application.Json](first, Some(StandardCharsets.UTF_8))
     val secondInput = Input.post("/donaters")

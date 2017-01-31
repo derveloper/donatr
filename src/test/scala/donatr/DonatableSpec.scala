@@ -15,18 +15,7 @@ class DonatableSpec extends FlatSpec with Matchers with Checkers{
   import DonatrServer._
   import io.circe.generic.auto._
   import io.finch.circe._
-
-  case class DonatableWithoutId(name: String,
-                                minDonationAmount: BigDecimal,
-                                balance: BigDecimal)
-
-  def genDonatableWithoutId: Gen[DonatableWithoutId] = for {
-    n <- Gen.listOfN(12, Gen.alphaChar).map(_.mkString)
-    m <- Gen.choose(Double.MinValue, Double.MaxValue)
-    b <- Gen.choose(Double.MinValue, Double.MaxValue)
-  } yield DonatableWithoutId(n, m, b)
-
-  implicit def arbitraryDonatableWithoutId: Arbitrary[DonatableWithoutId] = Arbitrary(genDonatableWithoutId)
+  import Mocks._
 
   it should "respond with 404 on random uuid" in {
     val req = Input.get(s"/donatables/${UUID.randomUUID().toString}")
@@ -34,7 +23,7 @@ class DonatableSpec extends FlatSpec with Matchers with Checkers{
   }
 
   it should "create a donatable" in {
-    check { (donatableWithoutId: DonatableWithoutId) =>
+    check { (donatableWithoutId: Mocks.DonatableWithoutId) =>
       val input = Input.post("/donatables")
         .withBody[Application.Json](donatableWithoutId, Some(StandardCharsets.UTF_8))
 

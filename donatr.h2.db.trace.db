@@ -70,3 +70,15 @@ create table "EVENTS" ("ID" VARCHAR NOT NULL PRIMARY KEY,"PAYLOAD" VARCHAR NOT N
 2017-01-31 03:43:37 jdbc[3]: exception
 org.h2.jdbc.JdbcSQLException: Table "EVENTS" already exists; SQL statement:
 create table "EVENTS" ("ID" VARCHAR NOT NULL PRIMARY KEY,"PAYLOAD" VARCHAR NOT NULL) [42101-193]
+2017-01-31 14:22:36 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Table "EVENTS" already exists; SQL statement:
+create table "EVENTS" ("ID" VARCHAR NOT NULL PRIMARY KEY,"PAYLOAD" VARCHAR NOT NULL) [42101-193]
+2017-01-31 14:23:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Table "EVENTS" already exists; SQL statement:
+create table "EVENTS" ("ID" VARCHAR NOT NULL PRIMARY KEY,"PAYLOAD" VARCHAR NOT NULL) [42101-193]
+2017-01-31 14:23:33 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Table "EVENTS" already exists; SQL statement:
+create table "EVENTS" ("ID" VARCHAR NOT NULL PRIMARY KEY,"PAYLOAD" VARCHAR NOT NULL) [42101-193]
+2017-01-31 14:24:07 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Table "EVENTS" already exists; SQL statement:
+create table "EVENTS" ("ID" VARCHAR NOT NULL PRIMARY KEY,"PAYLOAD" VARCHAR NOT NULL) [42101-193]
