@@ -1,3 +1,57 @@
 2017-01-31 21:54:51 jdbc[3]: exception
 org.h2.jdbc.JdbcSQLException: Table "EVENTS" already exists; SQL statement:
 create table "EVENTS" ("ID" VARCHAR NOT NULL PRIMARY KEY,"PAYLOAD" VARCHAR NOT NULL) [42101-193]
+2017-01-31 22:02:13 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Table "EVENTS" already exists; SQL statement:
+create table "EVENTS" ("ID" VARCHAR NOT NULL PRIMARY KEY,"PAYLOAD" VARCHAR NOT NULL) [42101-193]
+2017-01-31 22:03:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Table "EVENTS" already exists; SQL statement:
+create table "EVENTS" ("ID" VARCHAR NOT NULL PRIMARY KEY,"PAYLOAD" VARCHAR NOT NULL) [42101-193]
+2017-01-31 22:03:35 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Table "EVENTS" already exists; SQL statement:
+create table "EVENTS" ("ID" VARCHAR NOT NULL PRIMARY KEY,"PAYLOAD" VARCHAR NOT NULL) [42101-193]
+2017-01-31 22:04:25 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Table "EVENTS" already exists; SQL statement:
+create table "EVENTS" ("ID" VARCHAR NOT NULL PRIMARY KEY,"PAYLOAD" VARCHAR NOT NULL) [42101-193]
+2017-01-31 22:05:16 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Table "EVENTS" already exists; SQL statement:
+create table "EVENTS" ("ID" VARCHAR NOT NULL PRIMARY KEY,"PAYLOAD" VARCHAR NOT NULL) [42101-193]
+2017-01-31 22:06:46 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Table "EVENTS" already exists; SQL statement:
+create table "EVENTS" ("ID" VARCHAR NOT NULL PRIMARY KEY,"PAYLOAD" VARCHAR NOT NULL) [42101-193]
+2017-01-31 22:08:20 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Table "EVENTS" already exists; SQL statement:
+create table "EVENTS" ("ID" VARCHAR NOT NULL PRIMARY KEY,"PAYLOAD" VARCHAR NOT NULL) [42101-193]
+2017-01-31 22:08:46 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Table "EVENTS" already exists; SQL statement:
+create table "EVENTS" ("ID" VARCHAR NOT NULL PRIMARY KEY,"PAYLOAD" VARCHAR NOT NULL) [42101-193]
+2017-01-31 22:10:35 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Table "EVENTS" already exists; SQL statement:
+create table "EVENTS" ("ID" VARCHAR NOT NULL PRIMARY KEY,"PAYLOAD" VARCHAR NOT NULL) [42101-193]
+2017-01-31 22:11:03 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Table "EVENTS" already exists; SQL statement:
+create table "EVENTS" ("ID" VARCHAR NOT NULL PRIMARY KEY,"PAYLOAD" VARCHAR NOT NULL) [42101-193]
+2017-01-31 22:18:03 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Table "EVENTS" already exists; SQL statement:
+create table "EVENTS" ("ID" VARCHAR NOT NULL PRIMARY KEY,"PAYLOAD" VARCHAR NOT NULL) [42101-193]
+2017-01-31 22:18:15 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Table "EVENTS" already exists; SQL statement:
+create table "EVENTS" ("ID" VARCHAR NOT NULL PRIMARY KEY,"PAYLOAD" VARCHAR NOT NULL) [42101-193]
+2017-01-31 22:25:33 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Table "EVENTS" already exists; SQL statement:
+create table "EVENTS" ("ID" VARCHAR NOT NULL PRIMARY KEY,"PAYLOAD" VARCHAR NOT NULL) [42101-193]
+2017-01-31 22:30:19 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Table "EVENTS" already exists; SQL statement:
+create table "EVENTS" ("ID" VARCHAR NOT NULL PRIMARY KEY,"PAYLOAD" VARCHAR NOT NULL) [42101-193]
+2017-01-31 22:34:55 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Table "EVENTS" already exists; SQL statement:
+create table "EVENTS" ("ID" VARCHAR NOT NULL PRIMARY KEY,"PAYLOAD" VARCHAR NOT NULL) [42101-193]
+2017-01-31 22:50:22 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Table "EVENTS" already exists; SQL statement:
+create table "EVENTS" ("ID" VARCHAR NOT NULL PRIMARY KEY,"PAYLOAD" VARCHAR NOT NULL) [42101-193]
+2017-01-31 22:50:51 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Table "EVENTS" already exists; SQL statement:
+create table "EVENTS" ("ID" VARCHAR NOT NULL PRIMARY KEY,"PAYLOAD" VARCHAR NOT NULL) [42101-193]
+2017-01-31 22:51:07 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Table "EVENTS" already exists; SQL statement:
+create table "EVENTS" ("ID" VARCHAR NOT NULL PRIMARY KEY,"PAYLOAD" VARCHAR NOT NULL) [42101-193]
