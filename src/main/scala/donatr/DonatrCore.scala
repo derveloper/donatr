@@ -14,36 +14,37 @@ object DonatrCore {
     }
   }
 
-  def processCommand(command: Command): EventOrFailure = command match {
-    case CreateDonater(DonaterWithoutId(newName, email, balance)) =>
-      handleCreate(DonaterWithoutId(newName, email, balance))
-    case CreateDonatable(DonatableWithoutId(newName, value, balance)) =>
-      handleCreate(DonatableWithoutId(newName, value, balance))
-    case _ => EventOrFailure(None, Some(UnknownCommand(command)))
+  def processCommand(create: CreateDonater): EventOrFailure = {
+    val d = create.donater
+    if (state.donaters.count(_._2.name == d.name) == 0) {
+      val newId = UUID.randomUUID()
+      val created = DonaterCreated(Donater(newId, d.name, d.email, d.balance))
+      persistEvent(created)
+    } else {
+      EventOrFailure(None, Some(NameTaken()))
+    }
   }
 
-  private def handleCreate(donater: DonaterWithoutId) = donater match {
-    case DonaterWithoutId(name, email, balance) =>
-      if (state.donaters.count(d => d._2.name == name) == 0) {
-        val newId = UUID.randomUUID()
-        val created = DonaterCreated(Donater(newId, name, email, balance))
-        persistEvent(created)
-      } else {
-        EventOrFailure(None, Some(NameTaken()))
-      }
-    case _ => EventOrFailure(None, Some(UnknownEntity(donater)))
+  def processCommand(create: CreateDonatable): EventOrFailure = {
+    val d = create.donatable
+    if (state.donatables.count(_._2.name == d.name) == 0) {
+      val newId = UUID.randomUUID()
+      val created = DonatableCreated(Donatable(newId, d.name, d.minDonationAmount, d.balance))
+      persistEvent(created)
+    } else {
+      EventOrFailure(None, Some(NameTaken()))
+    }
   }
 
-  private def handleCreate(donatable: DonatableWithoutId) = donatable match {
-    case DonatableWithoutId(name, minDonationAmount, balance) =>
-      if (state.donatables.count(d => d._2.name == name) == 0) {
-        val newId = UUID.randomUUID()
-        val created = DonatableCreated(Donatable(newId, name, minDonationAmount, balance))
-        persistEvent(created)
-      } else {
-        EventOrFailure(None, Some(NameTaken()))
-      }
-    case _ => EventOrFailure(None, Some(UnknownEntity(donatable)))
+  def processCommand(create: CreateFundable): EventOrFailure = {
+    val d = create.fundable
+    if (state.fundables.count(_._2.name == d.name) == 0) {
+      val newId = UUID.randomUUID()
+      val created = FundableCreated(Fundable(newId, d.name, d.fundingTarget, d.balance))
+      persistEvent(created)
+    } else {
+      EventOrFailure(None, Some(NameTaken()))
+    }
   }
 
   private def persistEvent(event: Event) = {

@@ -39,29 +39,22 @@ object DonatrServer extends TwitterServer {
   }
 
   def getDonater: Endpoint[Donater] = get("donaters" :: uuid) { id: UUID =>
-    DonatrCore.state.donaters.get(id) match {
-      case Some(Donater(`id`, `name`, email, balance)) =>
-        Ok(Donater(id, name, email, balance))
-      case _ =>
-        throw DonatrNotFound()
-    }
+    getEntity(id, DonatrCore.state.donaters)
   }
 
   def getDonatable: Endpoint[Donatable] = get("donatables" :: uuid) { id: UUID =>
-    DonatrCore.state.donatables.get(id) match {
-      case Some(Donatable(`id`, `name`, minDonationAmount, balance)) =>
-        Ok(Donatable(id, name, minDonationAmount, balance))
-      case _ =>
-        throw DonatrNotFound()
-    }
+    getEntity(id, DonatrCore.state.donatables)
   }
 
   def getFundable: Endpoint[Fundable] = get("fundables" :: uuid) { id: UUID =>
-    DonatrCore.state.fundables.get(id) match {
-      case Some(Fundable(`id`, `name`, fundingTarget, balance)) =>
-        Ok(Fundable(id, name, fundingTarget, balance))
-      case _ =>
-        throw DonatrNotFound()
+    getEntity(id, DonatrCore.state.fundables)
+  }
+
+  def getEntity[T](id: UUID, map: Map[UUID, T]): Output[T] = {
+    if (map.contains(id)) {
+      Ok(map(id))
+    } else {
+      throw EntityNotFound()
     }
   }
 
@@ -72,9 +65,10 @@ object DonatrServer extends TwitterServer {
       :+: postDonatable :+: getDonatable
       :+: postFundable :+: getFundable
     ).handle({
-    case e: DonatrNotFound => NotFound(e)
+    case e: EntityNotFound => NotFound(e)
     case e: UnknownCommand => BadRequest(e)
     case e: NameTaken => BadRequest(e)
+    case e: NoSuchElementException => NotFound(e)
     case e: Exception => InternalServerError(e)
   }).toServiceAs[Application.Json]
 

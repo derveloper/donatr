@@ -16,6 +16,6 @@ case class UnknownEntity(entity: Any) extends Exception {
   override def getMessage: String = s"Unknown entity $entity."
 }
 
-case class DonatrNotFound() extends Exception {
+case class EntityNotFound() extends Exception {
   override def getMessage: String = "Unknown entity"
 }

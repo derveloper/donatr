@@ -26,7 +26,6 @@ case class Fundable(id: UUID,
                     balance: BigDecimal = 0)
 
 case class FundableWithoutId(name: String,
-                             value: BigDecimal,
                              fundingTarget: BigDecimal,
                              balance: BigDecimal)
 

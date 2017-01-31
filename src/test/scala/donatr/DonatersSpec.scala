@@ -30,7 +30,7 @@ class DonatersSpec extends FlatSpec with Matchers with Checkers{
 
   it should "respond with 404 on random uuid" in {
     val req = Input.get(s"/donaters/${UUID.randomUUID().toString}")
-    a[DonatrNotFound] shouldBe thrownBy(getDonater(req).awaitValueUnsafe())
+    a[EntityNotFound] shouldBe thrownBy(getDonater(req).awaitValueUnsafe())
   }
 
   it should "create a donater" in {
@@ -55,17 +55,22 @@ class DonatersSpec extends FlatSpec with Matchers with Checkers{
   }
 
   it should "create two donaters" in {
-    val donaterWithoutId1 = arbitraryDonaterWithoutId.arbitrary.sample.get
-    val donaterWithoutId2 = arbitraryDonaterWithoutId.arbitrary.sample.get
-    val input1 = Input.post("/donaters")
-      .withBody[Application.Json](donaterWithoutId1, Some(StandardCharsets.UTF_8))
-    val input2 = Input.post("/donaters")
-      .withBody[Application.Json](donaterWithoutId2, Some(StandardCharsets.UTF_8))
+    val first = arbitraryDonaterWithoutId.arbitrary.sample.get
+    val second = arbitraryDonaterWithoutId.arbitrary.sample.get
+    
+    val firstInput = Input.post("/donaters")
+      .withBody[Application.Json](first, Some(StandardCharsets.UTF_8))
+    val secondInput = Input.post("/donaters")
+      .withBody[Application.Json](second, Some(StandardCharsets.UTF_8))
 
-    val Some(value1) = postDonater(input1).awaitOutputUnsafe()
-    val Some(value2) = postDonater(input2).awaitOutputUnsafe()
-    value1.headers("Location") shouldBe a[String]
-    value2.headers("Location") shouldBe a[String]
-    getDonater(Input.get(value1.headers("Location"))).awaitValueUnsafe() shouldBe Some(donaterWithoutId1)
+    val Some(firstOutput) = postDonater(firstInput).awaitOutputUnsafe()
+    val Some(secondOutput) = postDonater(secondInput).awaitOutputUnsafe()
+    firstOutput.headers("Location") shouldBe a[String]
+    secondOutput.headers("Location") shouldBe a[String]
+
+    val Some(firstValue) = getDonater(Input.get(firstOutput.headers("Location"))).awaitValueUnsafe()
+    val Some(secondValue) = getDonater(Input.get(secondOutput.headers("Location"))).awaitValueUnsafe()
+    firstValue shouldBe Donater(firstValue.id, first.name, first.email, first.balance)
+    secondValue shouldBe Donater(secondValue.id, second.name, second.email, second.balance)
   }
 }
