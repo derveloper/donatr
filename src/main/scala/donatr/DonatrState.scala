@@ -1,35 +1,22 @@
 package donatr
 
-import scala.collection.immutable.List
+import java.util.UUID
+
 
 case class DonatrState(
-                        donatables: Seq[BaseDonatable] = List.empty,
-                        transactions: Seq[Transaction] = List.empty
+                        donaters: Map[UUID, Donater] = Map.empty,
+                        donatables: Map[UUID, Donatable] = Map.empty,
+                        fundables: Map[UUID, Fundable] = Map.empty,
+                        donations: Map[UUID, Donation] = Map.empty
                       ) {
 
-  def handleCreate(event: DonatableCreated): DonatrState = {
-    donatables.count(d => d.name == event.donatable.name) match {
-      case 0 =>
-        copy(donatables :+ event.donatable)
-      case _ =>
-        this
-    }
-  }
-
-  def handleCreate(event: FixedValueDonatableCreated): DonatrState = {
-    donatables.count(d => d.name == event.donatable.name) match {
-      case 0 =>
-        copy(donatables :+ event.donatable)
-      case _ =>
-        this
-    }
-  }
-
   def apply(event: Event): DonatrState = event match {
-    case DonatableCreated(Donatable(id, name, balance)) =>
-      handleCreate(DonatableCreated(Donatable(id, name, balance)))
-    case FixedValueDonatableCreated(FixedValueDonatable(id, name, value, balance)) =>
-      handleCreate(FixedValueDonatableCreated(FixedValueDonatable(id, name, value, balance)))
-    case _ => this
+    case DonaterCreated(Donater(id, name, email, balance)) =>
+      copy(donaters = donaters + (id -> Donater(id, name, email, balance)))
+    case DonatableCreated(Donatable(id, name, minDonationAmount, balance)) =>
+      copy(donatables = donatables + (id -> Donatable(id, name, minDonationAmount, balance)))
+    case FundableCreated(Fundable(id, name, fundingTarget, balance)) =>
+      copy(fundables = fundables + (id -> Fundable(id, name, fundingTarget, balance)))
+    case _ => throw UnknownEvent(event)
   }
 }

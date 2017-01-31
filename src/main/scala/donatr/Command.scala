@@ -2,5 +2,6 @@ package donatr
 
 sealed trait Command
 
-case class CreateDonatable(donatable: Donatable) extends Command
-case class CreateFixedValueDonatable(donatable: FixedValueDonatable) extends Command
+case class CreateDonater(donatable: DonaterWithoutId) extends Command
+case class CreateDonatable(donatable: DonatableWithoutId) extends Command
+case class CreateFundable(fundable: FundableWithoutId) extends Command

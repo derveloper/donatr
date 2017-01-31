@@ -2,17 +2,19 @@ package donatr
 
 import java.util.UUID
 
-import io.circe.syntax._
-import io.circe.parser._
+import com.twitter.logging.LoggerFactory
 import io.circe.generic.auto._
-
+import io.circe.parser._
+import io.circe.syntax._
 import slick.driver.H2Driver.api._
 import slick.lifted.{ProvenShape, TableQuery}
 
-import scala.concurrent.ExecutionContext
-import scala.concurrent.duration.Duration
-
 class EventStore {
+  import scala.concurrent.ExecutionContext
+  import scala.concurrent.duration.Duration
+
+  private val log = LoggerFactory.newBuilder().build().apply()
+
   private val db: _root_.slick.driver.H2Driver.backend.DatabaseDef =
     Database.forURL("jdbc:h2:file:/Users/derveloper/Projects/scala/donatr4/donatr.h2.db", driver = "org.h2.Driver")
   private class Events(tag: Tag) extends Table[(String, String)](tag, "EVENTS") {
@@ -28,7 +30,7 @@ class EventStore {
       events.schema.create
     )), Duration.Inf)
   }
-  catch { case e: Throwable => println(e.getLocalizedMessage) }
+  catch { case e: Throwable => log.info(e.getLocalizedMessage) }
 
   def insert(event: Event): Unit = {
     scala.concurrent.Await.result(db.run(DBIO.seq(

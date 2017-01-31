@@ -2,23 +2,34 @@ package donatr
 
 import java.util.UUID
 
-sealed trait BaseDonatable {
-  val id: Option[UUID]
-  val name: String
-  val balance: BigDecimal
-}
+case class Donater(id: UUID,
+                   name: String,
+                   email: String,
+                   balance: BigDecimal)
 
-case class Donatable(
-                      id: Option[UUID],
-                      name: String,
-                      balance: BigDecimal = 0
-                    ) extends BaseDonatable
+case class DonaterWithoutId(name: String,
+                            email: String,
+                            balance: BigDecimal)
 
-case class FixedValueDonatable(
-                                id: Option[UUID],
-                                name: String,
-                                value: BigDecimal,
-                                balance: BigDecimal = 0
-                              ) extends BaseDonatable
+case class Donatable(id: UUID,
+                     name: String,
+                     minDonationAmount: BigDecimal,
+                     balance: BigDecimal)
 
-case class Transaction(id: Option[UUID], from: Donatable, to: Donatable, value: BigDecimal)
+case class DonatableWithoutId(name: String,
+                              minDonationAmount: BigDecimal,
+                              balance: BigDecimal)
+
+case class Fundable(id: UUID,
+                    name: String,
+                    fundingTarget: BigDecimal,
+                    balance: BigDecimal = 0)
+
+case class FundableWithoutId(name: String,
+                             value: BigDecimal,
+                             fundingTarget: BigDecimal,
+                             balance: BigDecimal)
+
+case class DonationWithoutId(from: UUID, to: UUID, value: BigDecimal)
+
+case class Donation(id: UUID, from: UUID, to: UUID, value: BigDecimal)

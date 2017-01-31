@@ -2,51 +2,53 @@ package donatr
 
 import java.util.UUID
 
-import scala.concurrent.ExecutionContext
-
 object DonatrCore {
+  import scala.concurrent.ExecutionContext
+
   val eventStore = new EventStore()
   var state = DonatrState()
 
-  def rebuildState(implicit ec: ExecutionContext): Unit = {
+  def rebuildState()(implicit ec: ExecutionContext): Unit = {
     eventStore.getEvents.foreach { e =>
       state = state.apply(e)
     }
   }
 
-  def processCommand(command: Command): EventOrFailure = {
-    val result = command match {
-      case CreateDonatable(Donatable(_, newName, balance)) => handleCreate(newName, balance)
-      case CreateFixedValueDonatable(FixedValueDonatable(_, newName, value, balance)) => handleCreate(newName, value, balance)
-      case _ => EventOrFailure(None, Some(UnknownCommand(command)))
-    }
-    result match {
-      case EventOrFailure(Some(event), None) =>
-        eventStore.insert(event)
-        result
-      case _ => result
-    }
+  def processCommand(command: Command): EventOrFailure = command match {
+    case CreateDonater(DonaterWithoutId(newName, email, balance)) =>
+      handleCreate(DonaterWithoutId(newName, email, balance))
+    case CreateDonatable(DonatableWithoutId(newName, value, balance)) =>
+      handleCreate(DonatableWithoutId(newName, value, balance))
+    case _ => EventOrFailure(None, Some(UnknownCommand(command)))
   }
 
-  private def handleCreate(name: String, balance: BigDecimal) = {
-    state.donatables.count(d => d.name == name) match {
-      case 0 =>
+  private def handleCreate(donater: DonaterWithoutId) = donater match {
+    case DonaterWithoutId(name, email, balance) =>
+      if (state.donaters.count(d => d._2.name == name) == 0) {
         val newId = UUID.randomUUID()
-        val created = DonatableCreated(Donatable(Some(newId), name, balance))
-        state = state.apply(created)
-        EventOrFailure(Some(created))
-      case _ => EventOrFailure(None, Some(DonatableNameTaken()))
-    }
+        val created = DonaterCreated(Donater(newId, name, email, balance))
+        persistEvent(created)
+      } else {
+        EventOrFailure(None, Some(NameTaken()))
+      }
+    case _ => EventOrFailure(None, Some(UnknownEntity(donater)))
   }
 
-  private def handleCreate(name: String, value: BigDecimal, balance: BigDecimal) = {
-    state.donatables.count(d => d.name == name) match {
-      case 0 =>
+  private def handleCreate(donatable: DonatableWithoutId) = donatable match {
+    case DonatableWithoutId(name, minDonationAmount, balance) =>
+      if (state.donatables.count(d => d._2.name == name) == 0) {
         val newId = UUID.randomUUID()
-        val created = FixedValueDonatableCreated(FixedValueDonatable(Some(newId), name, value, balance))
-        state = state.apply(created)
-        EventOrFailure(Some(created))
-      case _ => EventOrFailure(None, Some(DonatableNameTaken()))
-    }
+        val created = DonatableCreated(Donatable(newId, name, minDonationAmount, balance))
+        persistEvent(created)
+      } else {
+        EventOrFailure(None, Some(NameTaken()))
+      }
+    case _ => EventOrFailure(None, Some(UnknownEntity(donatable)))
+  }
+
+  private def persistEvent(event: Event) = {
+    eventStore.insert(event)
+    state = state.apply(event)
+    EventOrFailure(Some(event))
   }
 }
