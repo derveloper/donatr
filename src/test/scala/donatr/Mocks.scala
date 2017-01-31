@@ -12,7 +12,7 @@ object Mocks {
   def genDonationWithoutId: Gen[DonationWithoutId] = for {
     f <- Gen.uuid
     t <- Gen.uuid
-    v <- Gen.choose(Double.MinValue, Double.MaxValue)
+    v <- Gen.choose(-100.0, 100.0)
   } yield DonationWithoutId(f, t, v)
 
   implicit def arbitraryDonationWithoutId: Arbitrary[DonationWithoutId] = Arbitrary(genDonationWithoutId)
@@ -23,8 +23,8 @@ object Mocks {
 
   def genDonatableWithoutId: Gen[DonatableWithoutId] = for {
     n <- Gen.listOfN(12, Gen.alphaChar).map(_.mkString)
-    m <- Gen.choose(Double.MinValue, Double.MaxValue)
-    b <- Gen.choose(Double.MinValue, Double.MaxValue)
+    m <- Gen.choose(-100.0, 100.0)
+    b <- Gen.choose(-100.0, 100.0)
   } yield DonatableWithoutId(n, m, b)
 
   implicit def arbitraryDonatableWithoutId: Arbitrary[DonatableWithoutId] = Arbitrary(genDonatableWithoutId)
@@ -36,7 +36,7 @@ object Mocks {
   def genDonaterWithoutId: Gen[DonaterWithoutId] = for {
     n <- Gen.listOfN(12, Gen.alphaChar).map(_.mkString)
     e <- Gen.listOfN(14, Gen.alphaChar).map(_.mkString)
-    b <- Gen.choose(Double.MinValue, Double.MaxValue)
+    b <- Gen.choose(-100.0, 100.0)
   } yield DonaterWithoutId(n, e, b)
 
   implicit def arbitraryDonaterWithoutId: Arbitrary[DonaterWithoutId] = Arbitrary(genDonaterWithoutId)
@@ -47,8 +47,8 @@ object Mocks {
 
   def genFundableWithoutId: Gen[FundableWithoutId] = for {
     n <- Gen.listOfN(12, Gen.alphaChar).map(_.mkString)
-    m <- Gen.choose(Double.MinValue, Double.MaxValue)
-    b <- Gen.choose(Double.MinValue, Double.MaxValue)
+    m <- Gen.choose(-100.0, 100.0)
+    b <- Gen.choose(-100.0, 100.0)
   } yield FundableWithoutId(n, m, b)
 
   implicit def arbitraryFundableWithoutId: Arbitrary[FundableWithoutId] = Arbitrary(genFundableWithoutId)

@@ -1,84 +1,33 @@
-2017-01-31 02:20:01 jdbc[3]: exception
+2017-01-31 17:22:00 jdbc[3]: exception
 org.h2.jdbc.JdbcSQLException: Table "EVENTS" already exists; SQL statement:
 create table "EVENTS" ("ID" VARCHAR NOT NULL PRIMARY KEY,"PAYLOAD" VARCHAR NOT NULL) [42101-193]
-2017-01-31 02:22:55 jdbc[3]: exception
+2017-01-31 17:23:49 jdbc[3]: exception
 org.h2.jdbc.JdbcSQLException: Table "EVENTS" already exists; SQL statement:
 create table "EVENTS" ("ID" VARCHAR NOT NULL PRIMARY KEY,"PAYLOAD" VARCHAR NOT NULL) [42101-193]
-2017-01-31 02:24:30 jdbc[3]: exception
+2017-01-31 17:24:05 jdbc[3]: exception
 org.h2.jdbc.JdbcSQLException: Table "EVENTS" already exists; SQL statement:
 create table "EVENTS" ("ID" VARCHAR NOT NULL PRIMARY KEY,"PAYLOAD" VARCHAR NOT NULL) [42101-193]
-2017-01-31 02:26:39 jdbc[3]: exception
+2017-01-31 17:58:41 jdbc[3]: exception
 org.h2.jdbc.JdbcSQLException: Table "EVENTS" already exists; SQL statement:
 create table "EVENTS" ("ID" VARCHAR NOT NULL PRIMARY KEY,"PAYLOAD" VARCHAR NOT NULL) [42101-193]
-2017-01-31 02:30:33 jdbc[3]: exception
+2017-01-31 17:58:48 jdbc[3]: exception
 org.h2.jdbc.JdbcSQLException: Table "EVENTS" already exists; SQL statement:
 create table "EVENTS" ("ID" VARCHAR NOT NULL PRIMARY KEY,"PAYLOAD" VARCHAR NOT NULL) [42101-193]
-2017-01-31 02:34:01 jdbc[3]: exception
+2017-01-31 18:01:38 jdbc[3]: exception
 org.h2.jdbc.JdbcSQLException: Table "EVENTS" already exists; SQL statement:
 create table "EVENTS" ("ID" VARCHAR NOT NULL PRIMARY KEY,"PAYLOAD" VARCHAR NOT NULL) [42101-193]
-2017-01-31 02:35:20 jdbc[3]: exception
+2017-01-31 21:17:31 jdbc[3]: exception
 org.h2.jdbc.JdbcSQLException: Table "EVENTS" already exists; SQL statement:
 create table "EVENTS" ("ID" VARCHAR NOT NULL PRIMARY KEY,"PAYLOAD" VARCHAR NOT NULL) [42101-193]
-2017-01-31 02:45:08 jdbc[3]: exception
+2017-01-31 21:37:52 jdbc[3]: exception
 org.h2.jdbc.JdbcSQLException: Table "EVENTS" already exists; SQL statement:
 create table "EVENTS" ("ID" VARCHAR NOT NULL PRIMARY KEY,"PAYLOAD" VARCHAR NOT NULL) [42101-193]
-2017-01-31 02:45:37 jdbc[3]: exception
+2017-01-31 21:45:12 jdbc[3]: exception
 org.h2.jdbc.JdbcSQLException: Table "EVENTS" already exists; SQL statement:
 create table "EVENTS" ("ID" VARCHAR NOT NULL PRIMARY KEY,"PAYLOAD" VARCHAR NOT NULL) [42101-193]
-2017-01-31 02:46:10 jdbc[3]: exception
+2017-01-31 21:46:10 jdbc[3]: exception
 org.h2.jdbc.JdbcSQLException: Table "EVENTS" already exists; SQL statement:
 create table "EVENTS" ("ID" VARCHAR NOT NULL PRIMARY KEY,"PAYLOAD" VARCHAR NOT NULL) [42101-193]
-2017-01-31 02:47:59 jdbc[3]: exception
-org.h2.jdbc.JdbcSQLException: Table "EVENTS" already exists; SQL statement:
-create table "EVENTS" ("ID" VARCHAR NOT NULL PRIMARY KEY,"PAYLOAD" VARCHAR NOT NULL) [42101-193]
-2017-01-31 02:48:32 jdbc[3]: exception
-org.h2.jdbc.JdbcSQLException: Table "EVENTS" already exists; SQL statement:
-create table "EVENTS" ("ID" VARCHAR NOT NULL PRIMARY KEY,"PAYLOAD" VARCHAR NOT NULL) [42101-193]
-2017-01-31 02:52:35 jdbc[3]: exception
-org.h2.jdbc.JdbcSQLException: Table "EVENTS" already exists; SQL statement:
-create table "EVENTS" ("ID" VARCHAR NOT NULL PRIMARY KEY,"PAYLOAD" VARCHAR NOT NULL) [42101-193]
-2017-01-31 02:53:41 jdbc[3]: exception
-org.h2.jdbc.JdbcSQLException: Table "EVENTS" already exists; SQL statement:
-create table "EVENTS" ("ID" VARCHAR NOT NULL PRIMARY KEY,"PAYLOAD" VARCHAR NOT NULL) [42101-193]
-2017-01-31 02:54:35 jdbc[3]: exception
-org.h2.jdbc.JdbcSQLException: Table "EVENTS" already exists; SQL statement:
-create table "EVENTS" ("ID" VARCHAR NOT NULL PRIMARY KEY,"PAYLOAD" VARCHAR NOT NULL) [42101-193]
-2017-01-31 03:02:27 jdbc[3]: exception
-org.h2.jdbc.JdbcSQLException: Table "EVENTS" already exists; SQL statement:
-create table "EVENTS" ("ID" VARCHAR NOT NULL PRIMARY KEY,"PAYLOAD" VARCHAR NOT NULL) [42101-193]
-2017-01-31 03:25:59 jdbc[3]: exception
-org.h2.jdbc.JdbcSQLException: Table "EVENTS" already exists; SQL statement:
-create table "EVENTS" ("ID" VARCHAR NOT NULL PRIMARY KEY,"PAYLOAD" VARCHAR NOT NULL) [42101-193]
-2017-01-31 03:27:42 jdbc[3]: exception
-org.h2.jdbc.JdbcSQLException: Table "EVENTS" already exists; SQL statement:
-create table "EVENTS" ("ID" VARCHAR NOT NULL PRIMARY KEY,"PAYLOAD" VARCHAR NOT NULL) [42101-193]
-2017-01-31 03:29:35 jdbc[3]: exception
-org.h2.jdbc.JdbcSQLException: Table "EVENTS" already exists; SQL statement:
-create table "EVENTS" ("ID" VARCHAR NOT NULL PRIMARY KEY,"PAYLOAD" VARCHAR NOT NULL) [42101-193]
-2017-01-31 03:30:05 jdbc[3]: exception
-org.h2.jdbc.JdbcSQLException: Table "EVENTS" already exists; SQL statement:
-create table "EVENTS" ("ID" VARCHAR NOT NULL PRIMARY KEY,"PAYLOAD" VARCHAR NOT NULL) [42101-193]
-2017-01-31 03:30:48 jdbc[3]: exception
-org.h2.jdbc.JdbcSQLException: Table "EVENTS" already exists; SQL statement:
-create table "EVENTS" ("ID" VARCHAR NOT NULL PRIMARY KEY,"PAYLOAD" VARCHAR NOT NULL) [42101-193]
-2017-01-31 03:41:58 jdbc[3]: exception
-org.h2.jdbc.JdbcSQLException: Table "EVENTS" already exists; SQL statement:
-create table "EVENTS" ("ID" VARCHAR NOT NULL PRIMARY KEY,"PAYLOAD" VARCHAR NOT NULL) [42101-193]
-2017-01-31 03:43:22 jdbc[3]: exception
-org.h2.jdbc.JdbcSQLException: Table "EVENTS" already exists; SQL statement:
-create table "EVENTS" ("ID" VARCHAR NOT NULL PRIMARY KEY,"PAYLOAD" VARCHAR NOT NULL) [42101-193]
-2017-01-31 03:43:37 jdbc[3]: exception
-org.h2.jdbc.JdbcSQLException: Table "EVENTS" already exists; SQL statement:
-create table "EVENTS" ("ID" VARCHAR NOT NULL PRIMARY KEY,"PAYLOAD" VARCHAR NOT NULL) [42101-193]
-2017-01-31 14:22:36 jdbc[3]: exception
-org.h2.jdbc.JdbcSQLException: Table "EVENTS" already exists; SQL statement:
-create table "EVENTS" ("ID" VARCHAR NOT NULL PRIMARY KEY,"PAYLOAD" VARCHAR NOT NULL) [42101-193]
-2017-01-31 14:23:11 jdbc[3]: exception
-org.h2.jdbc.JdbcSQLException: Table "EVENTS" already exists; SQL statement:
-create table "EVENTS" ("ID" VARCHAR NOT NULL PRIMARY KEY,"PAYLOAD" VARCHAR NOT NULL) [42101-193]
-2017-01-31 14:23:33 jdbc[3]: exception
-org.h2.jdbc.JdbcSQLException: Table "EVENTS" already exists; SQL statement:
-create table "EVENTS" ("ID" VARCHAR NOT NULL PRIMARY KEY,"PAYLOAD" VARCHAR NOT NULL) [42101-193]
-2017-01-31 14:24:07 jdbc[3]: exception
+2017-01-31 21:47:12 jdbc[3]: exception
 org.h2.jdbc.JdbcSQLException: Table "EVENTS" already exists; SQL statement:
 create table "EVENTS" ("ID" VARCHAR NOT NULL PRIMARY KEY,"PAYLOAD" VARCHAR NOT NULL) [42101-193]
