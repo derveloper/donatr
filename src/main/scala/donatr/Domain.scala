@@ -2,30 +2,28 @@ package donatr
 
 import java.util.UUID
 
-class DonationReceiver(val id: UUID)
-
-case class Donater(override val id: UUID,
+case class Donater(id: UUID,
                    name: String,
                    email: String,
-                   balance: BigDecimal) extends DonationReceiver(id)
+                   balance: BigDecimal)
 
 case class DonaterWithoutId(name: String,
                             email: String,
                             balance: BigDecimal)
 
-case class Donatable(override val id: UUID,
+case class Donatable(id: UUID,
                      name: String,
                      minDonationAmount: BigDecimal,
-                     balance: BigDecimal) extends DonationReceiver(id)
+                     balance: BigDecimal)
 
 case class DonatableWithoutId(name: String,
                               minDonationAmount: BigDecimal,
                               balance: BigDecimal)
 
-case class Fundable(override val id: UUID,
+case class Fundable(id: UUID,
                     name: String,
                     fundingTarget: BigDecimal,
-                    balance: BigDecimal = 0) extends DonationReceiver(id)
+                    balance: BigDecimal = 0)
 
 case class FundableWithoutId(name: String,
                              fundingTarget: BigDecimal,

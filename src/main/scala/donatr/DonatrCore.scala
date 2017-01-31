@@ -2,8 +2,6 @@ package donatr
 
 import java.util.UUID
 
-import scala.concurrent.Future
-
 object DonatrCore {
   import scala.concurrent.ExecutionContext
 
@@ -52,10 +50,9 @@ object DonatrCore {
   def processCommand(create: CreateDonation): EventOrFailure = {
     val d = create.donation
     val newId = UUID.randomUUID()
-    val r = persistEvent(DonationCreated(Donation(newId, d.from, d.to, d.value)))
     persistEvent(Withdrawn(newId, d.from, d.value))
     persistEvent(Deposited(newId, d.to, d.value))
-    r
+    persistEvent(DonationCreated(Donation(newId, d.from, d.to, d.value)))
   }
 
   private def persistEvent(event: Event) = {
