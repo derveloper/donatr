@@ -17,6 +17,8 @@ case class DonatrState(
       copy(donatables = donatables + (id -> Donatable(id, name, minDonationAmount, balance)))
     case FundableCreated(Fundable(id, name, fundingTarget, balance)) =>
       copy(fundables = fundables + (id -> Fundable(id, name, fundingTarget, balance)))
+    case DonationCreated(Donation(id, from, to, value)) =>
+      copy(donations = donations + (id -> Donation(id, from, to, value)))
     case _ => throw UnknownEvent(event)
   }
 }

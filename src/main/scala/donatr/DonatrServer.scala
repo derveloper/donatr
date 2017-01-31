@@ -38,6 +38,15 @@ object DonatrServer extends TwitterServer {
     }
   }
 
+  def postDonation: Endpoint[Unit] = post("donations" :: jsonBody[DonationWithoutId]) { d: DonationWithoutId =>
+    DonatrCore.processCommand(CreateDonation(d)) match {
+      case EventOrFailure(Some(DonationCreated(Donation(id, _, _, _))), None) =>
+        Output.unit(Status.Created).withHeader("Location" -> s"/donations/$id")
+      case EventOrFailure(None, Some(failure)) =>
+        throw failure
+    }
+  }
+
   def getDonater: Endpoint[Donater] = get("donaters" :: uuid) { id: UUID =>
     getEntity(id, DonatrCore.state.donaters)
   }
@@ -48,6 +57,10 @@ object DonatrServer extends TwitterServer {
 
   def getFundable: Endpoint[Fundable] = get("fundables" :: uuid) { id: UUID =>
     getEntity(id, DonatrCore.state.fundables)
+  }
+
+  def getDonation: Endpoint[Donation] = get("donations" :: uuid) { id: UUID =>
+    getEntity(id, DonatrCore.state.donations)
   }
 
   def getEntity[T](id: UUID, map: Map[UUID, T]): Output[T] = {
@@ -64,6 +77,7 @@ object DonatrServer extends TwitterServer {
     postDonater :+: getDonater
       :+: postDonatable :+: getDonatable
       :+: postFundable :+: getFundable
+      :+: postDonation :+: getDonation
     ).handle({
     case e: EntityNotFound => NotFound(e)
     case e: UnknownCommand => BadRequest(e)

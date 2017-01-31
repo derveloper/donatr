@@ -47,6 +47,13 @@ object DonatrCore {
     }
   }
 
+  def processCommand(create: CreateDonation): EventOrFailure = {
+    val d = create.donation
+    val newId = UUID.randomUUID()
+    val created = DonationCreated(Donation(newId, d.from, d.to, d.value))
+    persistEvent(created)
+  }
+
   private def persistEvent(event: Event) = {
     eventStore.insert(event)
     state = state.apply(event)
