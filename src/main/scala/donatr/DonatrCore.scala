@@ -4,9 +4,12 @@ import java.util.UUID
 
 object DonatrCore {
   import scala.concurrent.ExecutionContext
+  import ExecutionContext.Implicits.global
 
   val eventStore = new EventStore()
   var state = DonatrState()
+
+  rebuildState()
 
   def rebuildState()(implicit ec: ExecutionContext): Unit = {
     eventStore.getEvents.foreach { e =>

@@ -87,9 +87,6 @@ object DonatrServer extends TwitterServer {
   }).toServiceAs[Application.Json]
 
   def main(): Unit = {
-    import scala.concurrent.ExecutionContext
-    import ExecutionContext.Implicits.global
-    DonatrCore.rebuildState
     val server = Http.server
       .serve(":8080", api)
 
