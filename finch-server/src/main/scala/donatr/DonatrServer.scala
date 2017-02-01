@@ -16,7 +16,6 @@ import io.finch._
 import io.finch.circe._
 
 
-
 object DonatrServer extends TwitterServer {
   def postDonater: Endpoint[Unit] = post("donaters" :: jsonBody[DonaterWithoutId]) { d: DonaterWithoutId =>
     DonatrCore.processCommand(CreateDonater(d)) match {
@@ -83,6 +82,7 @@ object DonatrServer extends TwitterServer {
   }
 
   import com.twitter.finagle.{Http, Service}
+
   implicit val showDate: Show[Date] = Show.fromToString[Date]
 
   implicit val timest: Timer = DefaultTimer.twitter

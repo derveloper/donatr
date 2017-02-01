@@ -5,6 +5,7 @@ import java.util.UUID
 import org.scalacheck.{Arbitrary, Gen}
 
 object Mocks {
+
   case class DonationWithoutId(from: UUID,
                                to: UUID,
                                value: BigDecimal)

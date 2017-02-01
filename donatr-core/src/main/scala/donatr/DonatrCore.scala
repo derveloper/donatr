@@ -3,6 +3,7 @@ package donatr
 import java.util.UUID
 
 object DonatrCore {
+
   import scala.concurrent.ExecutionContext
   import ExecutionContext.Implicits.global
 

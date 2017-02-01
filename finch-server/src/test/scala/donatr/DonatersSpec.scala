@@ -8,7 +8,7 @@ import io.finch.{Application, Input}
 import org.scalatest._
 import org.scalatest.prop.Checkers
 
-class DonatersSpec extends FlatSpec with Matchers with Checkers{
+class DonatersSpec extends FlatSpec with Matchers with Checkers {
   behavior of "the donaters endpoint"
 
   import DonatrServer._

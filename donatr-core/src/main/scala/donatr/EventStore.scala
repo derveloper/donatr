@@ -10,6 +10,7 @@ import slick.driver.H2Driver.api._
 import slick.lifted.{ProvenShape, TableQuery}
 
 class EventStore {
+
   import scala.concurrent.ExecutionContext
   import scala.concurrent.duration.Duration
 
@@ -17,12 +18,16 @@ class EventStore {
 
   private val db: _root_.slick.driver.H2Driver.backend.DatabaseDef =
     Database.forURL("jdbc:h2:file:/Users/derveloper/Projects/scala/donatr4/donatr.h2.db", driver = "org.h2.Driver")
+
   private class Events(tag: Tag) extends Table[(String, String)](tag, "EVENTS") {
     def id: Rep[String] = column[String]("ID", O.PrimaryKey)
+
     def payload: Rep[String] = column[String]("PAYLOAD")
+
     def * : ProvenShape[(String, String)] =
       (id, payload)
   }
+
   private val events: TableQuery[Events] = TableQuery[Events]
   try {
     scala.concurrent.Await.result(db.run(DBIO.seq(
@@ -30,7 +35,9 @@ class EventStore {
       events.schema.create
     )), Duration.Inf)
   }
-  catch { case e: Throwable => log.info(e.getLocalizedMessage) }
+  catch {
+    case e: Throwable => log.info(e.getLocalizedMessage)
+  }
 
   def insert(event: Event): Unit = {
     scala.concurrent.Await.result(db.run(DBIO.seq(
