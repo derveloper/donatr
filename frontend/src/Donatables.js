@@ -42,9 +42,9 @@ const styles = {
 };
 
 const getDonatableMD5 = (name) =>
-    md5(`donat+${name}@fnordeingang.de`);
+    md5(`donatr+${name}@fnordeingang.de`);
 
-const donate = (dispatch, from, to, amount) => () => Api.createDonation({from, to, amount});
+const donate = (from, to, value) => () => Api.createDonation({from, to, value});
 
 const Donatable = injectSheet(styles)(({classes, donatable, userId, dispatch}) => (
     <div
@@ -60,7 +60,7 @@ const _onSubmitCreate = (f) => (e) => {
     e.preventDefault();
     Api.createDonatable({
         name: e.target.elements['name'].value,
-        email: e.target.elements['email'].value
+        minDonationAmount: e.target.elements['minDonationAmount'].value
     });
     f();
 };
@@ -72,7 +72,7 @@ const CreateForm = injectSheet(styles)(({classes, onSubmitCreate}) => (
                 <input placeholder="name" name="name" type="text"/>
             </label>
             <label className="block mx-auto center">
-                <input placeholder="email" name="email" type="email"/>
+                <input placeholder="price" name="minDonationAmount" type="decimal"/>
             </label>
             <button className={`block mx-auto center ${classes.button}`} type="submit">Create</button>
         </form>

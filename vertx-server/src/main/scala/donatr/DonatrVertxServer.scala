@@ -25,8 +25,9 @@ object DonatrVertxServer {
   val donatr = new DonatrCore(ledger = Ledger(UUID.randomUUID()))
 
   private def websocketHandler(socket: ServerWebSocket) = {
-    vertx.eventBus().consumer[String]("event")
+    val consumer = vertx.eventBus().consumer[String]("event")
       .handler(msg => socket.writeFinalTextFrame(msg.body()))
+    socket.closeHandler(_ => consumer.unregister())
   }
 
   def main(args: Array[String]): Unit = {

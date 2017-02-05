@@ -18,6 +18,10 @@ const styles = {
         minHeight: 120,
         overflow: 'hidden'
     },
+    link: {
+        color: '#00ff00',
+        textDecoration: 'none'
+    },
     form: {
         backgroundColor: '#000',
         width: '100vw',
@@ -43,7 +47,7 @@ const styles = {
 };
 
 const Donater = injectSheet(styles)(({classes, donater}) => (
-    <Link to={`/${donater.id}/donatables`}>
+    <Link className={classes.link} to={`/${donater.id}/donatables`}>
         <div
             className={`border break-word m1 inline-block align-top ${classes.donater}`}
         >

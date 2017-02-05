@@ -22,7 +22,21 @@ export const createDonater = ({name, email}) =>
         })
     });
 
-export const createDonation = ({from, to, amount}) =>
+export const createDonatable = ({name, minDonationAmount}) =>
+    fetch('/api/donatables', {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            name,
+            minDonationAmount,
+            balance: 0
+        })
+    });
+
+export const createDonation = ({from, to, value}) =>
     fetch('/api/donations', {
         method: 'POST',
         headers: {
@@ -32,6 +46,6 @@ export const createDonation = ({from, to, amount}) =>
         body: JSON.stringify({
             from,
             to,
-            amount
+            value
         })
     });
