@@ -2,13 +2,13 @@
 import Inferno from "inferno";
 import Component from "inferno-component";
 import {connect} from "inferno-redux";
-import * as DonaterReducer from "./redux/donaters";
+import * as DonatableReducer from "./redux/donatables";
 import * as Api from "./api";
 import md5 from "md5";
 import injectSheet from 'react-jss'
 
 const styles = {
-    donater: {
+    donatable: {
         cursor: 'pointer',
         borderWidth: 3,
         borderColor: '#00ff00',
@@ -41,18 +41,24 @@ const styles = {
     }
 };
 
-const Donater = injectSheet(styles)(({classes, donater}) => (
+const getDonatableMD5 = (name) =>
+    md5(`donat+${name}@fnordeingang.de`);
+
+const donate = (dispatch, from, to, amount) => () => Api.createDonation({from, to, amount});
+
+const Donatable = injectSheet(styles)(({classes, donatable, userId, dispatch}) => (
     <div
-        className={`border break-word m1 inline-block align-top ${classes.donater}`}
+        className={`border break-word m1 inline-block align-top ${classes.donatable}`}
+        onClick={donate(userId, donatable.id, donatable.minDonationAmount)}
     >
-        <img alt="gravatar" src={`https://www.gravatar.com/avatar/${md5(donater.email)}?s=115`} width="115"/>
-        {donater.name}
+        <img alt="gravatar" src={`https://www.gravatar.com/avatar/${getDonatableMD5(donatable.name)}?s=115`} width="115"/>
+        {donatable.name}
     </div>
 ));
 
 const _onSubmitCreate = (f) => (e) => {
     e.preventDefault();
-    Api.createDonater({
+    Api.createDonatable({
         name: e.target.elements['name'].value,
         email: e.target.elements['email'].value
     });
@@ -75,26 +81,28 @@ const CreateForm = injectSheet(styles)(({classes, onSubmitCreate}) => (
 
 class App extends Component {
     state = {
-        createDonaterFormOpen: false
+        createDonatableFormOpen: false
     };
 
     componentWillMount() {
         const {dispatch} = this.props;
-        dispatch({type: DonaterReducer.DONATERS_FETCH_REQUESTED})
+        dispatch({type: DonatableReducer.DONATABLES_FETCH_REQUESTED})
     }
 
     toggleForm = () => {
-        this.setState({createDonaterFormOpen: !this.state.createDonaterFormOpen})
+        this.setState({createDonatableFormOpen: !this.state.createDonatableFormOpen})
     };
 
     render() {
         return (
             <div className={`block mx-auto ${this.props.classes.app}`}>
                 <h1>Donatables</h1>
-                { this.state.createDonaterFormOpen && <CreateForm onSubmitCreate={this.toggleForm} /> }
+                { this.state.createDonatableFormOpen && <CreateForm onSubmitCreate={this.toggleForm} /> }
                 <button className={this.props.classes.button} onClick={this.toggleForm}>+</button>
                 <div className={`block ${this.props.classes.grid}`}>
-                    { this.props.donaters.map(f => <Donater donater={f}/>)}
+                    { this.props.donatables.map(f => <Donatable
+                        userId={this.props.userId}
+                        donatable={f}/>)}
                 </div>
             </div>
         );
@@ -102,7 +110,7 @@ class App extends Component {
 }
 
 function mapStateToProps(state) {
-    return {donaters: state.donaters}
+    return {donatables: state.donatables}
 }
 
 export default connect(mapStateToProps)(injectSheet(styles)(App))

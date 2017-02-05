@@ -43,7 +43,7 @@ const styles = {
 };
 
 const Donater = injectSheet(styles)(({classes, donater}) => (
-    <Link to="/donatables">
+    <Link to={`/${donater.id}/donatables`}>
         <div
             className={`border break-word m1 inline-block align-top ${classes.donater}`}
         >
