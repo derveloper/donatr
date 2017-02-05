@@ -2,7 +2,6 @@
 import Inferno from "inferno";
 import Component from "inferno-component";
 import {connect} from "inferno-redux";
-import {Link} from "inferno-router";
 import * as DonaterReducer from "./redux/donaters";
 import * as Api from "./api";
 import md5 from "md5";
@@ -43,14 +42,12 @@ const styles = {
 };
 
 const Donater = injectSheet(styles)(({classes, donater}) => (
-    <Link to="/donatables">
-        <div
-            className={`border break-word m1 inline-block align-top ${classes.donater}`}
-        >
-            <img alt="gravatar" src={`https://www.gravatar.com/avatar/${md5(donater.email)}?s=115`} width="115"/>
-            {donater.name}
-        </div>
-    </Link>
+    <div
+        className={`border break-word m1 inline-block align-top ${classes.donater}`}
+    >
+        <img alt="gravatar" src={`https://www.gravatar.com/avatar/${md5(donater.email)}?s=115`} width="115"/>
+        {donater.name}
+    </div>
 ));
 
 const _onSubmitCreate = (f) => (e) => {
@@ -93,7 +90,7 @@ class App extends Component {
     render() {
         return (
             <div className={`block mx-auto ${this.props.classes.app}`}>
-                <h1>Donaters</h1>
+                <h1>Donatables</h1>
                 { this.state.createDonaterFormOpen && <CreateForm onSubmitCreate={this.toggleForm} /> }
                 <button className={this.props.classes.button} onClick={this.toggleForm}>+</button>
                 <div className={`block ${this.props.classes.grid}`}>
