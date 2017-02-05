@@ -9,6 +9,10 @@ class DonatrSpec extends FlatSpec with Matchers {
   trait Db {
     val eventStore = new EventStore(s"jdbc:h2:mem:donatr-${UUID.randomUUID()};DB_CLOSE_DELAY=-1")
     val ledger = Ledger(ledgerId)
+    class EP extends EventPublisher {
+      override def publish(event: Event): Unit = {}
+    }
+    implicit val ep = new EP()
     val donatr = new DonatrCore(eventStore, ledger)
   }
 
@@ -55,6 +59,12 @@ class DonatrSpec extends FlatSpec with Matchers {
     val fundableCreated2 = donatr.processCommand(CreateFundable(FundableWithoutId("Foo", 0, 0)))
     fundableCreated1 should be(a[Right[_, FundableCreated]])
     fundableCreated2 should be(a[Left[NameTaken, _]])
+  }
+
+  it should "throw BelowMinDonation with smaller value than minDonation" in new Db {
+    val (fromId, toId) = mkDonaterAndDonatable(donatr)
+    val donation = donatr.processCommand(CreateDonation(DonationWithoutId(fromId, toId, 0)))
+    donation should be (a[Left[BelowMinDonationAmount, _]])
   }
 
   it should "create Donater, Donatable and Donation and have correct balances" in new Db {
@@ -143,8 +153,8 @@ class DonatrSpec extends FlatSpec with Matchers {
     fundableCreated.right.get.fundable.id
   }
 
-  private def mkDonation(donatr: DonatrCore, fromId: UUID, toId: UUID) = {
-    val donation = donatr.processCommand(CreateDonation(DonationWithoutId(fromId, toId, 3)))
+  private def mkDonation(donatr: DonatrCore, fromId: UUID, toId: UUID, value: BigDecimal = 3) = {
+    val donation = donatr.processCommand(CreateDonation(DonationWithoutId(fromId, toId, value)))
     donation should be(a[Right[_, DonationCreated]])
     donation
   }

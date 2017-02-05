@@ -2,7 +2,9 @@ package donatr
 
 import java.util.UUID
 
-class DonatrCore(val eventStore: EventStore = new EventStore(), ledger: Ledger) {
+class DonatrCore(val eventStore: EventStore = new EventStore(),
+                 ledger: Ledger)(implicit val eventPublisher: EventPublisher)
+{
 
   import scala.concurrent.ExecutionContext
   import ExecutionContext.Implicits.global
@@ -64,14 +66,14 @@ class DonatrCore(val eventStore: EventStore = new EventStore(), ledger: Ledger) 
       state.donatables.get(create.entityId),
       state.fundables.get(create.entityId)
     ) match {
-      case (Some(donater), None, None) =>
+      case (Some(_), None, None) =>
         persistEvent(Deposited(create.donationId, create.entityId, create.depositValue))
       case (None, Some(donatable), None) =>
         Either.cond(create.depositValue >= donatable.minDonationAmount,
           Deposited(create.donationId, create.entityId, create.depositValue),
           BelowMinDonationAmount(donatable.minDonationAmount, create.depositValue)
         ).flatMap(persistEvent)
-      case (None, None, Some(fundable)) =>
+      case (None, None, Some(_)) =>
         persistEvent(Deposited(create.donationId, create.entityId, create.depositValue))
       case _ => Left(UnknownEntity(create.entityId))
     }
@@ -90,6 +92,7 @@ class DonatrCore(val eventStore: EventStore = new EventStore(), ledger: Ledger) 
     eventStore.insert(event) match {
       case Right(_) =>
         state = state.apply(event)
+        eventPublisher.publish(event)
         Right(event)
       case Left(err) => Left(err)
     }

@@ -3,6 +3,7 @@ package donatr
 import java.util.UUID
 
 import io.vertx.scala.core.Vertx
+import io.vertx.scala.core.http.ServerWebSocket
 import io.vertx.scala.ext.web.handler.BodyHandler
 
 object DonatrVertxServer {
@@ -12,10 +13,23 @@ object DonatrVertxServer {
   import io.circe.syntax._
   import io.vertx.scala.ext.web.{Router, RoutingContext}
 
+  val vertx: Vertx = Vertx.vertx()
+
+  class VertxEventPublisher extends EventPublisher {
+    override def publish(event: Event): Unit = {
+      vertx.eventBus().publish("event", event.asJson.noSpaces)
+    }
+  }
+
+  implicit val ep = new VertxEventPublisher()
   val donatr = new DonatrCore(ledger = Ledger(UUID.randomUUID()))
 
+  private def websocketHandler(socket: ServerWebSocket) = {
+    vertx.eventBus().consumer[String]("event")
+      .handler(msg => socket.writeFinalTextFrame(msg.body()))
+  }
+
   def main(args: Array[String]): Unit = {
-    val vertx = Vertx.vertx()
     val router = Router.router(vertx)
 
     router.route().handler(BodyHandler.create())
@@ -39,6 +53,7 @@ object DonatrVertxServer {
 
     vertx
       .createHttpServer()
+      .websocketHandler(websocketHandler)
       .requestHandler(router.accept)
       .listenFuture(8080)
   }
@@ -65,7 +80,7 @@ object DonatrVertxServer {
   private def postDonation(ctx: RoutingContext) = {
     decode[DonationWithoutId](ctx.getBodyAsString.getOrElse(""))
       .flatMap(d => donatr.processCommand(CreateDonation(d)))
-        .map(_.donation)
+      .map(_.donation)
       .fold(badRequest(ctx, _), d => created(ctx, s"/api/donations/${d.id}"))
   }
 
