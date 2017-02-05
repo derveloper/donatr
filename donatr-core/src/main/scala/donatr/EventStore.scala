@@ -6,7 +6,7 @@ import io.circe.generic.auto._
 import io.circe.parser._
 import io.circe.syntax._
 import org.slf4j.LoggerFactory
-import slick.driver.H2Driver.api._
+import slick.jdbc.H2Profile.api._
 import slick.lifted.{ProvenShape, TableQuery}
 
 class EventStore {
@@ -16,7 +16,7 @@ class EventStore {
 
   private val log = LoggerFactory.getLogger("EventStore")
 
-  private val db: _root_.slick.driver.H2Driver.backend.DatabaseDef =
+  private val db: _root_.slick.jdbc.H2Profile.backend.DatabaseDef =
     Database.forURL("jdbc:h2:file:/Users/derveloper/Projects/scala/donatr4/donatr.h2.db", driver = "org.h2.Driver")
 
   private class Events(tag: Tag) extends Table[(String, String)](tag, "EVENTS") {

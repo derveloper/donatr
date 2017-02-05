@@ -12,46 +12,34 @@ object DonatrCore {
 
   rebuildState()
 
-  def rebuildState()(implicit ec: ExecutionContext): Unit = {
+  private def rebuildState(): Unit = {
     eventStore.getEvents.foreach { e =>
       state = state.apply(e)
     }
   }
 
-  def processCommand(create: CreateDonater): EventOrFailure = {
+  def processCommand(create: CreateDonater): Either[NameTaken, DonaterCreated] = {
     val d = create.donater
-    if (state.donaters.count(_._2.name == d.name) == 0) {
-      val newId = UUID.randomUUID()
-      val created = DonaterCreated(Donater(newId, d.name, d.email, d.balance))
-      persistEvent(created)
-    } else {
-      EventOrFailure(None, Some(NameTaken()))
-    }
+      Either.cond(state.donaters.count(_._2.name == d.name) == 0,
+        persistEvent(DonaterCreated(Donater(UUID.randomUUID(), d.name, d.email, d.balance))),
+        NameTaken())
   }
 
-  def processCommand(create: CreateDonatable): EventOrFailure = {
+  def processCommand(create: CreateDonatable): Either[NameTaken, DonatableCreated] = {
     val d = create.donatable
-    if (state.donatables.count(_._2.name == d.name) == 0) {
-      val newId = UUID.randomUUID()
-      val created = DonatableCreated(Donatable(newId, d.name, d.minDonationAmount, d.balance))
-      persistEvent(created)
-    } else {
-      EventOrFailure(None, Some(NameTaken()))
-    }
+    Either.cond(state.donatables.count(_._2.name == d.name) == 0,
+      persistEvent(DonatableCreated(Donatable(UUID.randomUUID(), d.name, d.minDonationAmount, d.balance))),
+      NameTaken())
   }
 
-  def processCommand(create: CreateFundable): EventOrFailure = {
+  def processCommand(create: CreateFundable): Either[NameTaken, FundableCreated] = {
     val d = create.fundable
-    if (state.fundables.count(_._2.name == d.name) == 0) {
-      val newId = UUID.randomUUID()
-      val created = FundableCreated(Fundable(newId, d.name, d.fundingTarget, d.balance))
-      persistEvent(created)
-    } else {
-      EventOrFailure(None, Some(NameTaken()))
-    }
+    Either.cond(state.fundables.count(_._2.name == d.name) == 0,
+      persistEvent(FundableCreated(Fundable(UUID.randomUUID(), d.name, d.fundingTarget, d.balance))),
+      NameTaken())
   }
 
-  def processCommand(create: CreateDonation): EventOrFailure = {
+  def processCommand(create: CreateDonation): DonationCreated = {
     val d = create.donation
     val newId = UUID.randomUUID()
     persistEvent(Withdrawn(newId, d.from, d.value))
@@ -59,9 +47,9 @@ object DonatrCore {
     persistEvent(DonationCreated(Donation(newId, d.from, d.to, d.value)))
   }
 
-  private def persistEvent(event: Event) = {
+  private def persistEvent[E <: Event](event: E) = {
     eventStore.insert(event)
     state = state.apply(event)
-    EventOrFailure(Some(event))
+    event
   }
 }

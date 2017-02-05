@@ -6,6 +6,7 @@ import java.util.{Date, UUID}
 import cats.Show
 import com.twitter.concurrent.AsyncStream
 import com.twitter.conversions.time.longToTimeableNumber
+import com.twitter.finagle.ListeningServer
 import com.twitter.finagle.http.{Request, Response, Status}
 import com.twitter.finagle.util.DefaultTimer
 import com.twitter.io.{Buf, Reader}
@@ -118,7 +119,16 @@ object DonatrServer extends TwitterServer {
     case e: Exception => InternalServerError(e)
   }).toServiceAs[Application.Json]
 
-  def main(): Unit = {
+  def eventsource(): Unit = {
+    val server = Http.server
+      .serve(":8081", ts)
+
+    onExit {
+      server.close()
+    }
+  }
+
+  def apiSrvc: ListeningServer = {
     val server = Http.server
       .serve(":8080", api)
 
@@ -126,7 +136,12 @@ object DonatrServer extends TwitterServer {
       server.close()
     }
 
+    eventsource()
     Await.ready(adminHttpServer)
+  }
+
+  def main(): Unit = {
+    apiSrvc
   }
 }
 
