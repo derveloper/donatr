@@ -1,5 +1,6 @@
 package donatr
 
+import io.circe.JsonObject
 import io.vertx.scala.core.Vertx
 import io.vertx.scala.ext.web.{Router, RoutingContext}
 import io.vertx.scala.ext.web.handler.BodyHandler
@@ -21,8 +22,8 @@ object DonatrVertxServer {
     }
 
     router.post("/api/donaters").handler { ctx =>
-      val maybeDonater = decode[DonaterWithoutId](ctx.getBodyAsString.get)
-      maybeDonater.flatMap(d => DonatrCore.processCommand(CreateDonater(d)))
+      decode[DonaterWithoutId](ctx.getBodyAsString.getOrElse(""))
+        .flatMap(d => DonatrCore.processCommand(CreateDonater(d)))
         .fold(badRequest(ctx, _),
           donater => created(ctx, s"/api/donaters/${donater.donater.id}"))
     }
@@ -34,7 +35,7 @@ object DonatrVertxServer {
   }
 
   private def badRequest(ctx: RoutingContext, err: Exception) = {
-    ctx.response().setStatusCode(400).end(err.getMessage)
+    ctx.response().setStatusCode(400).end(("message" -> err.getMessage).asJson.noSpaces)
   }
 
   private def created(ctx: RoutingContext, path: String) = {
