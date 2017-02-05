@@ -9,15 +9,25 @@ import org.slf4j.LoggerFactory
 import slick.jdbc.H2Profile.api._
 import slick.lifted.{ProvenShape, TableQuery}
 
-class EventStore {
+class EventStore(url: String = "jdbc:h2:file:/Users/derveloper/Projects/scala/donatr4/donatr.h2.db") {
 
   import scala.concurrent.ExecutionContext
   import scala.concurrent.duration.Duration
 
   private val log = LoggerFactory.getLogger("EventStore")
+  private val db = Database.forURL(url = url, driver = "org.h2.Driver")
 
-  private val db: _root_.slick.jdbc.H2Profile.backend.DatabaseDef =
-    Database.forURL("jdbc:h2:file:/Users/derveloper/Projects/scala/donatr4/donatr.h2.db", driver = "org.h2.Driver")
+  private val events: TableQuery[Events] = TableQuery[Events]
+
+  try {
+    log.debug("creating schema")
+    scala.concurrent.Await.result(db.run(DBIO.seq(
+      events.schema.create
+    )), Duration.Inf)
+  }
+  catch {
+    case e: Throwable => log.error(e.getMessage)
+  }
 
   private class Events(tag: Tag) extends Table[(String, String)](tag, "EVENTS") {
     def id: Rep[String] = column[String]("ID", O.PrimaryKey)
@@ -28,30 +38,32 @@ class EventStore {
       (id, payload)
   }
 
-  private val events: TableQuery[Events] = TableQuery[Events]
-  try {
-    scala.concurrent.Await.result(db.run(DBIO.seq(
-      // create the schema
-      events.schema.create
-    )), Duration.Inf)
-  }
-  catch {
-    case e: Throwable => log.info(e.getLocalizedMessage)
-  }
-
-  def insert(event: Event): Unit = {
-    scala.concurrent.Await.result(db.run(DBIO.seq(
-      events += (UUID.randomUUID().toString, event.asJson.noSpaces)
-    )), Duration.Inf)
+  def insert(event: Event): Either[Throwable, Unit] = {
+    try {
+      scala.concurrent.Await.result(db.run(DBIO.seq(
+        events += (UUID.randomUUID().toString, event.asJson.noSpaces)
+      )), Duration.Inf)
+      Right(())
+    }
+    catch {
+      case e: Throwable => Left(e)
+    }
   }
 
   def getEvents(implicit ec: ExecutionContext): Seq[Event] = {
-    scala.concurrent.Await.result(db.run(events.result).map { allEvents =>
-      allEvents.map { e =>
-        decode[Event](e._2)
+    try {
+      scala.concurrent.Await.result(db.run(events.result).map { allEvents =>
+        allEvents.map { e =>
+          decode[Event](e._2)
+        }
+      }, Duration.Inf).map { e =>
+        e.right.get
       }
-    }, Duration.Inf).map { e =>
-      e.right.get
+    }
+    catch {
+      case e: Throwable =>
+        log.info(e.getMessage)
+        List.empty
     }
   }
 }

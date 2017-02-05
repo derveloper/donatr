@@ -1,6 +1,5 @@
 package donatr
 
-import donatr.DonatrCore.processCommand
 import io.vertx.scala.core.Vertx
 import io.vertx.scala.ext.web.handler.BodyHandler
 
@@ -11,6 +10,8 @@ object DonatrVertxServer {
   import io.circe.syntax._
   import io.vertx.scala.ext.web.{Router, RoutingContext}
 
+  val donatr = new DonatrCore()
+
   def main(args: Array[String]): Unit = {
     val vertx = Vertx.vertx()
     val router = Router.router(vertx)
@@ -18,15 +19,15 @@ object DonatrVertxServer {
     router.route().handler(BodyHandler.create())
 
     router.get("/api/donaters").handler { ctx =>
-      ok(ctx, DonatrCore.state.donaters.map(_._2.asJson).asJson.noSpaces)
+      ok(ctx, donatr.state.donaters.map(_._2.asJson).asJson.noSpaces)
     }
 
     router.get("/api/donatables").handler { ctx =>
-      ok(ctx, DonatrCore.state.donatables.map(_._2.asJson).asJson.noSpaces)
+      ok(ctx, donatr.state.donatables.map(_._2.asJson).asJson.noSpaces)
     }
 
     router.get("/api/fundables").handler { ctx =>
-      ok(ctx, DonatrCore.state.fundables.map(_._2.asJson).asJson.noSpaces)
+      ok(ctx, donatr.state.fundables.map(_._2.asJson).asJson.noSpaces)
     }
 
     router.post("/api/donaters").handler(postDonater)
@@ -42,26 +43,27 @@ object DonatrVertxServer {
 
   private def postDonater(ctx: RoutingContext) = {
     decode[DonaterWithoutId](ctx.getBodyAsString.getOrElse(""))
-      .flatMap(d => processCommand(CreateDonater(d)))
+      .flatMap(d => donatr.processCommand(CreateDonater(d)))
       .fold(badRequest(ctx, _),
         event => created(ctx, s"/api/donaters/${event.donater.id}"))
   }
 
   private def postDonatable(ctx: RoutingContext) = {
     decode[DonatableWithoutId](ctx.getBodyAsString.getOrElse(""))
-      .flatMap(d => processCommand(CreateDonatable(d)).map(_.donatable))
+      .flatMap(d => donatr.processCommand(CreateDonatable(d)).map(_.donatable))
       .fold(badRequest(ctx, _), d => created(ctx, s"/api/donatables/${d.id}"))
   }
 
   private def postFundable(ctx: RoutingContext) = {
     decode[FundableWithoutId](ctx.getBodyAsString.getOrElse(""))
-      .flatMap(d => processCommand(CreateFundable(d)).map(_.fundable))
+      .flatMap(d => donatr.processCommand(CreateFundable(d)).map(_.fundable))
       .fold(badRequest(ctx, _), d => created(ctx, s"/api/fundables/${d.id}"))
   }
 
   private def postDonation(ctx: RoutingContext) = {
     decode[DonationWithoutId](ctx.getBodyAsString.getOrElse(""))
-      .map(d => processCommand(CreateDonation(d)).donation)
+      .flatMap(d => donatr.processCommand(CreateDonation(d)))
+        .map(_.donation)
       .fold(badRequest(ctx, _), d => created(ctx, s"/api/donations/${d.id}"))
   }
 
@@ -69,7 +71,7 @@ object DonatrVertxServer {
     ctx.response().putHeader("Content-Type", "application/json").end(json)
   }
 
-  private def badRequest(ctx: RoutingContext, err: Exception) = {
+  private def badRequest(ctx: RoutingContext, err: Throwable) = {
     ctx.response().setStatusCode(400).end(("message" -> err.getMessage).asJson.noSpaces)
   }
 
