@@ -12,6 +12,9 @@ case class FundableCreated(fundable: Fundable) extends Event
 
 case class DonationCreated(donation: Donation) extends Event
 
+case class Withdraw(donationId: UUID, entityId: UUID, withdrawValue: BigDecimal) extends Event
+case class Deposit(donationId: UUID, entityId: UUID, depositValue: BigDecimal) extends Event
+
 case class Withdrawn(donationId: UUID, entityId: UUID, withdrawValue: BigDecimal) extends Event
 
 case class Deposited(donationId: UUID, entityId: UUID, depositValue: BigDecimal) extends Event
