@@ -19,3 +19,7 @@ case class UnknownEntity(entity: Any) extends Exception {
 case class EntityNotFound() extends Exception {
   override def getMessage: String = "Unknown entity"
 }
+
+case class BelowMinDonationAmount(minDonationAmount: BigDecimal, actual: BigDecimal) extends Exception {
+  override def getMessage: String = s"Minimum donation amount should be at least $minDonationAmount was $actual"
+}

@@ -60,15 +60,18 @@ class DonatrCore(val eventStore: EventStore = new EventStore(), ledger: Ledger) 
   }
 
   def processCommand(create: Deposit): Either[Throwable, Deposited] = {
-    (state.donaters.contains(create.entityId),
-      state.donatables.contains(create.entityId),
-      state.fundables.contains(create.entityId)
+    (state.donaters.get(create.entityId),
+      state.donatables.get(create.entityId),
+      state.fundables.get(create.entityId)
     ) match {
-      case (true, false, false) =>
+      case (Some(donater), None, None) =>
         persistEvent(Deposited(create.donationId, create.entityId, create.depositValue))
-      case (false, true, false) =>
-        persistEvent(Deposited(create.donationId, create.entityId, create.depositValue))
-      case (false, false, true) =>
+      case (None, Some(donatable), None) =>
+        Either.cond(create.depositValue >= donatable.minDonationAmount,
+          Deposited(create.donationId, create.entityId, create.depositValue),
+          BelowMinDonationAmount(donatable.minDonationAmount, create.depositValue)
+        ).flatMap(persistEvent)
+      case (None, None, Some(fundable)) =>
         persistEvent(Deposited(create.donationId, create.entityId, create.depositValue))
       case _ => Left(UnknownEntity(create.entityId))
     }
