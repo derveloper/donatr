@@ -1,14 +1,13 @@
 package donatr
 
-import io.circe.JsonObject
 import io.vertx.scala.core.Vertx
-import io.vertx.scala.ext.web.{Router, RoutingContext}
 import io.vertx.scala.ext.web.handler.BodyHandler
 
 object DonatrVertxServer {
+  import io.vertx.scala.ext.web.{Router, RoutingContext}
   import io.circe.generic.auto._
-  import io.circe.syntax._
   import io.circe.parser._
+  import io.circe.syntax._
 
   def main(args: Array[String]): Unit = {
     val vertx = Vertx.vertx()
@@ -25,13 +24,13 @@ object DonatrVertxServer {
       decode[DonaterWithoutId](ctx.getBodyAsString.getOrElse(""))
         .flatMap(d => DonatrCore.processCommand(CreateDonater(d)))
         .fold(badRequest(ctx, _),
-          donater => created(ctx, s"/api/donaters/${donater.donater.id}"))
+          event => created(ctx, s"/api/donaters/${event.donater.id}"))
     }
 
     vertx
       .createHttpServer()
       .requestHandler(router.accept)
-      .listenFuture(8666)
+      .listenFuture(8080)
   }
 
   private def badRequest(ctx: RoutingContext, err: Exception) = {
