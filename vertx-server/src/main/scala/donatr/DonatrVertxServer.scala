@@ -21,6 +21,14 @@ object DonatrVertxServer {
       ok(ctx, DonatrCore.state.donaters.map(_._2.asJson).asJson.noSpaces)
     }
 
+    router.get("/api/donatables").handler { ctx =>
+      ok(ctx, DonatrCore.state.donatables.map(_._2.asJson).asJson.noSpaces)
+    }
+
+    router.get("/api/fundables").handler { ctx =>
+      ok(ctx, DonatrCore.state.fundables.map(_._2.asJson).asJson.noSpaces)
+    }
+
     router.post("/api/donaters").handler(postDonater)
     router.post("/api/donatables").handler(postDonatable)
     router.post("/api/fundables").handler(postFundable)
