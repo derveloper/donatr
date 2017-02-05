@@ -2,24 +2,29 @@ package donatr
 
 import java.util.UUID
 
-class DonatrCore(val eventStore: EventStore = new EventStore()) {
+class DonatrCore(val eventStore: EventStore = new EventStore(), ledger: Ledger) {
 
   import scala.concurrent.ExecutionContext
   import ExecutionContext.Implicits.global
 
-  var state = DonatrState()
+  var state = DonatrState(ledger = ledger)
 
   rebuildState()
 
   def rebuildState(): Unit = {
     resetState()
+
+    if(eventStore.getEvents.isEmpty) {
+      eventStore.insert(LedgerCreated(state.ledger))
+    }
+
     eventStore.getEvents.foreach { e =>
       state = state.apply(e)
     }
   }
 
   def resetState(): Unit = {
-    state = DonatrState()
+    state = DonatrState(ledger = ledger.copy(balance = 0))
   }
 
   def processCommand(create: CreateDonater): Either[Throwable, DonaterCreated] = {
@@ -47,17 +52,10 @@ class DonatrCore(val eventStore: EventStore = new EventStore()) {
   }
 
   def processCommand(create: Withdraw): Either[Throwable, Withdrawn] = {
-    (state.donaters.contains(create.entityId),
-      state.donatables.contains(create.entityId),
-      state.fundables.contains(create.entityId)
-    ) match {
-      case (true, false, false) =>
-        persistEvent(Withdrawn(create.donationId, create.entityId, create.withdrawValue))
-      case (false, true, false) =>
-        persistEvent(Withdrawn(create.donationId, create.entityId, create.withdrawValue))
-      case (false, false, true) =>
-        persistEvent(Withdrawn(create.donationId, create.entityId, create.withdrawValue))
-      case _ => Left(UnknownEntity(create.entityId))
+    if (state.donaters.contains(create.entityId)) {
+      persistEvent(Withdrawn(create.donationId, create.entityId, create.withdrawValue))
+    } else {
+      persistEvent(Withdrawn(create.donationId, state.ledger.id, create.withdrawValue))
     }
   }
 

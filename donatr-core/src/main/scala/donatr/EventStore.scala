@@ -62,7 +62,7 @@ class EventStore(url: String = "jdbc:h2:file:/Users/derveloper/Projects/scala/do
     }
     catch {
       case e: Throwable =>
-        log.info(e.getMessage)
+        log.error(e.getMessage)
         List.empty
     }
   }

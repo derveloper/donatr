@@ -1,5 +1,7 @@
 package donatr
 
+import java.util.UUID
+
 import io.vertx.scala.core.Vertx
 import io.vertx.scala.ext.web.handler.BodyHandler
 
@@ -10,7 +12,7 @@ object DonatrVertxServer {
   import io.circe.syntax._
   import io.vertx.scala.ext.web.{Router, RoutingContext}
 
-  val donatr = new DonatrCore()
+  val donatr = new DonatrCore(ledger = Ledger(UUID.randomUUID()))
 
   def main(args: Array[String]): Unit = {
     val vertx = Vertx.vertx()

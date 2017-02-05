@@ -2,6 +2,9 @@ package donatr
 
 import java.util.UUID
 
+case class Ledger(id: UUID,
+                  balance: BigDecimal = 0)
+
 case class Donater(id: UUID,
                    name: String,
                    email: String,
