@@ -7,6 +7,7 @@ sealed trait Event
 case class LedgerCreated(ledger: Ledger) extends Event
 
 case class DonaterCreated(donater: Donater) extends Event
+case class DonaterUpdated(donater: Donater) extends Event
 
 case class DonatableCreated(donatable: Donatable) extends Event
 

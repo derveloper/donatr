@@ -82,7 +82,13 @@ object DonatrVertxServer {
     decode[DonationWithoutId](ctx.getBodyAsString.getOrElse(""))
       .flatMap(d => donatr.processCommand(CreateDonation(d)))
       .map(_.donation)
-      .fold(badRequest(ctx, _), d => created(ctx, s"/api/donations/${d.id}"))
+      .fold(badRequest(ctx, _), d => {
+        if (donatr.state.donaters.contains(d.from))
+          ep.publish(DonaterUpdated(donatr.state.donaters(d.from)))
+        if (donatr.state.donaters.contains(d.to))
+          ep.publish(DonaterUpdated(donatr.state.donaters(d.to)))
+        created(ctx, s"/api/donations/${d.id}")
+      })
   }
 
   private def ok(ctx: RoutingContext, json: String) = {

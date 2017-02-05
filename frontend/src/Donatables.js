@@ -3,6 +3,7 @@ import Inferno from "inferno";
 import Component from "inferno-component";
 import {connect} from "inferno-redux";
 import * as DonatableReducer from "./redux/donatables";
+import * as DonaterReducer from "./redux/donaters";
 import * as Api from "./api";
 import md5 from "md5";
 import injectSheet from 'react-jss'
@@ -86,7 +87,10 @@ class App extends Component {
 
     componentWillMount() {
         const {dispatch} = this.props;
-        dispatch({type: DonatableReducer.DONATABLES_FETCH_REQUESTED})
+        dispatch({type: DonatableReducer.DONATABLES_FETCH_REQUESTED});
+        if (this.props.donaters.length === 0) {
+            dispatch({type: DonaterReducer.DONATERS_FETCH_REQUESTED});
+        }
     }
 
     toggleForm = () => {
@@ -101,7 +105,7 @@ class App extends Component {
                 <button className={this.props.classes.button} onClick={this.toggleForm}>+</button>
                 <div className={`block ${this.props.classes.grid}`}>
                     { this.props.donatables.map(f => <Donatable
-                        userId={this.props.userId}
+                        userId={this.props.params.userId}
                         donatable={f}/>)}
                 </div>
             </div>
@@ -110,7 +114,7 @@ class App extends Component {
 }
 
 function mapStateToProps(state) {
-    return {donatables: state.donatables}
+    return {donatables: state.donatables, donaters: state.donaters}
 }
 
 export default connect(mapStateToProps)(injectSheet(styles)(App))
