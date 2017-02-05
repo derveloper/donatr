@@ -76,9 +76,14 @@ class DonatrSpec extends FlatSpec with Matchers {
     val fundable = donatr.state.fundables(toId)
     donater.balance should be (-3)
     fundable.balance should be (3)
+  }
 
-    donater.balance should be (-3)
-    fundable.balance should be (3)
+  it should "create Donater, Donation and have correct balances in Ledger and Donater" in new Db {
+    val (fromId, toId) = (ledgerId, mkDonater(donatr))
+    val donation = mkDonation(donatr, fromId, toId)
+    val donater = donatr.state.donaters(toId)
+    donater.balance should be (3)
+    donatr.state.ledger.balance should be (-3)
   }
 
   it should "have correct state after rebuild" in new Db {
