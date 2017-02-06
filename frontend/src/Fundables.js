@@ -35,7 +35,14 @@ const styles = {
     },
     '@media (min-width: 480px)': {
         app: {
-            padding: 20
+            padding: 20,
+            paddingTop: 10
+        }
+    },
+    '@media (max-width: 479px)': {
+        app: {
+            padding: 20,
+            paddingTop: 10
         }
     }
 };

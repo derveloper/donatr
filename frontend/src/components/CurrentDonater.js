@@ -2,10 +2,11 @@
 import Inferno from "inferno";
 import {connect} from "inferno-redux";
 
-const CurrentDonater = ({donater}) => donater && (
+const CurrentDonater = ({donater}) => (
     <div className="clearfix border">
-        <div className="col p1">{donater.name}</div>
-        <div className="col p1">{donater.balance}</div>
+        {!donater ? <div className="col-12 center p1">{'select user'}</div> : null}
+        {donater && <div className="col p1">{donater.name}</div>}
+        {donater && <div className="col p1">{donater.balance}</div>}
     </div>
 );
 
