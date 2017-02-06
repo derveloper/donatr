@@ -214,16 +214,23 @@ module.exports = {
     new webpack.optimize.DedupePlugin(),
     // Minify the code.
     new webpack.optimize.UglifyJsPlugin({
-      compress: {
-        screw_ie8: true, // Inferno doesn't support IE8
-        warnings: false
-      },
       mangle: {
         screw_ie8: true
       },
+      compress: {
+        warnings: false,
+        screw_ie8: true,
+        conditionals: true,
+        unused: true,
+        comparisons: true,
+        sequences: true,
+        dead_code: true,
+        evaluate: true,
+        if_return: true,
+        join_vars: true,
+      },
       output: {
         comments: false,
-        screw_ie8: true
       }
     }),
     // Note: this won't work without ExtractTextPlugin.extract(..) in `loaders`.
