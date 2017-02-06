@@ -88,7 +88,11 @@ const Fundable = injectSheet(styles)(({classes, fundable, userId, dispatch}) => 
         onClick={donate(userId, fundable.id)}
     >
         <img alt="gravatar" src={`https://www.gravatar.com/avatar/${getFundableMD5(fundable.name)}?s=115`} width="115"/>
-        <span className="p1">{fundable.name}</span>
+        <div className="p1">
+            {fundable.name} /
+            {fundable.fundingTarget} /
+            {fundable.balance}
+        </div>
     </div>
 ));
 

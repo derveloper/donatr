@@ -88,6 +88,10 @@ object DonatrVertxServer {
         ep.publish(DonaterUpdated(donatr.state.donaters(d.from)))
       if (donatr.state.donaters.contains(d.to))
         ep.publish(DonaterUpdated(donatr.state.donaters(d.to)))
+      if (donatr.state.fundables.contains(d.from))
+        ep.publish(FundableUpdated(donatr.state.fundables(d.from)))
+      if (donatr.state.fundables.contains(d.to))
+        ep.publish(FundableUpdated(donatr.state.fundables(d.to)))
       created(ctx, s"/api/donations/${d.id}")
     }
 
