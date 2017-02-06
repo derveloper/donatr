@@ -24,10 +24,10 @@ const styles = {
 const Layout = injectSheet(styles)(({classes, params, children}) => {
     return (
         <div className="root">
-            <h1 className="block mx-auto max-width-3 center">
+            <h1 className="block mx-auto center">
                 <IndexLink className={classes.link}>donatr</IndexLink>
             </h1>
-            <h2 className="block mx-auto max-width-3 right pr3">
+            <h2 className="block mx-auto right-align pb0 pr3 pt3 pl3 m0">
                 <CurrentDonater params={params} />
             </h2>
             {children}

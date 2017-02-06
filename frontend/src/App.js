@@ -31,7 +31,7 @@ const styles = {
         backgroundColor: '#000',
         border: 'none',
         color: '#00ff00',
-        fontSize: '32px',
+        fontSize: '28px',
         cursor: 'pointer'
     },
     grid: {
@@ -41,7 +41,20 @@ const styles = {
     },
     '@media (min-width: 480px)': {
         app: {
-            padding: 20
+            padding: 20,
+            paddingTop: 10
+        }
+    },
+    '@media (max-width: 479px)': {
+        app: {
+            padding: 20,
+            paddingTop: 10
+        },
+        link: {
+            fontSize: '20px'
+        },
+        button: {
+            fontSize: '20px'
         }
     }
 };
@@ -98,7 +111,10 @@ class App extends Component {
         return (
             <div className={`block mx-auto ${this.props.classes.app}`}>
                 { this.state.createDonaterFormOpen && <CreateForm onSubmitCreate={this.toggleForm} /> }
-                <button className={this.props.classes.button} onClick={this.toggleForm}>+user</button>
+                <div>
+                    <button className={this.props.classes.button} onClick={this.toggleForm}>+user</button>
+                </div>
+                <hr style={{backgroundColor: '#00ff00', borderColor: '#00ff00'}}/>
                 <div className={`block ${this.props.classes.grid}`}>
                     { this.props.donaters.map(f => <Donater donater={f}/>)}
                 </div>

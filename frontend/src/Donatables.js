@@ -22,7 +22,7 @@ const styles = {
     link: {
         color: '#00ff00',
         textDecoration: 'none',
-        fontSize: '32px'
+        fontSize: '28px'
     },
     form: {
         backgroundColor: '#000',
@@ -33,14 +33,14 @@ const styles = {
         backgroundColor: '#000',
         border: 'none',
         color: '#00ff00',
-        fontSize: '32px',
+        fontSize: '28px',
         cursor: 'pointer'
     },
     spacer: {
         backgroundColor: '#000',
         border: 'none',
         color: '#00ff00',
-        fontSize: '32px',
+        fontSize: '28px',
     },
     grid: {
         display: 'flex',
@@ -50,6 +50,24 @@ const styles = {
     '@media (min-width: 480px)': {
         app: {
             padding: 20
+        },
+        link: {
+            fontSize: '28px'
+        },
+        but: {
+            fontSize: '28px'
+        }
+    },
+    '@media (max-width: 479px)': {
+        app: {
+            padding: 20,
+            paddingTop: 10
+        },
+        link: {
+            fontSize: '20px'
+        },
+        button: {
+            fontSize: '20px'
         }
     }
 };
@@ -140,11 +158,14 @@ class App extends Component {
                 { this.state.createDonatableFormOpen && <CreateForm onSubmitCreate={this.toggleForm} /> }
                 { this.state.createDepositFormOpen && <DepositForm userId={this.props.params.userId}
                                                                    onSubmitCreate={this.toggleDepositForm} /> }
-                <button className={this.props.classes.button} onClick={this.toggleForm}>+item</button>
-                <span className={this.props.classes.spacer}> ~ </span>
-                <button className={this.props.classes.button} onClick={this.toggleDepositForm}>+€</button>
-                <span className={this.props.classes.spacer}> ~ </span>
-                <Link className={this.props.classes.link} to={`/${this.props.params.userId}/fundables`}>&gt;funding</Link>
+                <div>
+                    <button className={this.props.classes.button} onClick={this.toggleForm}>+item</button>
+                    <span className={this.props.classes.spacer}> ~ </span>
+                    <button className={this.props.classes.button} onClick={this.toggleDepositForm}>+€</button>
+                    <span className={this.props.classes.spacer}> ~ </span>
+                    <Link className={this.props.classes.link} to={`/${this.props.params.userId}/fundables`}>&gt;funding</Link>
+                </div>
+                <hr style={{backgroundColor: '#00ff00', borderColor: '#00ff00'}}/>
                 <div className={`block ${this.props.classes.grid}`}>
                     { this.props.donatables.map(f => <Donatable
                         userId={this.props.params.userId}
