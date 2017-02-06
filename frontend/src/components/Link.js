@@ -7,7 +7,10 @@ const styles = {
     link: {
         color: '#00ff00',
         textDecoration: 'none',
-        fontSize: '28px'
+        fontSize: '28px',
+        '&:active': {
+            backgroundColor: 'rgba(0,255,0,0.4)'
+        }
     },
     '@media (max-width: 479px)': {
         link: {

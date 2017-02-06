@@ -15,7 +15,7 @@ object Benchmark {
 
   def main(args: Array[String]): Unit = {
     val vertx = Vertx.vertx()
-    val options = HttpClientOptions().setDefaultHost("localhost").setDefaultPort(8080)
+    val options = HttpClientOptions().setDefaultHost("donatr.herokuapp.com").setSsl(true).setDefaultPort(443)
     val client = vertx.createHttpClient(options)
 
     val donaters = createDonaters(Range(1, 10).map(_ => donaterGen.sample.get), client)

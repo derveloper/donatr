@@ -20,7 +20,10 @@ const styles = {
         maxHeight: 200,
         minHeight: 120,
         overflow: 'hidden',
-        margin: '.1rem'
+        margin: '.1rem',
+        '&:active': {
+            backgroundColor: 'rgba(0,255,0,0.4)'
+        }
     },
     form: {
         backgroundColor: '#000',
@@ -52,12 +55,14 @@ const getDonatableMD5 = (name) =>
 const donate = (from, to, value) => () => Api.createDonation({from, to, value});
 
 const Donatable = injectSheet(styles)(({classes, donatable, userId, dispatch}) => (
-    <div
-        className={`border break-word inline-block align-top ${classes.donatable}`}
-        onClick={donate(userId, donatable.id, donatable.minDonationAmount)}
-    >
-        <img alt="gravatar" src={`https://www.gravatar.com/avatar/${getDonatableMD5(donatable.name)}?s=115`} width="115"/>
-        <span className="p1">{donatable.name} ({donatable.minDonationAmount})</span>
+    <div className="flex">
+        <div
+            className={`border break-word align-top ${classes.donatable}`}
+            onClick={donate(userId, donatable.id, donatable.minDonationAmount)}
+        >
+            <img alt="gravatar" src={`https://www.gravatar.com/avatar/${getDonatableMD5(donatable.name)}?s=115`} width="115"/>
+            <span className="p1">{donatable.name} ({donatable.minDonationAmount})</span>
+        </div>
     </div>
 ));
 
