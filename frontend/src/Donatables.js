@@ -19,7 +19,8 @@ const styles = {
         width: 115,
         maxHeight: 200,
         minHeight: 120,
-        overflow: 'hidden'
+        overflow: 'hidden',
+        margin: '.1rem'
     },
     form: {
         backgroundColor: '#000',
@@ -51,7 +52,7 @@ const donate = (from, to, value) => () => Api.createDonation({from, to, value});
 
 const Donatable = injectSheet(styles)(({classes, donatable, userId, dispatch}) => (
     <div
-        className={`border break-word m1 inline-block align-top ${classes.donatable}`}
+        className={`border break-word inline-block align-top ${classes.donatable}`}
         onClick={donate(userId, donatable.id, donatable.minDonationAmount)}
     >
         <img alt="gravatar" src={`https://www.gravatar.com/avatar/${getDonatableMD5(donatable.name)}?s=115`} width="115"/>

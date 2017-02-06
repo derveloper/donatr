@@ -20,7 +20,8 @@ const styles = {
         width: 115,
         maxHeight: 200,
         minHeight: 120,
-        overflow: 'hidden'
+        overflow: 'hidden',
+        margin: '.1rem'
     },
     form: {
         backgroundColor: '#000',
@@ -68,7 +69,7 @@ const donate = (from, to) => () => {
 
 const Fundable = injectSheet(styles)(({classes, fundable, userId, dispatch}) => (
     <div
-        className={`border break-word m1 inline-block align-top ${classes.fundable}`}
+        className={`border break-word inline-block align-top ${classes.fundable}`}
         onClick={donate(userId, fundable.id)}
     >
         <img alt="gravatar" src={`https://www.gravatar.com/avatar/${getFundableMD5(fundable.name)}?s=115`} width="115"/>

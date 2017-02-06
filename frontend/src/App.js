@@ -17,7 +17,8 @@ const styles = {
         width: 115,
         maxHeight: 200,
         minHeight: 120,
-        overflow: 'hidden'
+        overflow: 'hidden',
+        margin: '.1rem'
     },
     form: {
         backgroundColor: '#000',
@@ -49,7 +50,7 @@ const styles = {
 const Donater = injectSheet(styles)(({classes, donater}) => (
     <Link className={classes.link} to={`/${donater.id}/donatables`}>
         <div
-            className={`border break-word m1 inline-block align-top ${classes.donater}`}
+            className={`border break-word inline-block align-top ${classes.donater}`}
         >
             <img alt="gravatar" src={`https://www.gravatar.com/avatar/${md5(donater.email)}?s=115`} width="115"/>
             <span className="p1">{donater.name}</span>
