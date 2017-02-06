@@ -3,7 +3,7 @@ package donatr
 import java.util.UUID
 
 import io.vertx.scala.core.Vertx
-import io.vertx.scala.core.http.ServerWebSocket
+import io.vertx.scala.core.http.{HttpServerOptions, ServerWebSocket}
 import io.vertx.scala.ext.web.handler.{BodyHandler, StaticHandler}
 
 object DonatrVertxServer {
@@ -58,8 +58,11 @@ object DonatrVertxServer {
     router.get("/static/*").handler(StaticHandler.create("webroot/static"))
     router.get("/*").handler(ctx => ctx.response().sendFile("webroot/index.html"))
 
+    val options = HttpServerOptions()
+      .setCompressionSupported(true)
+      .setCompressionLevel(7)
     vertx
-      .createHttpServer()
+      .createHttpServer(options)
       .websocketHandler(websocketHandler)
       .requestHandler(router.accept)
       .listenFuture(System.getenv.getOrDefault("PORT", "8080").toInt)
