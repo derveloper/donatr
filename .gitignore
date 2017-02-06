@@ -1,4 +1,5 @@
-/donatr.db
+*.h2*
+vertx-server/src/main/resources/webroot
 /keystore.jceks
 /sample.db
 /npm-debug.log

@@ -13,6 +13,8 @@ object DonatrVertxServer {
   import io.circe.syntax._
   import io.vertx.scala.ext.web.{Router, RoutingContext}
 
+  System.setProperty("vertx.disableFileCPResolving", "false")
+
   val vertx: Vertx = Vertx.vertx()
 
   class VertxEventPublisher extends EventPublisher {
@@ -52,15 +54,15 @@ object DonatrVertxServer {
     router.post("/api/fundables").handler(postFundable)
     router.post("/api/donations").handler(postDonation)
 
-    router.get("/favicon.ico").handler(ctx => ctx.response().sendFile("./frontend/build/favicon.ico"))
-    router.get("/static/*").handler(StaticHandler.create("./frontend/build/static"))
-    router.get("/*").handler(ctx => ctx.response().sendFile("./frontend/build/index.html"))
+    router.get("/favicon.ico").handler(ctx => ctx.response().sendFile("webroot/favicon.ico"))
+    router.get("/static/*").handler(StaticHandler.create("webroot/static"))
+    router.get("/*").handler(ctx => ctx.response().sendFile("webroot/index.html"))
 
     vertx
       .createHttpServer()
       .websocketHandler(websocketHandler)
       .requestHandler(router.accept)
-      .listenFuture(Some(System.getenv("PORT")).getOrElse("8080").toInt)
+      .listenFuture(System.getenv.getOrDefault("PORT", "8080").toInt)
   }
 
   private def postDonater(ctx: RoutingContext) = {
