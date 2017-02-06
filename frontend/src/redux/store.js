@@ -31,14 +31,22 @@ const schema = window.location.port === ""
 const port = window.location.port === ""
     ? ""
     : ":"+window.location.port;
-const ws = new WebSocket(schema+window.location.hostname+port+'/api/events');
-ws.onmessage = msg => {
-    const data = JSON.parse(msg.data);
-    const type = Object.keys(data)[0];
-    store.dispatch({
-        type: type,
-        payload: data[type]
-    });
-};
+const wss = schema+window.location.hostname+port+'/api/events';
+
+function start(websocketServerLocation){
+    ws = new WebSocket(websocketServerLocation);
+    ws.onmessage = msg => {
+        const data = JSON.parse(msg.data);
+        const type = Object.keys(data)[0];
+        store.dispatch({
+            type: type,
+            payload: data[type]
+        });
+    };
+    ws.onclose = function(){
+        //try to reconnect in 5 seconds
+        setTimeout(function(){start(websocketServerLocation)}, 5000);
+    };
+}
 
 export default store;
