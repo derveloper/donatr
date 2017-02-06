@@ -3,14 +3,15 @@ import Inferno from "inferno";
 import Component from "inferno-component";
 import {connect} from "inferno-redux";
 import {Link} from "inferno-router";
-import * as DonatableReducer from "./redux/donatables";
+import * as FundableReducer from "./redux/fundables";
 import * as DonaterReducer from "./redux/donaters";
 import * as Api from "./api";
 import md5 from "md5";
-import injectSheet from 'react-jss'
+import injectSheet from 'react-jss';
+import swal from 'sweetalert';
 
 const styles = {
-    donatable: {
+    fundable: {
         cursor: 'pointer',
         borderWidth: 3,
         borderColor: '#00ff00',
@@ -21,8 +22,8 @@ const styles = {
     },
     link: {
         color: '#00ff00',
-        textDecoration: 'none',
-        fontSize: '32px'
+        fontSize: '32px',
+        textDecoration: 'none'
     },
     form: {
         backgroundColor: '#000',
@@ -54,26 +55,48 @@ const styles = {
     }
 };
 
-const getDonatableMD5 = (name) =>
-    md5(`donatr+${name}@fnordeingang.de`);
+const getFundableMD5 = (name) =>
+    md5(`donatr+fundable-${name}@fnordeingang.de`);
 
-const donate = (from, to, value) => () => Api.createDonation({from, to, value});
+const donate = (from, to) => () => {
+    swal({
+            title: "A Donation!",
+            text: "Donate whatever you like",
+            type: "input",
+            showCancelButton: true,
+            closeOnConfirm: false,
+            animation: "slide-from-top",
+            inputPlaceholder: "amount"
+        },
+        function(inputValue){
+            if (inputValue === false) return false;
 
-const Donatable = injectSheet(styles)(({classes, donatable, userId, dispatch}) => (
+            if (inputValue === "") {
+                swal.showInputError("You need to donate something!");
+                return false
+            }
+
+            Api.createDonation({from, to, value: inputValue});
+
+            swal("Nice!", "You donated: " + inputValue, "success");
+        });
+};
+
+const Fundable = injectSheet(styles)(({classes, fundable, userId, dispatch}) => (
     <div
-        className={`border break-word m1 inline-block align-top ${classes.donatable}`}
-        onClick={donate(userId, donatable.id, donatable.minDonationAmount)}
+        className={`border break-word m1 inline-block align-top ${classes.fundable}`}
+        onClick={donate(userId, fundable.id)}
     >
-        <img alt="gravatar" src={`https://www.gravatar.com/avatar/${getDonatableMD5(donatable.name)}?s=115`} width="115"/>
-        <span className="p1">{donatable.name}</span>
+        <img alt="gravatar" src={`https://www.gravatar.com/avatar/${getFundableMD5(fundable.name)}?s=115`} width="115"/>
+        <span className="p1">{fundable.name}</span>
     </div>
 ));
 
 const _onSubmitCreate = (f) => (e) => {
     e.preventDefault();
-    Api.createDonatable({
+    Api.createFundable({
         name: e.target.elements['name'].value,
-        minDonationAmount: e.target.elements['minDonationAmount'].value
+        fundingTarget: e.target.elements['fundingTarget'].value
     });
     f();
 };
@@ -94,7 +117,7 @@ const CreateForm = injectSheet(styles)(({classes, onSubmitCreate}) => (
                 <input placeholder="name" name="name" type="text"/>
             </label>
             <label className="block mx-auto center">
-                <input placeholder="price" name="minDonationAmount" type="decimal"/>
+                <input placeholder="target" name="fundingTarget" type="decimal"/>
             </label>
             <button className={`block mx-auto center ${classes.button}`} type="submit">Create</button>
         </form>
@@ -114,20 +137,20 @@ const DepositForm = injectSheet(styles)(({classes, onSubmitCreate, userId}) => (
 
 class App extends Component {
     state = {
-        createDonatableFormOpen: false,
+        createFundableFormOpen: false,
         createDepositFormOpen: false
     };
 
     componentWillMount() {
         const {dispatch} = this.props;
-        dispatch({type: DonatableReducer.DONATABLES_FETCH_REQUESTED});
+        dispatch({type: FundableReducer.FUNDABLES_FETCH_REQUESTED});
         if (this.props.donaters.length === 0) {
             dispatch({type: DonaterReducer.DONATERS_FETCH_REQUESTED});
         }
     }
 
     toggleForm = () => {
-        this.setState({createDonatableFormOpen: !this.state.createDonatableFormOpen})
+        this.setState({createFundableFormOpen: !this.state.createFundableFormOpen})
     };
 
     toggleDepositForm = () => {
@@ -137,18 +160,18 @@ class App extends Component {
     render() {
         return (
             <div className={`block mx-auto ${this.props.classes.app}`}>
-                { this.state.createDonatableFormOpen && <CreateForm onSubmitCreate={this.toggleForm} /> }
+                { this.state.createFundableFormOpen && <CreateForm onSubmitCreate={this.toggleForm} /> }
                 { this.state.createDepositFormOpen && <DepositForm userId={this.props.params.userId}
                                                                    onSubmitCreate={this.toggleDepositForm} /> }
-                <button className={this.props.classes.button} onClick={this.toggleForm}>+item</button>
+                <button className={this.props.classes.button} onClick={this.toggleForm}>+fundable</button>
                 <span className={this.props.classes.spacer}> ~ </span>
                 <button className={this.props.classes.button} onClick={this.toggleDepositForm}>+€</button>
                 <span className={this.props.classes.spacer}> ~ </span>
-                <Link className={this.props.classes.link} to={`/${this.props.params.userId}/fundables`}>&gt;funding</Link>
+                <Link className={this.props.classes.link} to={`/${this.props.params.userId}/donatables`}>&lt;items</Link>
                 <div className={`block ${this.props.classes.grid}`}>
-                    { this.props.donatables.map(f => <Donatable
+                    { this.props.fundables.map(f => <Fundable
                         userId={this.props.params.userId}
-                        donatable={f}/>)}
+                        fundable={f}/>)}
                 </div>
             </div>
         );
@@ -156,7 +179,7 @@ class App extends Component {
 }
 
 function mapStateToProps(state) {
-    return {donatables: state.donatables, donaters: state.donaters}
+    return {fundables: state.fundables, donaters: state.donaters}
 }
 
 export default connect(mapStateToProps)(injectSheet(styles)(App))

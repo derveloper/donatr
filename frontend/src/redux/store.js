@@ -2,7 +2,8 @@ import { createStore, applyMiddleware, compose, combineReducers } from 'redux';
 import createSagaMiddleware from 'redux-saga'
 import donaters from './donaters';
 import donatables from './donatables';
-import {donaterSaga, donatablesSaga} from './saga';
+import fundables from './fundables';
+import {donaterSaga, donatablesSaga, fundablesSaga} from './saga';
 
 const sagaMiddleware = createSagaMiddleware();
 
@@ -14,13 +15,15 @@ const middleware = composeEnhancers(
 
 const rootReducer = combineReducers({
     donaters,
-    donatables
+    donatables,
+    fundables
 });
 
 const store = createStore(rootReducer, middleware);
 
 sagaMiddleware.run(donaterSaga);
 sagaMiddleware.run(donatablesSaga);
+sagaMiddleware.run(fundablesSaga);
 
 const ws = new WebSocket('ws://'+window.location.hostname+':'+window.location.port+'/api/events');
 ws.onmessage = msg => {

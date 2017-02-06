@@ -8,6 +8,10 @@ export const fetchDonatables = () =>
     fetch('/api/donatables')
         .then(response => response.json());
 
+export const fetchFundables = () =>
+    fetch('/api/fundables')
+        .then(response => response.json());
+
 export const createDonater = ({name, email}) =>
     fetch('/api/donaters', {
         method: 'POST',
@@ -32,6 +36,20 @@ export const createDonatable = ({name, minDonationAmount}) =>
         body: JSON.stringify({
             name,
             minDonationAmount,
+            balance: 0
+        })
+    });
+
+export const createFundable = ({name, fundingTarget}) =>
+    fetch('/api/fundables', {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            name,
+            fundingTarget,
             balance: 0
         })
     });

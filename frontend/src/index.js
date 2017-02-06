@@ -3,8 +3,10 @@ import {Provider} from "inferno-redux";
 import { Router, Route, IndexRoute, IndexLink } from 'inferno-router';
 import { createBrowserHistory } from 'history';
 import Donatables from "./Donatables";
+import Fundables from "./Fundables";
 import "./index.css";
 import "./basscss.min.css";
+import "sweetalert/dist/sweetalert.css";
 import store from "./redux/store";
 import App from "./App";
 import CurrentDonater from './CurrentDonater';
@@ -46,6 +48,7 @@ const routes = (
         <Route component={ Main }>
             <IndexRoute component={ App }/>
             <Route path=":userId/donatables" component={ Donatables } />
+            <Route path=":userId/fundables" component={ Fundables } />
             <Route path="*" component={ App }/>
         </Route>
     </Router>
