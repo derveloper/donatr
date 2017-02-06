@@ -35,7 +35,8 @@ lazy val donatrCore = (project in file("./donatr-core")).
       "io.circe" %% "circe-generic" % "0.7.0",
       "io.circe" %% "circe-parser" % "0.7.0",
       "com.typesafe.slick" %% "slick" % "3.2.0-M2",
-      "org.slf4j" % "slf4j-nop" % "1.6.4",
+      "org.slf4j" % "slf4j-api" % "1.7.22",
+      "ch.qos.logback" % "logback-classic" % "1.1.10",
       "com.h2database" % "h2" % "1.4.193",
       scalaTest % Test,
       "org.scalacheck" %% "scalacheck" % "1.13.4" % Test

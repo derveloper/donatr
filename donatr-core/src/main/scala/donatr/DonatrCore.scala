@@ -2,10 +2,12 @@ package donatr
 
 import java.util.UUID
 
+import org.slf4j.LoggerFactory
+
 class DonatrCore(val eventStore: EventStore = new EventStore(),
                  ledger: Ledger)(implicit val eventPublisher: EventPublisher)
 {
-
+  private val log = LoggerFactory.getLogger(this.getClass)
   import scala.concurrent.ExecutionContext
   import ExecutionContext.Implicits.global
 
@@ -14,6 +16,7 @@ class DonatrCore(val eventStore: EventStore = new EventStore(),
   rebuildState()
 
   def rebuildState(): Unit = {
+    log.info("rebuilding state started")
     resetState()
 
     if(eventStore.getEvents.isEmpty) {
@@ -23,6 +26,8 @@ class DonatrCore(val eventStore: EventStore = new EventStore(),
     eventStore.getEvents.foreach { e =>
       state = state.apply(e)
     }
+
+    log.info("rebuilt state")
   }
 
   def resetState(): Unit = {
