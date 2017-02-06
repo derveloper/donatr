@@ -52,7 +52,7 @@ const Donater = injectSheet(styles)(({classes, donater}) => (
             className={`border break-word m1 inline-block align-top ${classes.donater}`}
         >
             <img alt="gravatar" src={`https://www.gravatar.com/avatar/${md5(donater.email)}?s=115`} width="115"/>
-            {donater.name}
+            <span className="p1">{donater.name}</span>
         </div>
     </Link>
 ));

@@ -4,7 +4,7 @@ import java.util.UUID
 
 import io.vertx.scala.core.Vertx
 import io.vertx.scala.core.http.ServerWebSocket
-import io.vertx.scala.ext.web.handler.BodyHandler
+import io.vertx.scala.ext.web.handler.{BodyHandler, StaticHandler}
 
 object DonatrVertxServer {
 
@@ -52,6 +52,10 @@ object DonatrVertxServer {
     router.post("/api/fundables").handler(postFundable)
     router.post("/api/donations").handler(postDonation)
 
+    router.get("/favicon.ico").handler(ctx => ctx.response().sendFile("./frontend/build/favicon.ico"))
+    router.get("/static/*").handler(StaticHandler.create("./frontend/build/static"))
+    router.get("/*").handler(ctx => ctx.response().sendFile("./frontend/build/index.html"))
+
     vertx
       .createHttpServer()
       .websocketHandler(websocketHandler)
@@ -79,16 +83,24 @@ object DonatrVertxServer {
   }
 
   private def postDonation(ctx: RoutingContext) = {
+    def handleSuccess(d: Donation) = {
+      if (donatr.state.donaters.contains(d.from))
+        ep.publish(DonaterUpdated(donatr.state.donaters(d.from)))
+      if (donatr.state.donaters.contains(d.to))
+        ep.publish(DonaterUpdated(donatr.state.donaters(d.to)))
+      created(ctx, s"/api/donations/${d.id}")
+    }
+
     decode[DonationWithoutId](ctx.getBodyAsString.getOrElse(""))
-      .flatMap(d => donatr.processCommand(CreateDonation(d)))
-      .map(_.donation)
-      .fold(badRequest(ctx, _), d => {
-        if (donatr.state.donaters.contains(d.from))
-          ep.publish(DonaterUpdated(donatr.state.donaters(d.from)))
-        if (donatr.state.donaters.contains(d.to))
-          ep.publish(DonaterUpdated(donatr.state.donaters(d.to)))
-        created(ctx, s"/api/donations/${d.id}")
-      })
+        .fold(
+          err => decode[DonationWithoutIdAndFrom](ctx.getBodyAsString.getOrElse(""))
+            .flatMap(d => donatr.processCommand(CreateLedgerDonation(d)))
+            .map(_.donation)
+            .fold(badRequest(ctx, _), handleSuccess),
+          d => donatr.processCommand(CreateDonation(d))
+            .map(_.donation)
+            .fold(badRequest(ctx, _), handleSuccess)
+        )
   }
 
   private def ok(ctx: RoutingContext, json: String) = {

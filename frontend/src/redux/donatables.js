@@ -6,10 +6,8 @@ export const DONATABLE_CREATED = "DonatableCreated";
 export default function donatableReducer(state = [], action) {
     switch (action.type) {
         case DONATABLES_FETCH_SUCCEEDED:
-            console.log("fetched", action);
             return action.payload;
         case DONATABLE_CREATED:
-            console.log("fetcheddfsdfsd", action);
             return [...state, action.payload.donatable];
         default:
             return state;

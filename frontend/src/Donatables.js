@@ -53,7 +53,7 @@ const Donatable = injectSheet(styles)(({classes, donatable, userId, dispatch}) =
         onClick={donate(userId, donatable.id, donatable.minDonationAmount)}
     >
         <img alt="gravatar" src={`https://www.gravatar.com/avatar/${getDonatableMD5(donatable.name)}?s=115`} width="115"/>
-        {donatable.name}
+        <span className="p1">{donatable.name}</span>
     </div>
 ));
 
@@ -62,6 +62,15 @@ const _onSubmitCreate = (f) => (e) => {
     Api.createDonatable({
         name: e.target.elements['name'].value,
         minDonationAmount: e.target.elements['minDonationAmount'].value
+    });
+    f();
+};
+
+const _onSubmitDeposit = (f, userId) => (e) => {
+    e.preventDefault();
+    Api.createDonation({
+        to: userId,
+        value: e.target.elements['value'].value
     });
     f();
 };
@@ -80,9 +89,21 @@ const CreateForm = injectSheet(styles)(({classes, onSubmitCreate}) => (
     </div>
 ));
 
+const DepositForm = injectSheet(styles)(({classes, onSubmitCreate, userId}) => (
+    <div className={`z4 fixed block mx-auto ${classes.form}`}>
+        <form onSubmit={_onSubmitDeposit(onSubmitCreate, userId)}>
+            <label className="block mx-auto center">
+                <input placeholder="amount" name="value" type="decimal"/>
+            </label>
+            <button className={`block mx-auto center ${classes.button}`} type="submit">Deposit</button>
+        </form>
+    </div>
+));
+
 class App extends Component {
     state = {
-        createDonatableFormOpen: false
+        createDonatableFormOpen: false,
+        createDepositFormOpen: false
     };
 
     componentWillMount() {
@@ -97,12 +118,19 @@ class App extends Component {
         this.setState({createDonatableFormOpen: !this.state.createDonatableFormOpen})
     };
 
+    toggleDepositForm = () => {
+        this.setState({createDepositFormOpen: !this.state.createDepositFormOpen})
+    };
+
     render() {
         return (
             <div className={`block mx-auto ${this.props.classes.app}`}>
                 <h1>Donatables</h1>
                 { this.state.createDonatableFormOpen && <CreateForm onSubmitCreate={this.toggleForm} /> }
+                { this.state.createDepositFormOpen && <DepositForm userId={this.props.params.userId}
+                                                                   onSubmitCreate={this.toggleDepositForm} /> }
                 <button className={this.props.classes.button} onClick={this.toggleForm}>+</button>
+                <button className={this.props.classes.button} onClick={this.toggleDepositForm}>+</button>
                 <div className={`block ${this.props.classes.grid}`}>
                     { this.props.donatables.map(f => <Donatable
                         userId={this.props.params.userId}

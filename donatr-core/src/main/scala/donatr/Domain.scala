@@ -33,5 +33,6 @@ case class FundableWithoutId(name: String,
                              balance: BigDecimal)
 
 case class DonationWithoutId(from: UUID, to: UUID, value: BigDecimal)
+case class DonationWithoutIdAndFrom(to: UUID, value: BigDecimal)
 
 case class Donation(id: UUID, from: UUID, to: UUID, value: BigDecimal)

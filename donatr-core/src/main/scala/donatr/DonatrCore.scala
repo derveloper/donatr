@@ -88,6 +88,10 @@ class DonatrCore(val eventStore: EventStore = new EventStore(),
       .fold(err => Left(err), event => Right(event))
   }
 
+  def processCommand(create: CreateLedgerDonation): Either[Throwable, DonationCreated] = {
+    processCommand(CreateDonation(DonationWithoutId(state.ledger.id, create.donation.to, create.donation.value)))
+  }
+
   private def persistEvent[E <: Event](event: E): Either[Throwable, E] = {
     eventStore.insert(event) match {
       case Right(_) =>

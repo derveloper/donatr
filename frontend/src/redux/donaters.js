@@ -7,7 +7,6 @@ export const DONATER_UPDATED = "DonaterUpdated";
 export default function donaterReducer(state = [], action) {
     switch (action.type) {
         case DONATERS_FETCH_SUCCEEDED:
-            console.log("fetched", action);
             return action.payload.map(d => ({...d, balance: d.balance.toFixed(2)}));
         case DONATER_CREATED:
             return [...state, {...action.payload.donater, balance: action.payload.donater.balance.toFixed(2)}];
