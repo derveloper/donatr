@@ -45,7 +45,7 @@ function start(websocketServerLocation){
     };
     ws.onclose = function(){
         //try to reconnect in 5 seconds
-        setTimeout(function(){start(websocketServerLocation)}, 5000);
+        setTimeout(function(){start(websocketServerLocation)}, 1000);
     };
 }
 
