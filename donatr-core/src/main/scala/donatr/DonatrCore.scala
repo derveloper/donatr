@@ -31,7 +31,7 @@ class DonatrCore(val eventStore: EventStore = new EventStore(),
 
   def processCommand(create: CreateDonater): Either[Throwable, DonaterCreated] = {
     val d = create.donater
-    Either.cond(state.donaters.count(_._2.name == d.name) == 0,
+    Either.cond(d.name.nonEmpty && state.donaters.count(_._2.name == d.name) == 0,
       DonaterCreated(Donater(UUID.randomUUID(), d.name, d.email, d.balance)),
       NameTaken())
       .flatMap(persistEvent)
@@ -39,7 +39,7 @@ class DonatrCore(val eventStore: EventStore = new EventStore(),
 
   def processCommand(create: CreateDonatable): Either[Throwable, DonatableCreated] = {
     val d = create.donatable
-    Either.cond(state.donatables.count(_._2.name == d.name) == 0,
+    Either.cond(d.name.nonEmpty && state.donatables.count(_._2.name == d.name) == 0,
       DonatableCreated(Donatable(UUID.randomUUID(), d.name, d.minDonationAmount, d.balance)),
       NameTaken())
       .flatMap(persistEvent)
@@ -47,7 +47,7 @@ class DonatrCore(val eventStore: EventStore = new EventStore(),
 
   def processCommand(create: CreateFundable): Either[Throwable, FundableCreated] = {
     val d = create.fundable
-    Either.cond(state.fundables.count(_._2.name == d.name) == 0,
+    Either.cond(d.name.nonEmpty && state.fundables.count(_._2.name == d.name) == 0,
       FundableCreated(Fundable(UUID.randomUUID(), d.name, d.fundingTarget, d.balance)),
       NameTaken())
       .flatMap(persistEvent)

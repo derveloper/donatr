@@ -30,6 +30,12 @@ const styles = {
         fontSize: '32px',
         cursor: 'pointer'
     },
+    spacer: {
+        backgroundColor: '#000',
+        border: 'none',
+        color: '#00ff00',
+        fontSize: '32px',
+    },
     grid: {
         display: 'flex',
         justifyContent: 'space-around',
@@ -125,12 +131,12 @@ class App extends Component {
     render() {
         return (
             <div className={`block mx-auto ${this.props.classes.app}`}>
-                <h1>Donatables</h1>
                 { this.state.createDonatableFormOpen && <CreateForm onSubmitCreate={this.toggleForm} /> }
                 { this.state.createDepositFormOpen && <DepositForm userId={this.props.params.userId}
                                                                    onSubmitCreate={this.toggleDepositForm} /> }
-                <button className={this.props.classes.button} onClick={this.toggleForm}>+</button>
-                <button className={this.props.classes.button} onClick={this.toggleDepositForm}>+</button>
+                <button className={this.props.classes.button} onClick={this.toggleForm}>+item</button>
+                <span className={this.props.classes.spacer}> ~ </span>
+                <button className={this.props.classes.button} onClick={this.toggleDepositForm}>+€</button>
                 <div className={`block ${this.props.classes.grid}`}>
                     { this.props.donatables.map(f => <Donatable
                         userId={this.props.params.userId}

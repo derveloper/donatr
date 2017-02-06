@@ -97,9 +97,8 @@ class App extends Component {
     render() {
         return (
             <div className={`block mx-auto ${this.props.classes.app}`}>
-                <h1>Donaters</h1>
                 { this.state.createDonaterFormOpen && <CreateForm onSubmitCreate={this.toggleForm} /> }
-                <button className={this.props.classes.button} onClick={this.toggleForm}>+</button>
+                <button className={this.props.classes.button} onClick={this.toggleForm}>+user</button>
                 <div className={`block ${this.props.classes.grid}`}>
                     { this.props.donaters.map(f => <Donater donater={f}/>)}
                 </div>
