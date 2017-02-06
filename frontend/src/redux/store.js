@@ -25,12 +25,12 @@ sagaMiddleware.run(donaterSaga);
 sagaMiddleware.run(donatablesSaga);
 sagaMiddleware.run(fundablesSaga);
 
-const schema = window.location.port === 443
+const schema = window.location.port === ""
     ? "wss://"
     : "ws://";
-const port = window.location.port === 443
-    ? ":"+window.location.port
-    : "";
+const port = window.location.port === ""
+    ? ""
+    : ":"+window.location.port;
 const ws = new WebSocket(schema+window.location.hostname+port+'/api/events');
 ws.onmessage = msg => {
     const data = JSON.parse(msg.data);
