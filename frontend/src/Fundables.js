@@ -160,7 +160,7 @@ class App extends Component {
                 { this.state.createDepositFormOpen && <DepositForm userId={this.props.params.userId}
                                                                    onSubmitCreate={this.toggleDepositForm} /> }
                 <div>
-                    <Button onClick={this.toggleForm}>+fundable</Button>
+                    <Button onClick={this.toggleForm}>+fund</Button>
                     <Spacer> ~ </Spacer>
                     <Button onClick={this.toggleDepositForm}>+€</Button>
                     <Spacer> ~ </Spacer>
