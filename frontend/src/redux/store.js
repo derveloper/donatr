@@ -34,7 +34,7 @@ const port = window.location.port === ""
 const wss = schema+window.location.hostname+port+'/api/events';
 
 function start(websocketServerLocation){
-    ws = new WebSocket(websocketServerLocation);
+    const ws = new WebSocket(websocketServerLocation);
     ws.onmessage = msg => {
         const data = JSON.parse(msg.data);
         const type = Object.keys(data)[0];
@@ -48,5 +48,7 @@ function start(websocketServerLocation){
         setTimeout(function(){start(websocketServerLocation)}, 1000);
     };
 }
+
+start(wss);
 
 export default store;
