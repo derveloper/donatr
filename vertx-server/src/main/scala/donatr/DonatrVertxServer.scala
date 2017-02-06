@@ -60,7 +60,7 @@ object DonatrVertxServer {
       .createHttpServer()
       .websocketHandler(websocketHandler)
       .requestHandler(router.accept)
-      .listenFuture(8080)
+      .listenFuture(Some(System.getenv("PORT")).getOrElse("8080").toInt)
   }
 
   private def postDonater(ctx: RoutingContext) = {

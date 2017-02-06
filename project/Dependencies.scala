@@ -8,8 +8,10 @@ object Version {
 }
 
 object Dependencies {
-  val vertxCodegen   = "io.vertx"       %  "vertx-codegen"    % Version.Vertx     % "provided" changing()
-  val vertxLangScala = "io.vertx"       %% "vertx-lang-scala" % Version.Vertx                  changing()
-  val vertxWeb       = "io.vertx"       %% "vertx-web-scala"  % Version.Vertx                  changing()
+  // val vertxCodegen   = "io.vertx"       %  "vertx-codegen"    % Version.Vertx     % "provided" changing()
+  val vertxLangScala = ("io.vertx"       %% "vertx-lang-scala" % Version.Vertx                  changing())
+    .exclude("io.vertx", "vertx-codegen")
+  val vertxWeb       = ("io.vertx"       %% "vertx-web-scala"  % Version.Vertx                  changing())
+    .exclude("io.vertx", "vertx-codegen")
   lazy val scalaTest = "org.scalatest" %% "scalatest" % Version.ScalaTest
 }
