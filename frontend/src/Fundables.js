@@ -152,11 +152,14 @@ class App extends Component {
                 { this.state.createFundableFormOpen && <CreateForm onSubmitCreate={this.toggleForm} /> }
                 { this.state.createDepositFormOpen && <DepositForm userId={this.props.params.userId}
                                                                    onSubmitCreate={this.toggleDepositForm} /> }
-                <Button onClick={this.toggleForm}>+fundable</Button>
-                <Spacer> ~ </Spacer>
-                <Button onClick={this.toggleDepositForm}>+€</Button>
-                <Spacer> ~ </Spacer>
-                <Link to={`/${this.props.params.userId}/donatables`}>&lt;items</Link>
+                <div>
+                    <Button onClick={this.toggleForm}>+fundable</Button>
+                    <Spacer> ~ </Spacer>
+                    <Button onClick={this.toggleDepositForm}>+€</Button>
+                    <Spacer> ~ </Spacer>
+                    <Link to={`/${this.props.params.userId}/donatables`}>&lt;items</Link>
+                </div>
+                <hr style={{backgroundColor: '#00ff00', borderColor: '#00ff00'}}/>
                 <div className={`block ${this.props.classes.grid}`}>
                     { this.props.fundables.map(f => <Fundable
                         userId={this.props.params.userId}
