@@ -56,7 +56,7 @@ const Donatable = injectSheet(styles)(({classes, donatable, userId, dispatch}) =
         onClick={donate(userId, donatable.id, donatable.minDonationAmount)}
     >
         <img alt="gravatar" src={`https://www.gravatar.com/avatar/${getDonatableMD5(donatable.name)}?s=115`} width="115"/>
-        <span className="p1">{donatable.name}</span>
+        <span className="p1">{donatable.name} ({donatable.minDonationAmount})</span>
     </div>
 ));
 
