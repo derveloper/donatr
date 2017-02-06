@@ -9,7 +9,7 @@ import "./basscss.min.css";
 import "sweetalert/dist/sweetalert.css";
 import store from "./redux/store";
 import App from "./App";
-import CurrentDonater from './CurrentDonater';
+import CurrentDonater from './components/CurrentDonater';
 import injectSheet from 'react-jss'
 
 const browserHistory = createBrowserHistory();

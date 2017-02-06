@@ -2,7 +2,9 @@
 import Inferno from "inferno";
 import Component from "inferno-component";
 import {connect} from "inferno-redux";
-import {Link} from "inferno-router";
+import Link from "./components/Link";
+import Button from "./components/Button";
+import Spacer from "./components/Spacer";
 import * as DonatableReducer from "./redux/donatables";
 import * as DonaterReducer from "./redux/donaters";
 import * as Api from "./api";
@@ -19,28 +21,10 @@ const styles = {
         minHeight: 120,
         overflow: 'hidden'
     },
-    link: {
-        color: '#00ff00',
-        textDecoration: 'none',
-        fontSize: '28px'
-    },
     form: {
         backgroundColor: '#000',
         width: '100vw',
         height: '100vh'
-    },
-    button: {
-        backgroundColor: '#000',
-        border: 'none',
-        color: '#00ff00',
-        fontSize: '28px',
-        cursor: 'pointer'
-    },
-    spacer: {
-        backgroundColor: '#000',
-        border: 'none',
-        color: '#00ff00',
-        fontSize: '28px',
     },
     grid: {
         display: 'flex',
@@ -50,24 +34,12 @@ const styles = {
     '@media (min-width: 480px)': {
         app: {
             padding: 20
-        },
-        link: {
-            fontSize: '28px'
-        },
-        but: {
-            fontSize: '28px'
         }
     },
     '@media (max-width: 479px)': {
         app: {
             padding: 20,
             paddingTop: 10
-        },
-        link: {
-            fontSize: '20px'
-        },
-        button: {
-            fontSize: '20px'
         }
     }
 };
@@ -159,11 +131,11 @@ class App extends Component {
                 { this.state.createDepositFormOpen && <DepositForm userId={this.props.params.userId}
                                                                    onSubmitCreate={this.toggleDepositForm} /> }
                 <div>
-                    <button className={this.props.classes.button} onClick={this.toggleForm}>+item</button>
-                    <span className={this.props.classes.spacer}> ~ </span>
-                    <button className={this.props.classes.button} onClick={this.toggleDepositForm}>+€</button>
-                    <span className={this.props.classes.spacer}> ~ </span>
-                    <Link className={this.props.classes.link} to={`/${this.props.params.userId}/fundables`}>&gt;funding</Link>
+                    <Button onClick={this.toggleForm}>+item</Button>
+                    <Spacer> ~ </Spacer>
+                    <Button onClick={this.toggleDepositForm}>+€</Button>
+                    <Spacer> ~ </Spacer>
+                    <Link to={`/${this.props.params.userId}/fundables`}>&gt;funding</Link>
                 </div>
                 <hr style={{backgroundColor: '#00ff00', borderColor: '#00ff00'}}/>
                 <div className={`block ${this.props.classes.grid}`}>

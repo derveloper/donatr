@@ -2,7 +2,9 @@
 import Inferno from "inferno";
 import Component from "inferno-component";
 import {connect} from "inferno-redux";
-import {Link} from "inferno-router";
+import Link from "./components/Link";
+import Button from "./components/Button";
+import Spacer from "./components/Spacer";
 import * as FundableReducer from "./redux/fundables";
 import * as DonaterReducer from "./redux/donaters";
 import * as Api from "./api";
@@ -20,28 +22,10 @@ const styles = {
         minHeight: 120,
         overflow: 'hidden'
     },
-    link: {
-        color: '#00ff00',
-        fontSize: '32px',
-        textDecoration: 'none'
-    },
     form: {
         backgroundColor: '#000',
         width: '100vw',
         height: '100vh'
-    },
-    button: {
-        backgroundColor: '#000',
-        border: 'none',
-        color: '#00ff00',
-        fontSize: '32px',
-        cursor: 'pointer'
-    },
-    spacer: {
-        backgroundColor: '#000',
-        border: 'none',
-        color: '#00ff00',
-        fontSize: '32px',
     },
     grid: {
         display: 'flex',
@@ -167,11 +151,11 @@ class App extends Component {
                 { this.state.createFundableFormOpen && <CreateForm onSubmitCreate={this.toggleForm} /> }
                 { this.state.createDepositFormOpen && <DepositForm userId={this.props.params.userId}
                                                                    onSubmitCreate={this.toggleDepositForm} /> }
-                <button className={this.props.classes.button} onClick={this.toggleForm}>+fundable</button>
-                <span className={this.props.classes.spacer}> ~ </span>
-                <button className={this.props.classes.button} onClick={this.toggleDepositForm}>+€</button>
-                <span className={this.props.classes.spacer}> ~ </span>
-                <Link className={this.props.classes.link} to={`/${this.props.params.userId}/donatables`}>&lt;items</Link>
+                <Button onClick={this.toggleForm}>+fundable</Button>
+                <Spacer> ~ </Spacer>
+                <Button onClick={this.toggleDepositForm}>+€</Button>
+                <Spacer> ~ </Spacer>
+                <Link to={`/${this.props.params.userId}/donatables`}>&lt;items</Link>
                 <div className={`block ${this.props.classes.grid}`}>
                     { this.props.fundables.map(f => <Fundable
                         userId={this.props.params.userId}

@@ -2,7 +2,8 @@
 import Inferno from "inferno";
 import Component from "inferno-component";
 import {connect} from "inferno-redux";
-import {Link} from "inferno-router";
+import Link from "./components/Link";
+import Button from "./components/Button";
 import * as DonaterReducer from "./redux/donaters";
 import * as Api from "./api";
 import md5 from "md5";
@@ -18,26 +19,18 @@ const styles = {
         minHeight: 120,
         overflow: 'hidden'
     },
-    link: {
-        color: '#00ff00',
-        textDecoration: 'none'
-    },
     form: {
         backgroundColor: '#000',
         width: '100vw',
         height: '100vh'
     },
-    button: {
-        backgroundColor: '#000',
-        border: 'none',
-        color: '#00ff00',
-        fontSize: '28px',
-        cursor: 'pointer'
-    },
     grid: {
         display: 'flex',
         justifyContent: 'space-around',
         flexFlow: 'row wrap'
+    },
+    link: {
+        fontSize: 16
     },
     '@media (min-width: 480px)': {
         app: {
@@ -49,12 +42,6 @@ const styles = {
         app: {
             padding: 20,
             paddingTop: 10
-        },
-        link: {
-            fontSize: '20px'
-        },
-        button: {
-            fontSize: '20px'
         }
     }
 };
@@ -112,7 +99,7 @@ class App extends Component {
             <div className={`block mx-auto ${this.props.classes.app}`}>
                 { this.state.createDonaterFormOpen && <CreateForm onSubmitCreate={this.toggleForm} /> }
                 <div>
-                    <button className={this.props.classes.button} onClick={this.toggleForm}>+user</button>
+                    <Button onClick={this.toggleForm}>+user</Button>
                 </div>
                 <hr style={{backgroundColor: '#00ff00', borderColor: '#00ff00'}}/>
                 <div className={`block ${this.props.classes.grid}`}>
