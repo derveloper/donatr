@@ -20,7 +20,7 @@ class DonatrSpec extends FlatSpec with Matchers {
     val donaterCreated = donatr.processCommand(CreateDonater(DonaterWithoutId("Foo", "Bar", 0)))
     donaterCreated should be(a[Right[_, DonaterCreated]])
 
-    val donater = donatr.state.donaters(donaterCreated.right.get.donater.id)
+    val donater = donatr.donaters(donaterCreated.right.get.donater.id)
     donater.balance should be (0)
   }
 
@@ -28,7 +28,7 @@ class DonatrSpec extends FlatSpec with Matchers {
     val donatableCreated = donatr.processCommand(CreateDonatable(DonatableWithoutId("Foo", 0, 0)))
     donatableCreated should be(a[Right[_, DonatableCreated]])
 
-    val donatable = donatr.state.donatables(donatableCreated.right.get.donatable.id)
+    val donatable = donatr.donatables(donatableCreated.right.get.donatable.id)
     donatable.balance should be (0)
   }
 
@@ -36,7 +36,7 @@ class DonatrSpec extends FlatSpec with Matchers {
     val fundableCreated = donatr.processCommand(CreateFundable(FundableWithoutId("Foo", 0, 0)))
     fundableCreated should be(a[Right[_, DonatableCreated]])
 
-    val fundable = donatr.state.fundables(fundableCreated.right.get.fundable.id)
+    val fundable = donatr.fundables(fundableCreated.right.get.fundable.id)
     fundable.balance should be (0)
   }
 
@@ -70,8 +70,8 @@ class DonatrSpec extends FlatSpec with Matchers {
   it should "create Donater, Donatable and Donation and have correct balances" in new Db {
     val (fromId, toId) = mkDonaterAndDonatable(donatr)
     val donation = mkDonation(donatr, fromId, toId)
-    val donater = donatr.state.donaters(fromId)
-    val donatable = donatr.state.donatables(toId)
+    val donater = donatr.donaters(fromId)
+    val donatable = donatr.donatables(toId)
     donater.balance should be (-3)
     donatable.balance should be (3)
 
@@ -82,8 +82,8 @@ class DonatrSpec extends FlatSpec with Matchers {
   it should "create Donater, Fundable and Donation and have correct balances" in new Db {
     val (fromId, toId) = mkDonaterAndFundable(donatr)
     val donation = mkDonation(donatr, fromId, toId)
-    val donater = donatr.state.donaters(fromId)
-    val fundable = donatr.state.fundables(toId)
+    val donater = donatr.donaters(fromId)
+    val fundable = donatr.fundables(toId)
     donater.balance should be (-3)
     fundable.balance should be (3)
   }
@@ -91,40 +91,40 @@ class DonatrSpec extends FlatSpec with Matchers {
   it should "create Donater, Donation and have correct balances in Ledger and Donater" in new Db {
     val (fromId, toId) = (ledgerId, mkDonater(donatr))
     val donation = mkDonation(donatr, fromId, toId)
-    val donater = donatr.state.donaters(toId)
+    val donater = donatr.donaters(toId)
     donater.balance should be (3)
-    donatr.state.ledger.balance should be (-3)
+    donatr.ledger.balance should be (-3)
   }
 
   it should "have correct state after rebuild" in new Db {
     val (fromId, toId) = mkDonaterAndDonatable(donatr)
     mkDonation(donatr, fromId, toId)
 
-    donatr.state.donaters(fromId).balance should be (-3)
-    donatr.state.donatables(toId).balance should be (3)
+    donatr.donaters(fromId).balance should be (-3)
+    donatr.donatables(toId).balance should be (3)
 
     donatr.resetState()
 
-    donatr.state should be (DonatrState(ledger = ledger))
+    donatr.donaters should be (Map.empty)
 
     donatr.rebuildState()
 
-    donatr.state should not be DonatrState(ledger = ledger)
+    donatr.donatables should not be Map.empty
 
-    donatr.state.donaters(fromId).balance should be (-3)
-    donatr.state.donatables(toId).balance should be (3)
+    donatr.donaters(fromId).balance should be (-3)
+    donatr.donatables(toId).balance should be (3)
   }
 
   it should "have same ledger after rebuild" in new Db {
-    val initLedgerId = donatr.state.ledger.id
+    val initLedgerId = donatr.ledger.id
 
     donatr.resetState()
 
-    donatr.state should be (DonatrState(ledger = ledger))
+    donatr.donatables should be (Map.empty)
 
     donatr.rebuildState()
 
-    donatr.state should be (DonatrState(ledger = ledger))
+    donatr.donations should be (Map.empty)
   }
 
   private def mkDonaterAndDonatable(donatr: DonatrCore) = {

@@ -24,7 +24,7 @@ object DonatrVertxServer {
   }
 
   implicit val ep = new VertxEventPublisher()
-  val donatr = new DonatrCore(ledger = Ledger(UUID.randomUUID()))
+  val donatr = new DonatrCore(initialLedger = Ledger(UUID.randomUUID()))
 
   private def websocketHandler(socket: ServerWebSocket) = {
     val consumer = vertx.eventBus().consumer[String]("event")
@@ -38,15 +38,15 @@ object DonatrVertxServer {
     router.route().handler(BodyHandler.create())
 
     router.get("/api/donaters").handler { ctx =>
-      ok(ctx, donatr.state.donaters.map(_._2.asJson).asJson.noSpaces)
+      ok(ctx, donatr.donaters.map(_._2.asJson).asJson.noSpaces)
     }
 
     router.get("/api/donatables").handler { ctx =>
-      ok(ctx, donatr.state.donatables.map(_._2.asJson).asJson.noSpaces)
+      ok(ctx, donatr.donatables.map(_._2.asJson).asJson.noSpaces)
     }
 
     router.get("/api/fundables").handler { ctx =>
-      ok(ctx, donatr.state.fundables.map(_._2.asJson).asJson.noSpaces)
+      ok(ctx, donatr.fundables.map(_._2.asJson).asJson.noSpaces)
     }
 
     router.post("/api/donaters").handler(postDonater)
@@ -89,14 +89,14 @@ object DonatrVertxServer {
 
   private def postDonation(ctx: RoutingContext) = {
     def handleSuccess(d: Donation) = {
-      if (donatr.state.donaters.contains(d.from))
-        ep.publish(DonaterUpdated(donatr.state.donaters(d.from)))
-      if (donatr.state.donaters.contains(d.to))
-        ep.publish(DonaterUpdated(donatr.state.donaters(d.to)))
-      if (donatr.state.fundables.contains(d.from))
-        ep.publish(FundableUpdated(donatr.state.fundables(d.from)))
-      if (donatr.state.fundables.contains(d.to))
-        ep.publish(FundableUpdated(donatr.state.fundables(d.to)))
+      if (donatr.donaters.contains(d.from))
+        ep.publish(DonaterUpdated(donatr.donaters(d.from)))
+      if (donatr.donaters.contains(d.to))
+        ep.publish(DonaterUpdated(donatr.donaters(d.to)))
+      if (donatr.fundables.contains(d.from))
+        ep.publish(FundableUpdated(donatr.fundables(d.from)))
+      if (donatr.fundables.contains(d.to))
+        ep.publish(FundableUpdated(donatr.fundables(d.to)))
       created(ctx, s"/api/donations/${d.id}")
     }
 

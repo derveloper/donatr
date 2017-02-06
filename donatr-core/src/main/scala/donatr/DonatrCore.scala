@@ -5,15 +5,21 @@ import java.util.UUID
 import org.slf4j.LoggerFactory
 
 class DonatrCore(val eventStore: EventStore = new EventStore(),
-                 ledger: Ledger)(implicit val eventPublisher: EventPublisher)
+                 initialLedger: Ledger)(implicit val eventPublisher: EventPublisher)
 {
   private val log = LoggerFactory.getLogger(this.getClass)
   import scala.concurrent.ExecutionContext
   import ExecutionContext.Implicits.global
 
-  var state = DonatrState(ledger = ledger)
+  private var state = DonatrState(ledger = initialLedger)
 
   rebuildState()
+
+  def donaters: Map[UUID, Donater] = state.donaters
+  def donatables: Map[UUID, Donatable] = state.donatables
+  def fundables: Map[UUID, Fundable] = state.fundables
+  def donations: Map[UUID, Donation] = state.donations
+  def ledger: Ledger = state.ledger
 
   def rebuildState(): Unit = {
     log.info("rebuilding state started")
