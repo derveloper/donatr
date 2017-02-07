@@ -13,9 +13,19 @@ const styles = {
             backgroundColor: 'rgba(0,255,0,0.4)'
         }
     },
-    '@media (max-width: 479px)': {
+    '@media (min-width: 1px) and (max-width: 360px)': {
+        button: {
+            fontSize: '16px'
+        }
+    },
+    '@media (min-width: 361px) and (max-width: 479px)': {
         button: {
             fontSize: '20px'
+        }
+    },
+    '@media (min-width: 480px)': {
+        button: {
+            fontSize: '28px'
         }
     }
 };

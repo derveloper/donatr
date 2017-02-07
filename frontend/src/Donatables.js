@@ -54,7 +54,20 @@ const styles = {
         textAlign: 'right',
         width: 56,
     },
-    '@media (max-width: 479px)': {
+
+    '@media (min-width: 1px) and (max-width: 360px)': {
+        multiplicatorWrap: {
+            border: '1px inset #000',
+            fontSize: '16px',
+            color: '#00ff00',
+            textAlign: 'right',
+        },
+        multiplicator: {
+            fontSize: '16px',
+            width: 18,
+        }
+    },
+    '@media (min-width: 361px) and (max-width: 479px)': {
         multiplicatorWrap: {
             border: '1px inset #000',
             fontSize: '20px',
@@ -135,7 +148,7 @@ class App extends Component {
                     </div>
                     <div className="col col-right right-align">
                         <label className={this.props.classes.multiplicatorWrap}>
-                            <form className="inline-block" onSubmit={e => {e.preventDefault(); document.activeElement.blur()}}>
+                            <form className="inline-block" onSubmit={e => {e.preventDefault(); e.stopPropagation(); document.activeElement.blur(); return false;}}>
                                 x<input onInput={(e) => this.setStateSync({multiplicator: e.target.value})}
                                         className={this.props.classes.multiplicator}
                                 // defaultValue="1"

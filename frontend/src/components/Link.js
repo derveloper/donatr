@@ -12,9 +12,19 @@ const styles = {
             backgroundColor: 'rgba(0,255,0,0.4)'
         }
     },
-    '@media (max-width: 479px)': {
+    '@media (min-width: 1px) and (max-width: 360px)': {
+        link: {
+            fontSize: '16px'
+        }
+    },
+    '@media (min-width: 361px) and (max-width: 479px)': {
         link: {
             fontSize: '20px'
+        }
+    },
+    '@media (min-width: 480px)': {
+        link: {
+            fontSize: '28px'
         }
     }
 };
