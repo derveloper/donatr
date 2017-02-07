@@ -10,7 +10,7 @@ import * as DonaterReducer from "./redux/donaters";
 import * as Api from "./api";
 import md5 from "md5";
 import injectSheet from 'react-jss'
-import swal from "sweetalert2";
+import dialog from "./components/dialog";
 import deposit from './components/deposit';
 
 const styles = {
@@ -91,42 +91,26 @@ const Donatable = injectSheet(styles)(({classes, donatable, userId, dispatch, mu
 ));
 
 const CreateDonatable = () => {
-    swal({
-        title: 'Create a Item',
-        background: '#000',
-        html:
-        '<input id="name-input" placeholder="name" class="swal2-input swal2-donatr-input">' +
-        '<input id="minDonationAmount-input" placeholder="price" class="swal2-input swal2-donatr-input">',
-        preConfirm: function () {
-            return new Promise(function (resolve) {
-                resolve([
-                    document.querySelector('#name-input').value,
-                    document.querySelector('#minDonationAmount-input').value
-                ])
-            })
-        },
-        onOpen: function () {
-            document.querySelector('#name-input').focus()
+    const inputs = '<input id="name-input" placeholder="name" class="swal2-input swal2-donatr-input">' +
+        '<input id="minDonationAmount-input" placeholder="price" type="number" step="any" class="swal2-input swal2-donatr-input">';
+    dialog('Create a Item', inputs,
+        resolve => (resolve([
+            document.querySelector('#name-input').value,
+            document.querySelector('#minDonationAmount-input').value
+        ])),
+        () => document.querySelector('#name-input').focus(),
+        result => {
+            Api.createDonatable({
+                name: result[0],
+                minDonationAmount: result[1]
+            });
+            return "You created a Item: " + result[0];
         }
-    }).then(function (result) {
-        const name = result[0];
-        const minDonationAmount = result[1];
-        Api.createDonatable({
-            name,
-            minDonationAmount
-        });
-        swal({
-            titleText: "Nice!",
-            background: '#000',
-            text: "You created a Donatable: " + name,
-            type: "success"
-        });
-    }).catch(swal.noop)
+    );
 };
 
 class App extends Component {
     state = {
-        createDonatableFormOpen: false,
         multiplicator: 1
     };
 
@@ -137,10 +121,6 @@ class App extends Component {
             dispatch({type: DonaterReducer.DONATERS_FETCH_REQUESTED});
         }
     }
-
-    toggleForm = () => {
-        this.setState({createDonatableFormOpen: !this.state.createDonatableFormOpen})
-    };
 
     render() {
         return (

@@ -10,7 +10,7 @@ import * as DonaterReducer from "./redux/donaters";
 import * as Api from "./api";
 import md5 from "md5";
 import injectSheet from "react-jss";
-import swal from "sweetalert2";
+import dialog from "./components/dialog";
 import deposit from "./components/deposit";
 
 const styles = {
@@ -44,31 +44,17 @@ const getFundableMD5 = (name) =>
     md5(`donatr+fundable-${name}@fnordeingang.de`);
 
 const donate = (from, to) => () => {
-    swal({
-        title: "A Donation!",
-        text: "Donate whatever you like",
-        input: "text",
-        background: '#000',
-        showCancelButton: true,
-        animation: "slide-from-top",
-        inputPlaceholder: "amount"
-    }).then(function (inputValue) {
-        if (inputValue === false) return false;
-
-        if (inputValue === "") {
-            swal.showInputError("You need to donate something!");
-            return false
+    const inputs = '<input id="amount-input" placeholder="amount" type="number" step="any" class="swal2-input swal2-donatr-input">';
+    dialog('A Donation!', inputs,
+        resolve => (resolve([
+            document.querySelector('#amount-input').value
+        ])),
+        () => document.querySelector('#amount-input').focus(),
+        result => {
+            Api.createDonation({from, to, value: result[0]});
+            return "You donated: " + result[0];
         }
-
-        Api.createDonation({from, to, value: inputValue});
-
-        swal({
-            titleText: "Nice!",
-            background: '#000',
-            text: "You donated: " + inputValue,
-            type: "success"
-        });
-    });
+    );
 };
 
 const Fundable = injectSheet(styles)(({classes, fundable, userId, dispatch}) => (
@@ -86,44 +72,25 @@ const Fundable = injectSheet(styles)(({classes, fundable, userId, dispatch}) => 
 ));
 
 const CreateFundable = () => {
-    swal({
-        title: 'Create a funding',
-        background: '#000',
-        html:
-        '<input id="name-input" placeholder="name" class="swal2-input swal2-donatr-input">' +
-        '<input id="fundingTarget-input" placeholder="target" class="swal2-input swal2-donatr-input">',
-        preConfirm: function () {
-            return new Promise(function (resolve) {
-                resolve([
-                    document.querySelector('#name-input').value,
-                    document.querySelector('#fundingTarget-input').value
-                ])
-            })
-        },
-        onOpen: function () {
-            document.querySelector('#name-input').focus()
+    const inputs = '<input id="name-input" placeholder="name" class="swal2-input swal2-donatr-input">' +
+        '<input id="fundingTarget-input" placeholder="funding target" type="number" step="any" class="swal2-input swal2-donatr-input">';
+    dialog('Create a funding', inputs,
+        resolve => (resolve([
+            document.querySelector('#name-input').value,
+            document.querySelector('#fundingTarget-input').value
+        ])),
+        () => document.querySelector('#name-input').focus(),
+        result => {
+            Api.createFundable({
+                name: result[0],
+                fundingTarget: result[1]
+            });
+            return "You created a Funding: " + result[0];
         }
-    }).then(function (result) {
-        const name = result[0];
-        const fundingTarget = result[1];
-        Api.createFundable({
-            name,
-            fundingTarget
-        });
-        swal({
-            titleText: "Nice!",
-            background: '#000',
-            text: "You created a Funding: " + name,
-            type: "success"
-        });
-    }).catch(swal.noop)
+    );
 };
 
 class App extends Component {
-    state = {
-        createFundableFormOpen: false
-    };
-
     componentWillMount() {
         const {dispatch} = this.props;
         dispatch({type: FundableReducer.FUNDABLES_FETCH_REQUESTED});
@@ -131,10 +98,6 @@ class App extends Component {
             dispatch({type: DonaterReducer.DONATERS_FETCH_REQUESTED});
         }
     }
-
-    toggleForm = () => {
-        this.setState({createFundableFormOpen: !this.state.createFundableFormOpen})
-    };
 
     render() {
         return (

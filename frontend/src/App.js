@@ -7,8 +7,8 @@ import Button from "./components/Button";
 import * as DonaterReducer from "./redux/donaters";
 import * as Api from "./api";
 import md5 from "md5";
-import swal from "sweetalert2";
-import injectSheet from 'react-jss'
+import injectSheet from "react-jss";
+import dialog from "./components/dialog";
 
 const styles = {
     app: {
@@ -51,62 +51,31 @@ const Donater = injectSheet(styles)(({classes, donater}) => (
     </Link>
 ));
 
-const _onSubmitCreate = (f) => (e) => {
-    e.preventDefault();
-    Api.createDonater({
-        name: e.target.elements['name'].value,
-        email: e.target.elements['email'].value
-    });
-    f();
-};
-
 const CreateDonater = () => {
-    swal({
-        title: 'Create a User',
-        background: '#000',
-        html:
-        '<input id="username-input" placeholder="name" class="swal2-input swal2-donatr-input">' +
-        '<input id="email-input" placeholder="email" class="swal2-input swal2-donatr-input">',
-        preConfirm: function () {
-            return new Promise(function (resolve) {
-                resolve([
-                    document.querySelector('#username-input').value,
-                    document.querySelector('#email-input').value
-                ])
-            })
-        },
-        onOpen: function () {
-            document.querySelector('#username-input').focus()
+    const inputs = '<input id="username-input" placeholder="name" class="swal2-input swal2-donatr-input">' +
+        '<input id="email-input" placeholder="email" type="email" class="swal2-input swal2-donatr-input">';
+    dialog('Create a User', inputs,
+        resolve => (resolve([
+            document.querySelector('#username-input').value,
+            document.querySelector('#email-input').value
+        ])),
+        () => document.querySelector('#username-input').focus(),
+        result => {
+            Api.createDonater({
+                name: result[0],
+                email: result[1]
+            });
+            return "You created a User: " + result[0];
         }
-    }).then(function (result) {
-        const name = result[0];
-        const email = result[1];
-        Api.createDonater({
-            name,
-            email
-        });
-        swal({
-            titleText: "Nice!",
-            background: '#000',
-            text: "You created a User: " + name,
-            type: "success"
-        });
-    }).catch(swal.noop)
+    );
 };
 
 class App extends Component {
-    state = {
-        createDonaterFormOpen: false
-    };
 
     componentWillMount() {
         const {dispatch} = this.props;
         dispatch({type: DonaterReducer.DONATERS_FETCH_REQUESTED})
     }
-
-    toggleForm = () => {
-        this.setState({createDonaterFormOpen: !this.state.createDonaterFormOpen})
-    };
 
     render() {
         return (

@@ -1,32 +1,18 @@
-import swal from "sweetalert2";
+import dialog from "./dialog";
 import * as Api from "../api";
 
 const deposit = (to) => () => {
-    swal({
-        title: "Deposit!",
-        text: "Type in the amount",
-        input: "text",
-        background: '#000',
-        showCancelButton: true,
-        animation: "slide-from-top",
-        inputPlaceholder: "amount"
-    }).then(function (inputValue) {
-        if (inputValue === false) return false;
-
-        if (inputValue === "") {
-            swal.showInputError("You need to type in something!");
-            return false
+    const inputs = '<input id="amount-input" placeholder="amount" type="number" step="any" class="swal2-input swal2-donatr-input">';
+    dialog('Deposit!', inputs,
+        resolve => (resolve([
+            document.querySelector('#amount-input').value
+        ])),
+        () => document.querySelector('#amount-input').focus(),
+        result => {
+            Api.createDonation({to, value: result[0]});
+            return "You deposited: " + result[0];
         }
-
-        Api.createDonation({to, value: inputValue});
-
-        swal({
-            titleText: "Nice!",
-            background: '#000',
-            text: "You deposited: " + inputValue,
-            type: "success"
-        });
-    });
+    );
 };
 
 export default deposit
