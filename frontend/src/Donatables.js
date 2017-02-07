@@ -151,6 +151,7 @@ class App extends Component {
                             <form className="inline-block" onSubmit={e => {e.preventDefault(); e.stopPropagation(); document.activeElement.blur(); return false;}}>
                                 x<input onInput={(e) => this.setStateSync({multiplicator: e.target.value})}
                                         className={this.props.classes.multiplicator}
+                                        onSubmit={e => {e.preventDefault(); e.stopPropagation(); document.activeElement.blur(); return false;}}
                                 // defaultValue="1"
                                         value={this.state.multiplicator}
                                         name="multiplicator"
