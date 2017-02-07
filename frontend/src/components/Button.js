@@ -17,8 +17,8 @@ const styles = {
     }
 };
 
-const Button = injectSheet(styles)(({ children, classes, ...props }) => (
-    <button {...props} className={classes.button}>{children}</button>
+const Button = injectSheet(styles)(({ children, classes, className, ...props }) => (
+    <button {...props} className={`${classes.button} ${className}`}>{children}</button>
 ));
 
 export default Button;

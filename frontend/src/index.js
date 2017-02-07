@@ -6,7 +6,7 @@ import Donatables from "./Donatables";
 import Fundables from "./Fundables";
 import "./index.css";
 import "./basscss.min.css";
-import "sweetalert/dist/sweetalert.css";
+import "sweetalert2/dist/sweetalert2.min.css";
 import store from "./redux/store";
 import App from "./App";
 import CurrentDonater from './components/CurrentDonater';

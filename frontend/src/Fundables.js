@@ -9,8 +9,9 @@ import * as FundableReducer from "./redux/fundables";
 import * as DonaterReducer from "./redux/donaters";
 import * as Api from "./api";
 import md5 from "md5";
-import injectSheet from 'react-jss';
-import swal from 'sweetalert';
+import injectSheet from "react-jss";
+import swal from "sweetalert2";
+import deposit from "./components/deposit";
 
 const styles = {
     app: {
@@ -44,26 +45,24 @@ const getFundableMD5 = (name) =>
 
 const donate = (from, to) => () => {
     swal({
-            title: "A Donation!",
-            text: "Donate whatever you like",
-            type: "input",
-            showCancelButton: true,
-            closeOnConfirm: false,
-            animation: "slide-from-top",
-            inputPlaceholder: "amount"
-        },
-        function(inputValue){
-            if (inputValue === false) return false;
+        title: "A Donation!",
+        text: "Donate whatever you like",
+        input: "text",
+        showCancelButton: true,
+        animation: "slide-from-top",
+        inputPlaceholder: "amount"
+    }).then(function (inputValue) {
+        if (inputValue === false) return false;
 
-            if (inputValue === "") {
-                swal.showInputError("You need to donate something!");
-                return false
-            }
+        if (inputValue === "") {
+            swal.showInputError("You need to donate something!");
+            return false
+        }
 
-            Api.createDonation({from, to, value: inputValue});
+        Api.createDonation({from, to, value: inputValue});
 
-            swal("Nice!", "You donated: " + inputValue, "success");
-        });
+        swal("Nice!", "You donated: " + inputValue, "success");
+    });
 };
 
 const Fundable = injectSheet(styles)(({classes, fundable, userId, dispatch}) => (
@@ -89,15 +88,6 @@ const _onSubmitCreate = (f) => (e) => {
     f();
 };
 
-const _onSubmitDeposit = (f, userId) => (e) => {
-    e.preventDefault();
-    Api.createDonation({
-        to: userId,
-        value: e.target.elements['value'].value
-    });
-    f();
-};
-
 const CreateForm = injectSheet(styles)(({classes, onSubmitCreate}) => (
     <div className={`z4 fixed block mx-auto ${classes.form}`}>
         <form onSubmit={_onSubmitCreate(onSubmitCreate)}>
@@ -107,26 +97,14 @@ const CreateForm = injectSheet(styles)(({classes, onSubmitCreate}) => (
             <label className="block mx-auto center">
                 <input placeholder="target" name="fundingTarget" type="decimal"/>
             </label>
-            <button className={`block mx-auto center ${classes.button}`} type="submit">Create</button>
-        </form>
-    </div>
-));
-
-const DepositForm = injectSheet(styles)(({classes, onSubmitCreate, userId}) => (
-    <div className={`z4 fixed block mx-auto ${classes.form}`}>
-        <form onSubmit={_onSubmitDeposit(onSubmitCreate, userId)}>
-            <label className="block mx-auto center">
-                <input placeholder="amount" name="value" type="decimal"/>
-            </label>
-            <button className={`block mx-auto center ${classes.button}`} type="submit">Deposit</button>
+            <Button className={`block mx-auto center`} type="submit">Create</Button>
         </form>
     </div>
 ));
 
 class App extends Component {
     state = {
-        createFundableFormOpen: false,
-        createDepositFormOpen: false
+        createFundableFormOpen: false
     };
 
     componentWillMount() {
@@ -141,20 +119,14 @@ class App extends Component {
         this.setState({createFundableFormOpen: !this.state.createFundableFormOpen})
     };
 
-    toggleDepositForm = () => {
-        this.setState({createDepositFormOpen: !this.state.createDepositFormOpen})
-    };
-
     render() {
         return (
             <div className={`block mx-auto ${this.props.classes.app}`}>
-                { this.state.createFundableFormOpen && <CreateForm onSubmitCreate={this.toggleForm} /> }
-                { this.state.createDepositFormOpen && <DepositForm userId={this.props.params.userId}
-                                                                   onSubmitCreate={this.toggleDepositForm} /> }
+                { this.state.createFundableFormOpen && <CreateForm onSubmitCreate={this.toggleForm}/> }
                 <div>
                     <Button onClick={this.toggleForm}>+fund</Button>
                     <Spacer> ~ </Spacer>
-                    <Button onClick={this.toggleDepositForm}>+€</Button>
+                    <Button onClick={deposit(this.props.params.userId)}>+€</Button>
                     <Spacer> ~ </Spacer>
                     <Link to={`/${this.props.params.userId}/donatables`}>&lt;items</Link>
                 </div>
