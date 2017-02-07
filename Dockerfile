@@ -2,13 +2,7 @@ FROM vileda/alpine-sbt-yarn
 
 WORKDIR /code
 
-RUN /bin/bash && git clone --depth 1 https://github.com/derveloper/donatr.git -b rewrite
-RUN /bin/bash && cd donatr/frontend && yarn && yarn run build
-RUN /bin/bash && cd donatr && sbt assembly
-
 EXPOSE 8080
-
-ARG CACHEBUST=1
 
 RUN /bin/bash && rm -rf donatr
 RUN /bin/bash && git clone --depth 1 https://github.com/derveloper/donatr.git -b rewrite
