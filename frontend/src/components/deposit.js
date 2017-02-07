@@ -6,6 +6,7 @@ const deposit = (to) => () => {
         title: "Deposit!",
         text: "Type in the amount",
         input: "text",
+        background: '#000',
         showCancelButton: true,
         animation: "slide-from-top",
         inputPlaceholder: "amount"
@@ -19,7 +20,12 @@ const deposit = (to) => () => {
 
         Api.createDonation({to, value: inputValue});
 
-        swal("Nice!", "You deposited: " + inputValue, "success");
+        swal({
+            titleText: "Nice!",
+            background: '#000',
+            text: "You deposited: " + inputValue,
+            type: "success"
+        });
     });
 };
 

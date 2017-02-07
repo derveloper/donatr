@@ -61,7 +61,12 @@ const donate = (from, to) => () => {
 
         Api.createDonation({from, to, value: inputValue});
 
-        swal("Nice!", "You donated: " + inputValue, "success");
+        swal({
+            titleText: "Nice!",
+            background: '#000',
+            text: "You donated: " + name,
+            type: "success"
+        });
     });
 };
 
