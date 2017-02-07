@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/vileda/donatr.svg?branch=master)](https://travis-ci.org/vileda/donatr)
+[![Build Status](https://travis-ci.org/derveloper/donatr.svg?branch=rewrite)](https://travis-ci.org/derveloper/donatr)
 
 # donatr
 track and collect donations
@@ -14,7 +14,7 @@ java -jar target/scala-2.12/donatr-assembly-0.1.0-SNAPSHOT.jar
 then point your browser to `http://localhost:8080`.
 
 ### demo
-you can find a demo at http://donatr.herokuapp.com/
+you can find a demo at https://donatr.herokuapp.com/
 
 ### docker
 Run the docker image from docker hub
