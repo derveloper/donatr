@@ -8,7 +8,10 @@ const styles = {
         border: 'none',
         color: '#00ff00',
         fontSize: '28px',
-        cursor: 'pointer'
+        cursor: 'pointer',
+        '&:active': {
+            backgroundColor: 'rgba(0,255,0,0.4)'
+        }
     },
     '@media (max-width: 479px)': {
         button: {

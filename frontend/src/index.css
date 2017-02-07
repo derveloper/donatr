@@ -1,6 +1,7 @@
 * {
   font-family: monospace;
 }
+
 body {
   margin: 0;
   padding: 0;
@@ -16,6 +17,10 @@ input {
   border-bottom: 2px solid #00ff00;
   background-color: #000;
   color: #00ff00;
+}
+
+a, button {
+  outline: 0;
 }
 
 .swal2-modal {
