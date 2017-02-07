@@ -10,6 +10,7 @@ RUN /bin/bash && cd donatr/frontend && yarn && yarn run build
 RUN /bin/bash && cd donatr && sbt assembly
 RUN /bin/bash && rm -rf /root/.m2
 RUN /bin/bash && rm -rf /root/.npm
+RUN /bin/bash && rm -rf /root/.ivy2
 RUN /bin/bash && rm -rf /root/.node-gyp
 RUN /bin/bash && rm -rf /root/.sbt
 RUN /bin/bash && cd donatr/frontend && yarn cache clean
