@@ -35,6 +35,19 @@ const styles = {
         justifyContent: 'space-around',
         flexFlow: 'row wrap'
     },
+    multiplicatorWrap: {
+        border: '1px inset #000',
+        fontSize: '28px',
+        color: '#00ff00',
+        textAlign: 'right',
+    },
+    multiplicator: {
+        border: 'none',
+        fontSize: '28px',
+        color: '#00ff00',
+        textAlign: 'right',
+        width: 56,
+    },
     '@media (min-width: 480px)': {
         app: {
             padding: 20,
@@ -52,13 +65,17 @@ const styles = {
 const getDonatableMD5 = (name) =>
     md5(`donatr+${name}@fnordeingang.de`);
 
-const donate = (from, to, value) => () => Api.createDonation({from, to, value});
+const donate = (from, to, value, multiplicator) => () => {
+    for (let i = 0; i < multiplicator; i++) {
+        Api.createDonation({from, to, value});
+    }
+};
 
-const Donatable = injectSheet(styles)(({classes, donatable, userId, dispatch}) => (
+const Donatable = injectSheet(styles)(({classes, donatable, userId, dispatch, multiplicator}) => (
     <div className="flex">
         <div
             className={`border break-word align-top ${classes.donatable}`}
-            onClick={donate(userId, donatable.id, donatable.minDonationAmount)}
+            onClick={donate(userId, donatable.id, donatable.minDonationAmount, multiplicator)}
         >
             <img alt="gravatar" src={`https://www.gravatar.com/avatar/${getDonatableMD5(donatable.name)}?s=115`} width="115"/>
             <span className="p1">{donatable.name} ({donatable.minDonationAmount})</span>
@@ -112,7 +129,8 @@ const DepositForm = injectSheet(styles)(({classes, onSubmitCreate, userId}) => (
 class App extends Component {
     state = {
         createDonatableFormOpen: false,
-        createDepositFormOpen: false
+        createDepositFormOpen: false,
+        multiplicator: 1
     };
 
     componentWillMount() {
@@ -137,16 +155,28 @@ class App extends Component {
                 { this.state.createDonatableFormOpen && <CreateForm onSubmitCreate={this.toggleForm} /> }
                 { this.state.createDepositFormOpen && <DepositForm userId={this.props.params.userId}
                                                                    onSubmitCreate={this.toggleDepositForm} /> }
-                <div>
-                    <Button onClick={this.toggleForm}>+item</Button>
-                    <Spacer> ~ </Spacer>
-                    <Button onClick={this.toggleDepositForm}>+€</Button>
-                    <Spacer> ~ </Spacer>
-                    <Link to={`/${this.props.params.userId}/fundables`}>&gt;funding</Link>
+                <div className="clearfix">
+                    <div className="col">
+                        <Button onClick={this.toggleForm}>+item</Button>
+                        <Spacer> ~ </Spacer>
+                        <Button onClick={this.toggleDepositForm}>+€</Button>
+                        <Spacer> ~ </Spacer>
+                        <Link to={`/${this.props.params.userId}/fundables`}>&gt;funding</Link>
+                    </div>
+                    <div className="col col-right right-align">
+                        <label className={this.props.classes.multiplicatorWrap}>
+                            x<input onChange={(e) => this.setState({multiplicator: e.target.value})}
+                                    className={this.props.classes.multiplicator}
+                                    defaultValue="1"
+                                    name="multiplicator"
+                                    type="number"/>
+                        </label>
+                    </div>
                 </div>
                 <hr style={{backgroundColor: '#00ff00', borderColor: '#00ff00'}}/>
                 <div className={`block ${this.props.classes.grid}`}>
                     { this.props.donatables.map(f => <Donatable
+                        multiplicator={this.state.multiplicator}
                         userId={this.props.params.userId}
                         donatable={f}/>)}
                 </div>
