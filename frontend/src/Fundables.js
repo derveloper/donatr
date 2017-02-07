@@ -13,6 +13,10 @@ import injectSheet from 'react-jss';
 import swal from 'sweetalert';
 
 const styles = {
+    app: {
+        padding: 20,
+        paddingTop: 10
+    },
     fundable: {
         cursor: 'pointer',
         borderWidth: 3,
@@ -32,18 +36,6 @@ const styles = {
         display: 'flex',
         justifyContent: 'space-around',
         flexFlow: 'row wrap'
-    },
-    '@media (min-width: 480px)': {
-        app: {
-            padding: 20,
-            paddingTop: 10
-        }
-    },
-    '@media (max-width: 479px)': {
-        app: {
-            padding: 20,
-            paddingTop: 10
-        }
     }
 };
 

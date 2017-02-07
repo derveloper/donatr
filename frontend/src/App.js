@@ -10,6 +10,10 @@ import md5 from "md5";
 import injectSheet from 'react-jss'
 
 const styles = {
+    app: {
+        padding: 20,
+        paddingTop: 10
+    },
     donater: {
         cursor: 'pointer',
         borderWidth: 3,
@@ -32,18 +36,6 @@ const styles = {
     },
     link: {
         fontSize: 16
-    },
-    '@media (min-width: 480px)': {
-        app: {
-            padding: 20,
-            paddingTop: 10
-        }
-    },
-    '@media (max-width: 479px)': {
-        app: {
-            padding: 20,
-            paddingTop: 10
-        }
     }
 };
 
