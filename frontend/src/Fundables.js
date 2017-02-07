@@ -48,6 +48,7 @@ const donate = (from, to) => () => {
         title: "A Donation!",
         text: "Donate whatever you like",
         input: "text",
+        background: '#000',
         showCancelButton: true,
         animation: "slide-from-top",
         inputPlaceholder: "amount"
@@ -64,7 +65,7 @@ const donate = (from, to) => () => {
         swal({
             titleText: "Nice!",
             background: '#000',
-            text: "You donated: " + name,
+            text: "You donated: " + inputValue,
             type: "success"
         });
     });
@@ -83,15 +84,6 @@ const Fundable = injectSheet(styles)(({classes, fundable, userId, dispatch}) => 
         </div>
     </div>
 ));
-
-const _onSubmitCreate = (f) => (e) => {
-    e.preventDefault();
-    Api.createFundable({
-        name: e.target.elements['name'].value,
-        fundingTarget: e.target.elements['fundingTarget'].value
-    });
-    f();
-};
 
 const CreateFundable = () => {
     swal({
