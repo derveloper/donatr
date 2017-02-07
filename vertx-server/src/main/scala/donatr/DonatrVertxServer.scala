@@ -42,11 +42,15 @@ object DonatrVertxServer {
     }
 
     router.get("/api/donatables").handler { ctx =>
-      ok(ctx, donatr.donatables.map(_._2.asJson).asJson.noSpaces)
+      ok(ctx, donatr.donatables.values.toList
+        .sortBy(_.balance)
+        .reverse.map(_.asJson).asJson.noSpaces)
     }
 
     router.get("/api/fundables").handler { ctx =>
-      ok(ctx, donatr.fundables.map(_._2.asJson).asJson.noSpaces)
+      ok(ctx, donatr.fundables.values.toList
+        .sortBy(f => f.fundingTarget - f.balance)
+        .map(_.asJson).asJson.noSpaces)
     }
 
     router.post("/api/donaters").handler(postDonater)

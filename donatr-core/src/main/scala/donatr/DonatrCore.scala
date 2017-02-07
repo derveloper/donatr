@@ -4,6 +4,8 @@ import java.util.UUID
 
 import org.slf4j.LoggerFactory
 
+import scala.math.BigDecimal.RoundingMode
+
 class DonatrCore(val eventStore: EventStore = new EventStore(),
                  initialLedger: Ledger)(implicit val eventPublisher: EventPublisher)
 {
@@ -80,7 +82,9 @@ class DonatrCore(val eventStore: EventStore = new EventStore(),
       case (Some(_), None, None) =>
         persistEvent(Deposited(create.donationId, create.entityId, create.depositValue))
       case (None, Some(donatable), None) =>
-        Either.cond(create.depositValue >= donatable.minDonationAmount,
+        val depositValue = create.depositValue.setScale(2, RoundingMode.UP)
+        val minDonationAmount = donatable.minDonationAmount.setScale(2, RoundingMode.UP)
+        Either.cond((depositValue - minDonationAmount) > -0.1,
           Deposited(create.donationId, create.entityId, create.depositValue),
           BelowMinDonationAmount(donatable.minDonationAmount, create.depositValue)
         ).flatMap(persistEvent)
