@@ -135,12 +135,14 @@ class App extends Component {
                     </div>
                     <div className="col col-right right-align">
                         <label className={this.props.classes.multiplicatorWrap}>
-                            x<input onInput={(e) => this.setStateSync({multiplicator: e.target.value})}
-                                    className={this.props.classes.multiplicator}
-                                    // defaultValue="1"
-                                    value={this.state.multiplicator}
-                                    name="multiplicator"
-                                    type="number"/>
+                            <form className="inline-block" onSubmit={e => {e.preventDefault(); document.activeElement.blur()}}>
+                                x<input onInput={(e) => this.setStateSync({multiplicator: e.target.value})}
+                                        className={this.props.classes.multiplicator}
+                                // defaultValue="1"
+                                        value={this.state.multiplicator}
+                                        name="multiplicator"
+                                        type="number"/>
+                            </form>
                         </label>
                     </div>
                 </div>
