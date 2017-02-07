@@ -58,7 +58,7 @@ lazy val vertxServer = (project in file("./vertx-server")).
     },
     libraryDependencies ++= Seq(
       Dependencies.vertxLangScala.exclude("io.vertx", "vertx-codegen"),
-      // Dependencies.vertxCodegen,
+      Dependencies.vertxCodegen,
       Dependencies.vertxWeb.exclude("io.vertx", "vertx-codegen"),
       "io.circe" %% "circe-core" % "0.7.0",
       "io.circe" %% "circe-generic" % "0.7.0",
