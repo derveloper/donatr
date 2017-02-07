@@ -7,6 +7,8 @@ import Fundables from "./Fundables";
 import "./index.css";
 import "./basscss.min.css";
 import "sweetalert2/dist/sweetalert2.min.css";
+import "vex-js/dist/css/vex.css";
+import "vex-js/dist/css/vex-theme-wireframe.css";
 import store from "./redux/store";
 import App from "./App";
 import CurrentDonater from './components/CurrentDonater';

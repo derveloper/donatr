@@ -7,6 +7,7 @@ import Button from "./components/Button";
 import * as DonaterReducer from "./redux/donaters";
 import * as Api from "./api";
 import md5 from "md5";
+import swal from "sweetalert2";
 import injectSheet from 'react-jss'
 
 const styles = {
@@ -59,19 +60,33 @@ const _onSubmitCreate = (f) => (e) => {
     f();
 };
 
-const CreateForm = injectSheet(styles)(({classes, onSubmitCreate}) => (
-    <div className={`z4 fixed block mx-auto ${classes.form}`}>
-        <form onSubmit={_onSubmitCreate(onSubmitCreate)}>
-            <label className="block mx-auto center">
-                <input placeholder="name" name="name" type="text"/>
-            </label>
-            <label className="block mx-auto center">
-                <input placeholder="email" name="email" type="email"/>
-            </label>
-            <button className={`block mx-auto center ${classes.button}`} type="submit">Create</button>
-        </form>
-    </div>
-));
+const CreateDonater = () => {
+    swal({
+        title: 'Create a User',
+        html:
+        '<input id="username-input" placeholder="name" class="swal2-input">' +
+        '<input id="email-input" placeholder="email" class="swal2-input">',
+        preConfirm: function () {
+            return new Promise(function (resolve) {
+                resolve([
+                    document.querySelector('#username-input').value,
+                    document.querySelector('#email-input').value
+                ])
+            })
+        },
+        onOpen: function () {
+            document.querySelector('#username-input').focus()
+        }
+    }).then(function (result) {
+        const name = result[0];
+        const email = result[1];
+        Api.createDonater({
+            name,
+            email
+        });
+        swal("Nice!", "You created a User: " + name, "success");
+    }).catch(swal.noop)
+};
 
 class App extends Component {
     state = {
@@ -90,9 +105,8 @@ class App extends Component {
     render() {
         return (
             <div className={`block mx-auto ${this.props.classes.app}`}>
-                { this.state.createDonaterFormOpen && <CreateForm onSubmitCreate={this.toggleForm} /> }
                 <div>
-                    <Button onClick={this.toggleForm}>+user</Button>
+                    <Button onClick={CreateDonater}>+user</Button>
                 </div>
                 <hr style={{backgroundColor: '#00ff00', borderColor: '#00ff00'}}/>
                 <div className={`block ${this.props.classes.grid}`}>

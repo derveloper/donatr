@@ -88,19 +88,33 @@ const _onSubmitCreate = (f) => (e) => {
     f();
 };
 
-const CreateForm = injectSheet(styles)(({classes, onSubmitCreate}) => (
-    <div className={`z4 fixed block mx-auto ${classes.form}`}>
-        <form onSubmit={_onSubmitCreate(onSubmitCreate)}>
-            <label className="block mx-auto center">
-                <input placeholder="name" name="name" type="text"/>
-            </label>
-            <label className="block mx-auto center">
-                <input placeholder="target" name="fundingTarget" type="decimal"/>
-            </label>
-            <Button className={`block mx-auto center`} type="submit">Create</Button>
-        </form>
-    </div>
-));
+const CreateFundable = () => {
+    swal({
+        title: 'Create a funding',
+        html:
+        '<input id="name-input" placeholder="name" class="swal2-input">' +
+        '<input id="fundingTarget-input" placeholder="target" class="swal2-input">',
+        preConfirm: function () {
+            return new Promise(function (resolve) {
+                resolve([
+                    document.querySelector('#name-input').value,
+                    document.querySelector('#fundingTarget-input').value
+                ])
+            })
+        },
+        onOpen: function () {
+            document.querySelector('#name-input').focus()
+        }
+    }).then(function (result) {
+        const name = result[0];
+        const fundingTarget = result[1];
+        Api.createFundable({
+            name,
+            fundingTarget
+        });
+        swal("Nice!", "You created a Funding: " + name, "success");
+    }).catch(swal.noop)
+};
 
 class App extends Component {
     state = {
@@ -122,9 +136,8 @@ class App extends Component {
     render() {
         return (
             <div className={`block mx-auto ${this.props.classes.app}`}>
-                { this.state.createFundableFormOpen && <CreateForm onSubmitCreate={this.toggleForm}/> }
                 <div>
-                    <Button onClick={this.toggleForm}>+fund</Button>
+                    <Button onClick={CreateFundable}>+fund</Button>
                     <Spacer> ~ </Spacer>
                     <Button onClick={deposit(this.props.params.userId)}>+€</Button>
                     <Spacer> ~ </Spacer>

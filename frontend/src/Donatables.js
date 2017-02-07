@@ -10,6 +10,7 @@ import * as DonaterReducer from "./redux/donaters";
 import * as Api from "./api";
 import md5 from "md5";
 import injectSheet from 'react-jss'
+import swal from "sweetalert2";
 import deposit from './components/deposit';
 
 const styles = {
@@ -89,28 +90,33 @@ const Donatable = injectSheet(styles)(({classes, donatable, userId, dispatch, mu
     </div>
 ));
 
-const _onSubmitCreate = (f) => (e) => {
-    e.preventDefault();
-    Api.createDonatable({
-        name: e.target.elements['name'].value,
-        minDonationAmount: e.target.elements['minDonationAmount'].value
-    });
-    f();
+const CreateDonatable = () => {
+    swal({
+        title: 'Create a Item',
+        html:
+        '<input id="name-input" placeholder="name" class="swal2-input">' +
+        '<input id="minDonationAmount-input" placeholder="price" class="swal2-input">',
+        preConfirm: function () {
+            return new Promise(function (resolve) {
+                resolve([
+                    document.querySelector('#name-input').value,
+                    document.querySelector('#minDonationAmount-input').value
+                ])
+            })
+        },
+        onOpen: function () {
+            document.querySelector('#name-input').focus()
+        }
+    }).then(function (result) {
+        const name = result[0];
+        const minDonationAmount = result[1];
+        Api.createDonatable({
+            name,
+            minDonationAmount
+        });
+        swal("Nice!", "You created a Donatable: " + name, "success");
+    }).catch(swal.noop)
 };
-
-const CreateForm = injectSheet(styles)(({classes, onSubmitCreate}) => (
-    <div className={`z4 fixed block mx-auto ${classes.form}`}>
-        <form onSubmit={_onSubmitCreate(onSubmitCreate)}>
-            <label className="block mx-auto center">
-                <input placeholder="name" name="name" type="text"/>
-            </label>
-            <label className="block mx-auto center">
-                <input placeholder="price" name="minDonationAmount" type="decimal"/>
-            </label>
-            <Button className={`block mx-auto center`} type="submit">Create</Button>
-        </form>
-    </div>
-));
 
 class App extends Component {
     state = {
@@ -133,10 +139,9 @@ class App extends Component {
     render() {
         return (
             <div className={`block mx-auto ${this.props.classes.app}`}>
-                { this.state.createDonatableFormOpen && <CreateForm onSubmitCreate={this.toggleForm} /> }
                 <div className="clearfix">
                     <div className="col">
-                        <Button onClick={this.toggleForm}>+item</Button>
+                        <Button onClick={CreateDonatable}>+item</Button>
                         <Spacer> ~ </Spacer>
                         <Button onClick={deposit(this.props.params.userId)}>+€</Button>
                         <Spacer> ~ </Spacer>
