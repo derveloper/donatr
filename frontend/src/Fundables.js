@@ -91,9 +91,10 @@ const _onSubmitCreate = (f) => (e) => {
 const CreateFundable = () => {
     swal({
         title: 'Create a funding',
+        background: '#000',
         html:
-        '<input id="name-input" placeholder="name" class="swal2-input">' +
-        '<input id="fundingTarget-input" placeholder="target" class="swal2-input">',
+        '<input id="name-input" placeholder="name" class="swal2-input swal2-donatr-input">' +
+        '<input id="fundingTarget-input" placeholder="target" class="swal2-input swal2-donatr-input">',
         preConfirm: function () {
             return new Promise(function (resolve) {
                 resolve([
@@ -112,7 +113,12 @@ const CreateFundable = () => {
             name,
             fundingTarget
         });
-        swal("Nice!", "You created a Funding: " + name, "success");
+        swal({
+            titleText: "Nice!",
+            background: '#000',
+            text: "You created a Funding: " + name,
+            type: "success"
+        });
     }).catch(swal.noop)
 };
 

@@ -63,9 +63,10 @@ const _onSubmitCreate = (f) => (e) => {
 const CreateDonater = () => {
     swal({
         title: 'Create a User',
+        background: '#000',
         html:
-        '<input id="username-input" placeholder="name" class="swal2-input">' +
-        '<input id="email-input" placeholder="email" class="swal2-input">',
+        '<input id="username-input" placeholder="name" class="swal2-input swal2-donatr-input">' +
+        '<input id="email-input" placeholder="email" class="swal2-input swal2-donatr-input">',
         preConfirm: function () {
             return new Promise(function (resolve) {
                 resolve([
@@ -84,7 +85,12 @@ const CreateDonater = () => {
             name,
             email
         });
-        swal("Nice!", "You created a User: " + name, "success");
+        swal({
+            titleText: "Nice!",
+            background: '#000',
+            text: "You created a User: " + name,
+            type: "success"
+        });
     }).catch(swal.noop)
 };
 

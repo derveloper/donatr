@@ -93,9 +93,10 @@ const Donatable = injectSheet(styles)(({classes, donatable, userId, dispatch, mu
 const CreateDonatable = () => {
     swal({
         title: 'Create a Item',
+        background: '#000',
         html:
-        '<input id="name-input" placeholder="name" class="swal2-input">' +
-        '<input id="minDonationAmount-input" placeholder="price" class="swal2-input">',
+        '<input id="name-input" placeholder="name" class="swal2-input swal2-donatr-input">' +
+        '<input id="minDonationAmount-input" placeholder="price" class="swal2-input swal2-donatr-input">',
         preConfirm: function () {
             return new Promise(function (resolve) {
                 resolve([
@@ -114,7 +115,12 @@ const CreateDonatable = () => {
             name,
             minDonationAmount
         });
-        swal("Nice!", "You created a Donatable: " + name, "success");
+        swal({
+            titleText: "Nice!",
+            background: '#000',
+            text: "You created a Donatable: " + name,
+            type: "success"
+        });
     }).catch(swal.noop)
 };
 
