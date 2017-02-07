@@ -43,26 +43,6 @@ lazy val donatrCore = (project in file("./donatr-core")).
     )
   )
 
-/*lazy val finchServer = (project in file("./finch-server")).
-  settings(
-    name += "DonatrServer",
-    resolvers += "twttr" at "https://maven.twttr.com/",
-    libraryDependencies ++= Seq(
-      "com.github.finagle" %% "finch-core" % "0.12.0",
-      "com.github.finagle" %% "finch-circe" % "0.12.0",
-      "com.github.finagle" %% "finch-sse" % "0.12.0",
-      "io.circe" %% "circe-core" % "0.7.0",
-      "io.circe" %% "circe-generic" % "0.7.0",
-      "io.circe" %% "circe-parser" % "0.7.0",
-      "com.twitter" %% "twitter-server" % "1.26.0",
-      scalaTest % Test,
-      "org.scalacheck" %% "scalacheck" % "1.13.4" % Test
-    ),
-    addCompilerPlugin(
-      "org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full
-    )
-  ).dependsOn(donatrCore)*/
-
 lazy val vertxServer = (project in file("./vertx-server")).
   settings(
     resolvers += "Sonatype SNAPSHOTS" at "https://oss.sonatype.org/content/repositories/snapshots/",
