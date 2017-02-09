@@ -7,15 +7,15 @@ import io.vertx.scala.core.http.{HttpClient, HttpClientOptions}
 import org.scalacheck.Gen
 
 object Benchmark {
-  import scala.concurrent.Promise
-  import scala.concurrent.duration.Duration
   import io.circe.generic.auto._
   import io.circe.syntax._
-  import scala.concurrent.Await
+
+  import scala.concurrent.{Await, Promise}
+  import scala.concurrent.duration.Duration
 
   def main(args: Array[String]): Unit = {
     val vertx = Vertx.vertx()
-    val options = HttpClientOptions().setDefaultHost("donatr.herokuapp.com").setSsl(true).setDefaultPort(443)
+    val options = HttpClientOptions().setDefaultHost("localhost").setSsl(false).setDefaultPort(8080)
     val client = vertx.createHttpClient(options)
 
     val donaters = createDonaters(Range(1, 10).map(_ => donaterGen.sample.get), client)

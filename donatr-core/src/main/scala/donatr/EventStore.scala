@@ -57,12 +57,20 @@ class EventStore(url: String = "jdbc:h2:file:./donatr.h2.db") {
           decode[Event](e._2)
         }
       }, Duration.Inf).map { e =>
-        e.right.get
-      }
+        if(e.isLeft) {
+          log.error("error fetching event", e.left.get)
+          None
+        }
+        else {
+          Some(e.right.get)
+        }
+      }.filter { e =>
+        e.isDefined
+      }.map { e => e.get }
     }
     catch {
       case e: Throwable =>
-        log.error(e.getMessage)
+        log.error(e.getMessage, e)
         List.empty
     }
   }

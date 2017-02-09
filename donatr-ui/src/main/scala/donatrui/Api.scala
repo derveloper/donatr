@@ -44,6 +44,12 @@ object Api {
     val donater: Donater = js.native
   }
 
+  @js.native
+  @JSName("DonaterUpdatedEvent")
+  class DonaterUpdatedEvent extends DonatrEvent {
+    val DonaterUpdated: DonaterUpdated = js.native
+  }
+
   def fromFuture[T](future: Future[T]): Rx[Option[Try[T]]] = {
     val result = Var(Option.empty[Try[T]])
     future.onComplete(x => result := Some(x))
@@ -61,6 +67,10 @@ object Api {
       .map(_.map(_.withFilter(_.status == 200).map { x =>
         f(x.responseText)
       }))
+
+  def fetchDonater(id: String): Rx[Option[Try[Donater]]] = {
+    fetch(s"/api/donaters/$id", f => f.asInstanceOf[Donater])
+  }
 
   def fetchDonaters: Rx[Option[Try[List[Donater]]]] = {
     fetch("/api/donaters", f => f.asInstanceOf[Array[Donater]].toList)

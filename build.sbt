@@ -6,6 +6,7 @@ lazy val donatr = (project in file("."))
   .settings(
     inThisBuild(List(
       organization := "de.fnordeingang",
+      //scalaOrganization := "org.typelevel",
       scalaVersion := "2.12.1",
       version := "0.1.0-SNAPSHOT",
       scalacOptions ++= Seq("-deprecation", "-feature"),
@@ -38,12 +39,9 @@ lazy val donatrCore = (project in file("./donatr-core")).
       "ch.qos.logback" % "logback-classic" % "1.1.10",
       "com.h2database" % "h2" % "1.4.193",
       scalaTest % Test,
-      "org.scalacheck" %% "scalacheck" % "1.13.4" % Test,
-      "io.circe" %%% "circe-core" % "0.7.0",
-      "io.circe" %%% "circe-generic" % "0.7.0",
-      "io.circe" %%% "circe-parser" % "0.7.0"
+      "org.scalacheck" %% "scalacheck" % "1.13.4" % Test
     )
-  ).enablePlugins(ScalaJSPlugin)
+  )
 
 lazy val vertxServer = (project in file("./vertx-server")).
   settings(

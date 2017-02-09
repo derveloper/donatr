@@ -42,6 +42,11 @@ object DonatrVertxServer {
       ok(ctx, donatr.donaters.map(_._2.asJson).asJson.noSpaces)
     }
 
+    router.get("/api/donaters/:donaterId").handler { ctx =>
+      val donaterId = UUID.fromString(ctx.pathParam("donaterId").get)
+      ok(ctx, donatr.donaters(donaterId).asJson.noSpaces)
+    }
+
     router.get("/api/donatables").handler { ctx =>
       ok(ctx, donatr.donatables.values.toList
         .sortBy(_.balance)

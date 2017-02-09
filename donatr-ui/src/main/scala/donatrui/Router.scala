@@ -1,0 +1,29 @@
+package donatrui
+
+import org.scalajs.dom
+
+object Router {
+  def init(routes: List[(String, (Map[String, String]) => Unit)]): Unit = {
+    dom.window.onhashchange = (e) => {
+      println("hash change!")
+      router(dom.window.location.hash, routes)
+    }
+    router(dom.window.location.hash, routes)
+  }
+
+  def router(uRL: String, routes: List[(String, (Map[String, String]) => Unit)]): Unit = {
+    val urlParts = uRL.replace("#", "").split("/")
+    val matchingRoute = routes.filter { r =>
+      val routeParts = r._1.split("/").zipWithIndex.filter(!_._1.startsWith(":"))
+      routeParts.forall(e => e._1 == urlParts(e._2))
+    }.head
+
+    val paramParts = matchingRoute._1.split("/").zipWithIndex.filter(_._1.startsWith(":"))
+    val params = paramParts.toList.map { p =>
+      p._1.replace(":", "") -> urlParts(p._2)
+    }.toMap
+
+    //noinspection ScalaUselessExpression
+    matchingRoute._2(params)
+  }
+}
