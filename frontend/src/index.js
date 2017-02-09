@@ -1,18 +1,16 @@
 import Inferno from "inferno";
 import {Provider} from "inferno-redux";
-import { Router, Route, IndexRoute, IndexLink } from 'inferno-router';
-import { createBrowserHistory } from 'history';
+import {Router, Route, IndexRoute, IndexLink} from "inferno-router";
+import {createBrowserHistory} from "history";
 import Donatables from "./Donatables";
 import Fundables from "./Fundables";
 import "./basscss.min.css";
 import "sweetalert2/dist/sweetalert2.min.css";
-import "vex-js/dist/css/vex.css";
-import "vex-js/dist/css/vex-theme-wireframe.css";
 import "./index.css";
 import store from "./redux/store";
 import App from "./App";
-import CurrentDonater from './components/CurrentDonater';
-import injectSheet from 'react-jss'
+import CurrentDonater from "./components/CurrentDonater";
+import injectSheet from "react-jss";
 
 const browserHistory = createBrowserHistory();
 
