@@ -8,20 +8,21 @@ import scala.util.Success
 import scala.xml.Elem
 
 object States {
+  val currentNav: Var[Elem] = Var(Layout.donaterNavBar)
   val currentView: Var[Elem] = Var(<span/>)
-  val currentDonater: Var[Donater] = Var[Donater](null)
+  val currentDonater: Var[Either[Unit, Donater]] = Var[Either[Unit, Donater]](Left(()))
 
   def setCurrentDonater(donaterId: String): Cancelable = {
     Api.fetchDonater(donaterId).foreach {
       case None => println("loading")
       case Some(Success(donater)) =>
-        States.currentDonater := donater
+        States.currentDonater := Right(donater)
       case _ => println("Failure!")
     }
   }
 
   def updateState(event: DonaterUpdatedEvent): Unit = {
-    States.currentDonater := event.DonaterUpdated.donater
+    States.currentDonater := Right(event.DonaterUpdated.donater)
   }
 
   def updateState(eventType: Symbol, obj: js.Object): Unit = {

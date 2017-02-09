@@ -7,7 +7,7 @@ import scala.xml.Elem
 
 object Components {
   def DonaterComponent(donater: Donater): Elem = {
-    def onClick: (Event) => Unit = { event: Event => States.currentDonater.:=(donater) }
+    def onClick: (Event) => Unit = { event: Event => States.currentDonater := Right(donater) }
 
     <div class={DonatrStyles.donater.htmlClass}>
       <a onclick={onClick} href={s"#/${donater.id}/donatables"}>
@@ -21,7 +21,7 @@ object Components {
 
   def DonatableComponent(donatable: Donatable): Elem = {
     def onClick: (Event) => Unit = { event: Event =>
-      Api.donate(States.currentDonater.value, donatable)
+      Api.donate(States.currentDonater.value.right.get, donatable)
     }
 
     <div onclick={onClick} class={DonatrStyles.donater.htmlClass}>
@@ -32,9 +32,9 @@ object Components {
     </div>
   }
 
-  def CurrentDonaterComponent(donater: Donater): Elem = {
+  def CurrentDonaterComponent(donater: Either[Unit, Donater]): Elem = {
     <div class={DonatrStyles.currentDonater.htmlClass}>
-      {donater.name}{donater.balance}
+      {donater.map(d => s"${d.name} ${d.balance}").getOrElse("select user")}
     </div>
   }
 }

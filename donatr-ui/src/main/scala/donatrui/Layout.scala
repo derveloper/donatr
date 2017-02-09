@@ -1,20 +1,26 @@
 package donatrui
 
+import scala.xml.Elem
+
 object Layout {
-  val main =
-    <div id="app">
-      <h1 class={DonatrStyles.header.htmlClass}>donatr</h1>{States.currentDonater.map(d => {
-      if (d == null) {
-        <div class={DonatrStyles.currentDonater.htmlClass}>
-          select user
-        </div>
-      }
-      else {
-        Components.CurrentDonaterComponent(d)
-      }
-    })}<ul class={DonatrStyles.nav.htmlClass}>
+  val  donaterNavBar: Elem = {
+    <ul class={DonatrStyles.nav.htmlClass}>
       <li class={DonatrStyles.navItem.htmlClass}>+user</li>
     </ul>
-      <hr class={DonatrStyles.hr.htmlClass}/>{States.currentView}
+  }
+
+  val donatableNavBar: Elem = {
+    <ul class={DonatrStyles.nav.htmlClass}>
+      <li class={DonatrStyles.navItem.htmlClass}>+item</li>
+      <li class={DonatrStyles.navItem.htmlClass}>+€</li>
+      <li class={DonatrStyles.navItem.htmlClass}>>funding</li>
+    </ul>
+  }
+
+  val main: Elem =
+    <div id="app">
+      <h1 class={DonatrStyles.header.htmlClass}>donatr</h1>
+      <hr class={DonatrStyles.hr.htmlClass}/>
+      {States.currentView}
     </div>
 }
