@@ -1,15 +1,14 @@
 import Dependencies._
-import sbt.Package._
 
 
 lazy val donatr = (project in file("."))
-  .aggregate(donatrCore, vertxServer)
+  .aggregate(donatrCore, vertxServer, donatrUi)
   .settings(
     inThisBuild(List(
       organization := "de.fnordeingang",
       scalaVersion := "2.12.1",
       version := "0.1.0-SNAPSHOT",
-      scalacOptions ++= Seq("-deprecation"),
+      scalacOptions ++= Seq("-deprecation", "-feature"),
       resolvers += "Sonatype SNAPSHOTS" at "https://oss.sonatype.org/content/repositories/snapshots/",
       test in assembly := {}
     )),
@@ -25,7 +24,7 @@ lazy val donatr = (project in file("."))
         val oldStrategy = (assemblyMergeStrategy in assembly).value
         oldStrategy(x)
     }
-  ).dependsOn(donatrCore, vertxServer)
+  ).dependsOn(donatrCore, vertxServer, donatrUi)
 
 lazy val donatrCore = (project in file("./donatr-core")).
   settings(
@@ -39,9 +38,12 @@ lazy val donatrCore = (project in file("./donatr-core")).
       "ch.qos.logback" % "logback-classic" % "1.1.10",
       "com.h2database" % "h2" % "1.4.193",
       scalaTest % Test,
-      "org.scalacheck" %% "scalacheck" % "1.13.4" % Test
+      "org.scalacheck" %% "scalacheck" % "1.13.4" % Test,
+      "io.circe" %%% "circe-core" % "0.7.0",
+      "io.circe" %%% "circe-generic" % "0.7.0",
+      "io.circe" %%% "circe-parser" % "0.7.0"
     )
-  )
+  ).enablePlugins(ScalaJSPlugin)
 
 lazy val vertxServer = (project in file("./vertx-server")).
   settings(
@@ -67,3 +69,21 @@ lazy val vertxServer = (project in file("./vertx-server")).
       "org.scalacheck" %% "scalacheck" % "1.13.4" % Test
     )
   ).dependsOn(donatrCore)
+
+lazy val donatrUi = (project in file("./donatr-ui")).
+  settings(
+    jsEnv := PhantomJSEnv().value,
+    libraryDependencies ++= Seq(
+      "in.nvilla" %%% "monadic-html" % "latest.integration",
+      "com.github.japgolly.scalacss" %%% "core" % "0.5.1",
+      //"org.webjars.npm" %%% "spark-md5" % "3.0.0",
+      scalaTest % Test,
+      "org.scalacheck" %% "scalacheck" % "1.13.4" % Test
+    ),
+    jsDependencies += "org.webjars.npm" % "spark-md5" % "2.0.2" / "spark-md5.js",
+    emitSourceMaps := true,
+    artifactPath in (Compile, fastOptJS) :=
+      ((crossTarget in (Compile, fastOptJS)).value /
+        ((moduleName in fastOptJS).value + "-opt.js")),
+    addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
+  ).enablePlugins(ScalaJSPlugin)

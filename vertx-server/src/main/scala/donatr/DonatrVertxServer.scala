@@ -4,7 +4,7 @@ import java.util.UUID
 
 import io.vertx.scala.core.Vertx
 import io.vertx.scala.core.http.{HttpServerOptions, ServerWebSocket}
-import io.vertx.scala.ext.web.handler.{BodyHandler, StaticHandler}
+import io.vertx.scala.ext.web.handler.{BodyHandler, CorsHandler, StaticHandler}
 
 object DonatrVertxServer {
 
@@ -35,6 +35,7 @@ object DonatrVertxServer {
   def main(args: Array[String]): Unit = {
     val router = Router.router(vertx)
 
+    router.route().handler(CorsHandler.create("^.*$").allowedHeader("X-Requested-With"))
     router.route().handler(BodyHandler.create())
 
     router.get("/api/donaters").handler { ctx =>

@@ -247,7 +247,7 @@ export default Button; // Don’t forget to use export default!
 ```js
 import Inferno from 'inferno';
 import Component from 'inferno-component';
-import Button from './Button'; // Import a component from another file
+import Button from './Button'; app
 
 class DangerButton extends Component {
   render() {
