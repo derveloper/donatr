@@ -1,26 +1,31 @@
 package donatrui
 
+import mhtml.Var
+
 import scala.xml.Elem
 
 object Routes {
-  private def updateCurrentView(view: Elem, after: Unit => Unit) = {
-    println(s"update view ${view.label}")
-    //States.currentView := view
+  import States._
+  val currentView = Var(<span/>)
+
+  def updateCurrentView(view: Elem, after: Unit => Unit = () => _): Unit = {
+    println(s"update view ${view.getClass.getName}")
+    currentView.update(_ => view)
     after(())
   }
 
-  val donatableRoute: (Map[String, String]) => Unit = (params: Map[String, String]) => {
+  def donatablesRoute(params: Map[String, String]): Unit = {
     Views.donatablesView()
       .foreach(updateCurrentView(_, _ => States.setCurrentDonater(params("donaterId"))))
   }
 
-  val donaterRoute: (Map[String, String]) => Unit = (_: Map[String, String]) => {
+  def donatersRoute(params: Map[String, String]): Unit = {
     Views.donatersView()
-      .foreach(updateCurrentView(_, _ => States.currentDonater.update(_ => Left(()))))
+      .foreach(updateCurrentView(_, _ => currentDonater := Left(())))
   }
 
   val routes: List[(String, (Map[String, String]) => Unit)] = List(
-    "/:donaterId/donatables" -> Routes.donatableRoute,
-    "/" -> Routes.donaterRoute
+    "/:donaterId/donatables" -> Routes.donatablesRoute,
+    "/" -> Routes.donatersRoute
   )
 }

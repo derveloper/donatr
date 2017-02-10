@@ -8,7 +8,7 @@ import scala.concurrent.Future
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSName
 import scala.scalajs.js.{Array, JSON}
-import scala.util.Try
+import scala.util.{Success, Try}
 
 object Api {
   import scala.concurrent.ExecutionContext.Implicits.global
@@ -72,8 +72,12 @@ object Api {
     fetch(s"/api/donaters/$id", f => f.asInstanceOf[Donater])
   }
 
-  def fetchDonaters: Rx[Option[Try[List[Donater]]]] = {
+  def fetchDonaters: Rx[List[Donater]] = {
     fetch("/api/donaters", f => f.asInstanceOf[Array[Donater]].toList)
+        .map {
+          case Some(Success(donaters)) => donaters
+          case _ => List.empty
+        }
   }
 
   def fetchDonatables: Rx[Option[Try[List[Donatable]]]] = {

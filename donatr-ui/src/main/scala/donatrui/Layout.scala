@@ -3,7 +3,9 @@ package donatrui
 import scala.xml.Elem
 
 object Layout {
-  val  donaterNavBar: Elem = {
+  import States._
+
+  val donaterNavBar: Elem = {
     <ul class={DonatrStyles.nav.htmlClass}>
       <li class={DonatrStyles.navItem.htmlClass}>+user</li>
     </ul>
@@ -20,7 +22,9 @@ object Layout {
   val main: Elem =
     <div id="app">
       <h1 class={DonatrStyles.header.htmlClass}>donatr</h1>
+      {currentDonater.map(d => Components.CurrentDonaterComponent(d))}
+      {States.currentNav}
       <hr class={DonatrStyles.hr.htmlClass}/>
-      {States.currentView}
+      {Routes.currentView}
     </div>
 }

@@ -10,9 +10,9 @@ import scalacss.Defaults._
 
 object Donatrui extends JSApp {
   def main(): Unit = {
-    Router.init(Routes.routes)
-    Websocket.init()
     mount(dom.document.head, <style>{DonatrStyles.renderA[String]}</style>)
     mount(dom.document.getElementById("root"), Layout.main)
+    Router.init(Routes.routes)
+    Websocket.init()
   }
 }
