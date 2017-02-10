@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>donatr-ui</title>
+    <style>
+        * {
+            font-family: monospace;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            color: #00ff00;
+            font-size: 1rem;
+        }
+
+        a, a:hover {
+            color: #00ff00;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        a:active {
+            color: #00ff00;
+            background-color: rgba(0, 255, 0, 0.3);
+        }
+    </style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/javascript" src="/2/donatrui-opt.js"></script>
+<script type="text/javascript" src="/2/donatrui-jsdeps.js"></script>
+<script type="text/javascript">
+    donatrui.Donatrui().main();
+</script>
+</body>
+</html>

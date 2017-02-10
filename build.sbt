@@ -1,4 +1,5 @@
 import Dependencies._
+import org.scalajs.sbtplugin.ScalaJSPlugin.AutoImport.{fullOptJS, packageMinifiedJSDependencies}
 
 
 lazy val donatr = (project in file("."))
@@ -56,6 +57,7 @@ lazy val vertxServer = (project in file("./vertx-server")).
         val oldStrategy = (assemblyMergeStrategy in assembly).value
         oldStrategy(x)
     },
+    unmanagedResourceDirectories in Compile += { baseDirectory.value / "../donatr-ui/target/scala-2.12/public" },
     libraryDependencies ++= Seq(
       Dependencies.vertxLangScala.exclude("io.vertx", "vertx-codegen"),
       Dependencies.vertxCodegen,
@@ -70,18 +72,19 @@ lazy val vertxServer = (project in file("./vertx-server")).
 
 lazy val donatrUi = (project in file("./donatr-ui")).
   settings(
-    jsEnv := PhantomJSEnv().value,
     libraryDependencies ++= Seq(
       "in.nvilla" %%% "monadic-html" % "latest.integration",
-      "com.github.japgolly.scalacss" %%% "core" % "0.5.1",
-      //"org.webjars.npm" %%% "spark-md5" % "3.0.0",
-      scalaTest % Test,
-      "org.scalacheck" %% "scalacheck" % "1.13.4" % Test
+      "com.github.japgolly.scalacss" %%% "core" % "0.5.1"
     ),
     jsDependencies += "org.webjars.npm" % "spark-md5" % "2.0.2" / "spark-md5.js",
     emitSourceMaps := true,
     artifactPath in (Compile, fastOptJS) :=
-      ((crossTarget in (Compile, fastOptJS)).value /
+      ((crossTarget in (Compile, fastOptJS)).value / "public" / "webroot2" /
         ((moduleName in fastOptJS).value + "-opt.js")),
-    addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
+    artifactPath in (Compile, fullOptJS) :=
+      ((crossTarget in (Compile, fullOptJS)).value / "public" / "webroot2" /
+        ((moduleName in fullOptJS).value + "-opt.js")),
+    artifactPath in (Compile, packageMinifiedJSDependencies) :=
+      ((crossTarget in (Compile, packageMinifiedJSDependencies)).value / "public" / "webroot2" /
+        ((moduleName in packageMinifiedJSDependencies).value + "-jsdeps.js"))
   ).enablePlugins(ScalaJSPlugin)

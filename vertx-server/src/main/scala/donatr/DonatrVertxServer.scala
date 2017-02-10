@@ -66,11 +66,14 @@ object DonatrVertxServer {
 
     router.get("/favicon.ico").handler(ctx => ctx.response().sendFile("webroot/favicon.ico"))
     router.get("/static/*").handler(StaticHandler.create("webroot/static"))
+    router.get("/2/donatrui-opt.js").handler(ctx => ctx.response().sendFile("webroot2/donatrui-opt.js"))
+    router.get("/2/donatrui-jsdeps.js").handler(ctx => ctx.response().sendFile("webroot2/donatrui-jsdeps.js"))
+    router.get("/2/*").handler(ctx => ctx.response().sendFile("webroot2/index.html"))
     router.get("/*").handler(ctx => ctx.response().sendFile("webroot/index.html"))
 
     val options = HttpServerOptions()
       .setCompressionSupported(true)
-      .setCompressionLevel(7)
+      .setCompressionLevel(9)
     vertx
       .createHttpServer(options)
       .websocketHandler(websocketHandler)
