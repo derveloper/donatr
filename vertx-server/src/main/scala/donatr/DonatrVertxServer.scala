@@ -69,6 +69,7 @@ object DonatrVertxServer {
     router.get("/favicon.ico").handler(ctx => ctx.response().sendFile("webroot/favicon.ico"))
     router.get("/static/*").handler(StaticHandler.create("webroot/static"))
     router.get("/2/donatrui-opt.js").handler(ctx => ctx.response().sendFile("webroot2/donatrui-opt.js"))
+    router.get("/2/sweetalert2.min.css").handler(ctx => ctx.response().sendFile("webroot2/sweetalert2.min.css"))
     router.get("/2/donatrui-jsdeps.js").handler(ctx => ctx.response().sendFile("webroot2/donatrui-jsdeps.js"))
     router.get("/2/donatrui-opt.js.map").handler(ctx => ctx.response().sendFile("webroot2/donatrui-opt.js.map"))
     router.get("/2/*").handler(ctx => ctx.response().sendFile("webroot2/index.html"))

@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>donatr-ui</title>
+    <link rel="stylesheet" href="/2/sweetalert2.min.css">
     <style>
         * {
             font-family: monospace;
@@ -25,6 +26,43 @@
         a:active {
             color: #00ff00;
             background-color: rgba(0, 255, 0, 0.3);
+        }
+
+        input {
+            font-size: 24px;
+            border: none;
+            border-bottom: 2px solid #00ff00;
+            background-color: #000;
+            color: #00ff00;
+        }
+
+        a, button {
+            outline: 0;
+        }
+
+        .swal2-modal {
+            background-color: #000;
+            border: solid 2px #00ff00;
+            border-radius: 0;
+        }
+
+        .swal2-modal input.swal2-donatr-input {
+            border: solid 1px #00ff00;
+            border-radius: 0;
+        }
+
+        .swal2-icon.swal2-success .fix {
+            background-color: #000;
+        }
+        .swal2-icon.swal2-success::after,
+        .swal2-icon.swal2-success::before {
+            background-color: #000;
+        }
+
+        .swal2-modal .swal2-input[type=number] {
+            max-width: none;
+            width: 100%;
+            text-align: right;
         }
     </style>
 </head>

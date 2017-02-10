@@ -10,7 +10,6 @@ object Views {
     Api.fetchDonaters
       .map { donaters =>
           <div>
-            <h1>DONATERS!!!!</h1>
             {donaters.map(d => Components.DonaterComponent(d))}
           </div>
       }

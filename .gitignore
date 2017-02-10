@@ -138,3 +138,4 @@ project/plugins/project/
 .ensime_cache/
 .ensime
 /vertx-server/src/main/resources/webroot2/
+!/vertx-server/src/main/resources/webroot2/
