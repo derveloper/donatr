@@ -5,7 +5,6 @@ import mhtml.Var
 import scala.xml.Elem
 
 object Routes {
-  import States._
   val currentView = Var(<span/>)
 
   def updateCurrentView(view: Elem, after: Unit => Unit = () => _): Unit = {
@@ -21,7 +20,7 @@ object Routes {
 
   def donatersRoute(params: Map[String, String]): Unit = {
     Views.donatersView()
-      .foreach(updateCurrentView(_, _ => currentDonater := Left(())))
+      .foreach(updateCurrentView(_, _ => States.unsetCurrentDonater()))
   }
 
   val routes: List[(String, (Map[String, String]) => Unit)] = List(

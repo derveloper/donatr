@@ -10,7 +10,7 @@ object Components {
 
   def DonaterComponent(donater: Donater): Elem = {
     def onClick(event: Event): Unit = {
-      currentDonater := Right(donater)
+      currentDonater := Some(donater)
     }
 
     <div class={DonatrStyles.donater.htmlClass}>
@@ -25,7 +25,7 @@ object Components {
 
   def DonatableComponent(donatable: Donatable): Elem = {
     def onClick: (Event) => Unit = { event: Event =>
-      Api.donate(currentDonater.value.right.get, donatable)
+      Api.donate(currentDonater.value.get, donatable)
     }
 
     <div onclick={onClick} class={DonatrStyles.donater.htmlClass}>
@@ -36,7 +36,7 @@ object Components {
     </div>
   }
 
-  def CurrentDonaterComponent(donater: Either[Unit, Donater]): Elem = {
+  def CurrentDonaterComponent(donater: Option[Donater]): Elem = {
     <div class={DonatrStyles.currentDonater.htmlClass}>
       {donater.map(d => {
         <div class={DonatrStyles.currentDonaterAvatar.htmlClass}>
