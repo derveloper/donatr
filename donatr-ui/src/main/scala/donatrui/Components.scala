@@ -9,10 +9,12 @@ object Components {
   import States._
 
   def DonaterComponent(donater: Donater): Elem = {
-    def onClick: (Event) => Unit = { event: Event => currentDonater := Right(donater) }
+    def onClick(event: Event): Unit = {
+      currentDonater := Right(donater)
+    }
 
     <div class={DonatrStyles.donater.htmlClass}>
-      <a onclick={onClick} href={s"#/${donater.id}/donatables"}>
+      <a onclick={onClick _} href={s"#/${donater.id}/donatables"}>
         <img src={s"https://www.gravatar.com/avatar/${md5(donater.email)}?s=115"}/>
         <div class={DonatrStyles.donaterName.htmlClass}>
           {donater.name}
@@ -36,7 +38,16 @@ object Components {
 
   def CurrentDonaterComponent(donater: Either[Unit, Donater]): Elem = {
     <div class={DonatrStyles.currentDonater.htmlClass}>
-      {donater.map(d => s"${d.name} ${d.balance}").getOrElse("select user")}
+      {donater.map(d => {
+        <div class={DonatrStyles.currentDonaterAvatar.htmlClass}>
+          <div>
+            <img class={DonatrStyles.currentDonaterAvatarImage.htmlClass}
+                 src={s"https://www.gravatar.com/avatar/${md5(d.email)}?s=40"}/>
+            <span class={DonatrStyles.currentDonaterAvatarName.htmlClass}>{d.name}</span>
+          </div>
+          <div>{d.balance}</div>
+        </div>
+      }).getOrElse(<span>select user</span>)}
     </div>
   }
 }

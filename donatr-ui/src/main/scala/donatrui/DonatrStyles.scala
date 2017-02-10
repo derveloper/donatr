@@ -26,6 +26,20 @@ object DonatrStyles extends StyleSheet.Inline {
     )
   )
 
+  val currentDonaterAvatar = style(
+    display.flex,
+    justifyContent.spaceBetween,
+    alignItems.center
+  )
+
+  val currentDonaterAvatarName = style(
+    verticalAlign.middle
+  )
+
+  val currentDonaterAvatarImage = style(
+    verticalAlign.middle
+  )
+
   val currentDonater = style(
     commonBorder,
     width(80 vw),
