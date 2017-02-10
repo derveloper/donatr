@@ -2,24 +2,13 @@ package donatrui
 
 import org.scalajs.dom.Event
 
-import scala.scalajs.js
-import scala.scalajs.js.annotation.JSName
 import scala.xml.Elem
 
 object Layout {
   import States._
 
-  @js.native
-  trait swal extends js.Object
-
-  @JSName("swal")
-  @js.native
-  object swal extends js.Object {
-    def apply(x: String): swal = js.native
-  }
-
   private def createUser(event: Event): Unit = {
-    swal("FOOOOOOO")
+    swal(swalOptions(title = "FOOOOOOdadsO", onOpen = _ => println("foooo")))
   }
 
   val donaterNavBar: Elem = {

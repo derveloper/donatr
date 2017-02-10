@@ -137,5 +137,5 @@ project/plugins/project/
 # ENSIME specific
 .ensime_cache/
 .ensime
-/vertx-server/src/main/resources/webroot2/
-!/vertx-server/src/main/resources/webroot2/
+/webroot2/
+!/webroot2/
