@@ -22,11 +22,9 @@ lazy val donatr = (project in file("."))
       case PathList("META-INF", xs @ _*) => MergeStrategy.last
       case PathList("META-INF", "io.netty.versions.properties") => MergeStrategy.last
       case "codegen.json" => MergeStrategy.discard
-      case x =>
-        val oldStrategy = (assemblyMergeStrategy in assembly).value
-        oldStrategy(x)
+      case x => MergeStrategy.first
     }
-  ).dependsOn(donatrCore, vertxServer, donatrUi)
+  ).dependsOn(donatrCore, vertxServer)
 
 lazy val donatrCore = (project in file("./donatr-core")).
   settings(
@@ -53,11 +51,8 @@ lazy val vertxServer = (project in file("./vertx-server")).
       case PathList("META-INF", xs @ _*) => MergeStrategy.last
       case PathList("META-INF", "io.netty.versions.properties") => MergeStrategy.last
       case "codegen.json" => MergeStrategy.discard
-      case x =>
-        val oldStrategy = (assemblyMergeStrategy in assembly).value
-        oldStrategy(x)
+      case x => MergeStrategy.first
     },
-    unmanagedResourceDirectories in Compile += { baseDirectory.value / "../donatr-ui/target/scala-2.12/public" },
     libraryDependencies ++= Seq(
       Dependencies.vertxLangScala.exclude("io.vertx", "vertx-codegen"),
       Dependencies.vertxCodegen,
@@ -68,7 +63,7 @@ lazy val vertxServer = (project in file("./vertx-server")).
       scalaTest % Test,
       "org.scalacheck" %% "scalacheck" % "1.13.4" % Test
     )
-  ).dependsOn(donatrCore)
+  ).dependsOn(donatrCore).dependsOn(donatrUi)
 
 lazy val donatrUi = (project in file("./donatr-ui")).
   settings(
@@ -79,12 +74,15 @@ lazy val donatrUi = (project in file("./donatr-ui")).
     jsDependencies += "org.webjars.npm" % "spark-md5" % "2.0.2" / "spark-md5.js",
     emitSourceMaps := true,
     artifactPath in (Compile, fastOptJS) :=
-      ((crossTarget in (Compile, fastOptJS)).value / "public" / "webroot2" /
+      ((crossTarget in (Compile, fastOptJS)).value / "classes" / "webroot2" /
         ((moduleName in fastOptJS).value + "-opt.js")),
     artifactPath in (Compile, fullOptJS) :=
-      ((crossTarget in (Compile, fullOptJS)).value / "public" / "webroot2" /
+      ((crossTarget in (Compile, fullOptJS)).value / "classes" / "webroot2" /
         ((moduleName in fullOptJS).value + "-opt.js")),
     artifactPath in (Compile, packageMinifiedJSDependencies) :=
-      ((crossTarget in (Compile, packageMinifiedJSDependencies)).value / "public" / "webroot2" /
-        ((moduleName in packageMinifiedJSDependencies).value + "-jsdeps.js"))
+      ((crossTarget in (Compile, packageMinifiedJSDependencies)).value / "classes" / "webroot2" /
+        ((moduleName in packageMinifiedJSDependencies).value + "-jsdeps.js")),
+    artifactPath in (Compile, packageJSDependencies) :=
+      ((crossTarget in (Compile, packageJSDependencies)).value / "classes" / "webroot2" /
+        ((moduleName in packageJSDependencies).value + "-jsdeps.js"))
   ).enablePlugins(ScalaJSPlugin)

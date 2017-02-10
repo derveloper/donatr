@@ -10,6 +10,7 @@ import scala.xml.Elem
 object States {
   val currentDonater: Var[Option[Donater]] = Var(None)
   val currentNav: Var[Elem] = Var(Layout.donaterNavBar)
+  val currentView = Var(<span/>)
 
   def setCurrentDonater(donaterId: String): Cancelable = {
     Api.fetchDonater(donaterId).foreach {

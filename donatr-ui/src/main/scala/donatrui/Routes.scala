@@ -1,12 +1,11 @@
 package donatrui
 
-import mhtml.Var
+
+import donatrui.States._
 
 import scala.xml.Elem
 
 object Routes {
-  val currentView = Var(<span/>)
-
   def updateCurrentView(view: Elem, after: Unit => Unit = () => _): Unit = {
     println(s"update view ${view.getClass.getName}")
     currentView.update(_ => view)

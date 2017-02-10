@@ -2,6 +2,7 @@ package donatr
 
 import java.util.UUID
 
+import io.vertx.core.impl.FileResolver
 import io.vertx.scala.core.Vertx
 import io.vertx.scala.core.http.{HttpServerOptions, ServerWebSocket}
 import io.vertx.scala.ext.web.handler.{BodyHandler, CorsHandler, StaticHandler}
@@ -14,6 +15,7 @@ object DonatrVertxServer {
   import io.vertx.scala.ext.web.{Router, RoutingContext}
 
   System.setProperty("vertx.disableFileCPResolving", "false")
+  System.setProperty(FileResolver.DISABLE_FILE_CACHING_PROP_NAME, "true")
 
   val vertx: Vertx = Vertx.vertx()
 
@@ -68,7 +70,9 @@ object DonatrVertxServer {
     router.get("/static/*").handler(StaticHandler.create("webroot/static"))
     router.get("/2/donatrui-opt.js").handler(ctx => ctx.response().sendFile("webroot2/donatrui-opt.js"))
     router.get("/2/donatrui-jsdeps.js").handler(ctx => ctx.response().sendFile("webroot2/donatrui-jsdeps.js"))
+    router.get("/2/donatrui-opt.js.map").handler(ctx => ctx.response().sendFile("webroot2/donatrui-opt.js.map"))
     router.get("/2/*").handler(ctx => ctx.response().sendFile("webroot2/index.html"))
+
     router.get("/*").handler(ctx => ctx.response().sendFile("webroot/index.html"))
 
     val options = HttpServerOptions()

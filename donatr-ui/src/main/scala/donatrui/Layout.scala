@@ -25,6 +25,6 @@ object Layout {
       {currentDonater.map(d => Components.CurrentDonaterComponent(d))}
       {States.currentNav}
       <hr class={DonatrStyles.hr.htmlClass}/>
-      {Routes.currentView}
+      {currentView}
     </div>
 }
