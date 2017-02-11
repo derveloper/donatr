@@ -73,7 +73,7 @@ object DonatrStyles extends StyleSheet.Inline {
     listStyleType := "none",
     fontSize(1.4 rem),
     lineHeight(4 rem),
-    marginRight(2 rem)
+    marginRight(0.7 rem)
   )
   val hr = style(border(1 px, solid, rgb(0, 255, 0)))
 }
