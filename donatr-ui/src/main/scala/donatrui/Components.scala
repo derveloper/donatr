@@ -101,7 +101,8 @@ object Components {
       <div class="swal2-content">
         <form onsubmit={onSubmit _}>
           <input required={true} oninput={inputEvent(name := _.value)} placeholder="name" />
-          <input required={true} oninput={inputEvent(name := _.value)} type="number" step="any" placeholder="price" />
+          <input required={true} oninput={inputEvent(minDonationAmount := _.value.toDouble)}
+                 type="number" step="any" placeholder="price" />
           <button class="swal2-styled" type="submit">Create</button></form>
       </div>
     </div>
