@@ -12,7 +12,7 @@ lazy val donatr = (project in file("."))
       version := "0.1.0-SNAPSHOT",
       scalacOptions ++= Seq("-deprecation", "-feature"),
       resolvers += "Sonatype SNAPSHOTS" at "https://oss.sonatype.org/content/repositories/snapshots/",
-      test in assembly := {},
+      test in assembly := {}
     )),
     herokuAppName in Compile := "donatr",
     herokuFatJar in Compile := Some((assemblyOutputPath in assembly).value),
