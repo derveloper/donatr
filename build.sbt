@@ -12,7 +12,7 @@ lazy val donatr = (project in file("."))
       version := "0.1.0-SNAPSHOT",
       scalacOptions ++= Seq("-deprecation", "-feature"),
       resolvers += "Sonatype SNAPSHOTS" at "https://oss.sonatype.org/content/repositories/snapshots/",
-      test in assembly := {}
+      test in assembly := {},
     )),
     herokuAppName in Compile := "donatr",
     herokuFatJar in Compile := Some((assemblyOutputPath in assembly).value),
@@ -67,6 +67,14 @@ lazy val vertxServer = (project in file("./vertx-server")).
 
 lazy val donatrUi = (project in file("./donatr-ui")).
   settings(
+    assemblyMergeStrategy in assembly := {
+      case PathList("META-INF", "MANIFEST.MF") => MergeStrategy.discard
+      case PathList("META-INF", xs @ _*) => MergeStrategy.last
+      case PathList("META-INF", "io.netty.versions.properties") => MergeStrategy.last
+      case "codegen.json" => MergeStrategy.discard
+      case x => MergeStrategy.first
+    },
+    test in assembly := {},
     libraryDependencies ++= Seq(
       "in.nvilla" %%% "monadic-html" % "latest.integration",
       "com.github.japgolly.scalacss" %%% "core" % "0.5.1",

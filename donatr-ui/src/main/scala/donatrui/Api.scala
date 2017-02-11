@@ -117,12 +117,12 @@ object Api {
   }
 
   private def fetch[Out](url: String, f: js.Dynamic => Out) = {
-    doGetRequest(s"http://localhost:8080$url")(s => JSON.parse(s))
+    doGetRequest(s"$url")(s => JSON.parse(s))
       .map { d => d.map(d2 => d2.map(d3 => f(d3))) }
   }
 
   private def post[Out](url: String, data: Ajax.InputData, f: js.Dynamic => Out) = {
-    doPostRequest(s"http://localhost:8080$url", data)(s => JSON.parse(s))
+    doPostRequest(s"$url", data)(s => JSON.parse(s))
       .map { d => d.map(d2 => d2.map(d3 => f(d3))) }
   }
 }
