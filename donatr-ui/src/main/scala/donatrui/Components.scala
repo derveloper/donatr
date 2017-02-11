@@ -55,12 +55,20 @@ object Components {
   def CreateUserDialog(): Elem = {
     val name = Var("")
     val email = Var("")
+
+    def onSubmit(e: Event) = {
+      e.preventDefault()
+      Api.createDonater(name.value, email.value)
+      currentDialog := None
+    }
+
     <div class="swal2-modal swal2-show">
       <h2>Create a User</h2>
       <div class="swal2-content">
-        <input onchange={inputEvent(name := _.value)} />
-        <input onchange={inputEvent(name := _.value)} />
-        <button class="swal2-styled" type="submit">Create</button>
+        <form onsubmit={onSubmit _}>
+          <input required={true} oninput={inputEvent(name := _.value)} placeholder="name" />
+          <input required={true} oninput={inputEvent(name := _.value)} type="email" placeholder="email" />
+          <button class="swal2-styled" type="submit">Create</button></form>
       </div>
     </div>
   }

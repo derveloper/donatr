@@ -14,12 +14,10 @@ package object donatrui {
 
   def inputEvent(f: HTMLInputElement => Unit): Event => Unit = {
     event: Event =>
-      print(s"event: $event")
       event.target match {
         case e: HTMLInputElement =>
-          print(s"event: $event")
           f(e)
-        case _ => print(s"unknown event: $event")
+        case _ =>
       }
   }
 

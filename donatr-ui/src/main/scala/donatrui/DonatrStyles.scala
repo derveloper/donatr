@@ -17,7 +17,10 @@ object DonatrStyles extends StyleSheet.Inline {
   val donater = style(
     commonBorder,
     display.inlineBlock,
+    wordWrap.breakWord,
     margin(1 rem),
+    verticalAlign.top,
+    width(115 px),
     &.hover(
       cursor.pointer
     ),
@@ -54,7 +57,9 @@ object DonatrStyles extends StyleSheet.Inline {
   val donaterName = style(
     fontSize(1.2 rem),
     paddingLeft(0.5 rem),
-    paddingBottom(0.3 rem)
+    paddingBottom(0.3 rem),
+    wordWrap.breakWord
+
   )
 
   val nav = style()

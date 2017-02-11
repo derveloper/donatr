@@ -7,7 +7,7 @@ import scala.xml.Elem
 
 object Views {
   def donatersView(): Rx[Elem] =
-    Api.fetchDonaters
+    States.donaters
       .map { donaters =>
           <div>
             {donaters.map(d => Components.DonaterComponent(d))}

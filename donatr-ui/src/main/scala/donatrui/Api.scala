@@ -50,6 +50,18 @@ object Api {
     val DonaterUpdated: DonaterUpdated = js.native
   }
 
+  @js.native
+  @JSName("DonaterCreated")
+  class DonaterCreated extends DonatrEvent {
+    val donater: Donater = js.native
+  }
+
+  @js.native
+  @JSName("DonaterCreatedEvent")
+  class DonaterCreatedEvent extends DonatrEvent {
+    val DonaterCreated: DonaterCreated = js.native
+  }
+
   def fromFuture[T](future: Future[T]): Rx[Option[Try[T]]] = {
     val result = Var(Option.empty[Try[T]])
     future.onComplete(x => result := Some(x))

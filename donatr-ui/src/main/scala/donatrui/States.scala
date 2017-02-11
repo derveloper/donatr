@@ -1,6 +1,6 @@
 package donatrui
 
-import donatrui.Api.{Donater, DonaterUpdatedEvent}
+import donatrui.Api.{Donater, DonaterCreatedEvent, DonaterUpdatedEvent}
 import mhtml.{Cancelable, Var}
 
 import scala.scalajs.js
@@ -8,6 +8,7 @@ import scala.util.Success
 import scala.xml.Elem
 
 object States {
+  val donaters: Var[List[Donater]] = Var(List.empty)
   val currentDonater: Var[Option[Donater]] = Var(None)
   val currentNav: Var[Elem] = Var(Layout.donaterNavBar)
   val currentView = Var(<span/>)
@@ -30,9 +31,14 @@ object States {
     currentDonater := Some(event.DonaterUpdated.donater)
   }
 
-  def updateState(eventType: Symbol, obj: js.Object): Unit = {
-    if (eventType == 'DonaterUpdated) {
+  def updateState(event: DonaterCreatedEvent): Unit = {
+    donaters := donaters.value :+ event.DonaterCreated.donater
+  }
+
+  def updateState(eventType: Symbol, obj: js.Object): Unit = eventType match {
+    case 'DonaterUpdated =>
       updateState(obj.asInstanceOf[DonaterUpdatedEvent])
-    }
+    case 'DonaterCreated =>
+      updateState(obj.asInstanceOf[DonaterCreatedEvent])
   }
 }

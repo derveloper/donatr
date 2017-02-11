@@ -18,6 +18,7 @@ object Routes {
   }
 
   def donatersRoute(params: Map[String, String]): Unit = {
+    Api.fetchDonaters.foreach(l => donaters := l)
     Views.donatersView()
       .foreach(updateCurrentView(_, _ => States.unsetCurrentDonater()))
   }
