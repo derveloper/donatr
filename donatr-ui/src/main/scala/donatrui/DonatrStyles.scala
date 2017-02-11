@@ -62,7 +62,6 @@ object DonatrStyles extends StyleSheet.Inline {
     paddingLeft(0.5 rem),
     paddingBottom(0.3 rem),
     wordWrap.breakWord
-
   )
 
   val nav = style(
