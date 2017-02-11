@@ -26,7 +26,7 @@ object Components {
 
   def DonatableComponent(donatable: Donatable): Elem = {
     def onClick: (Event) => Unit = { event: Event =>
-      for (_ <- 0 to currentMultiplicator.value) {
+      for (_ <- 1 to currentMultiplicator.value) {
         Api.donate(currentDonater.value.get, donatable)
       }
       currentMultiplicator := 1
