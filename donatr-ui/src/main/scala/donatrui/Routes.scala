@@ -29,12 +29,14 @@ object Routes {
     donatables.value.isEmpty :? Api.fetchDonatables.foreach(l => donatables := l)
     Views.donatablesView()
       .foreach(updateCurrentView(_, _ => States.setCurrentDonater(params("donaterId"))))
+    currentNav := Layout.donatableNavBar
   }
 
   def donatersRoute(params: Map[String, String]): Unit = {
     donaters.value.isEmpty :? Api.fetchDonaters.foreach(l => donaters := l)
     Views.donatersView()
       .foreach(updateCurrentView(_, _ => States.unsetCurrentDonater()))
+    currentNav := Layout.donaterNavBar
   }
 
   val routes: List[(String, (Map[String, String]) => Unit)] = List(

@@ -7,19 +7,23 @@ import scala.xml.Elem
 object Layout {
   import States._
 
-  private def createUser(event: Event): Unit = {
-    currentDialog := Some(Components.CreateUserDialog())
+  private def createDonater(event: Event): Unit = {
+    currentDialog := Some(Components.CreateDonaterDialog())
+  }
+
+  private def createDonatable(event: Event): Unit = {
+    currentDialog := Some(Components.CreateDonatableDialog())
   }
 
   val donaterNavBar: Elem = {
     <ul class={DonatrStyles.nav.htmlClass}>
-      <li onclick={createUser _} class={DonatrStyles.navItem.htmlClass}>+user</li>
+      <li onclick={createDonater _} class={DonatrStyles.navItem.htmlClass}>+user</li>
     </ul>
   }
 
   val donatableNavBar: Elem = {
     <ul class={DonatrStyles.nav.htmlClass}>
-      <li class={DonatrStyles.navItem.htmlClass}>+item</li>
+      <li onclick={createDonatable _} class={DonatrStyles.navItem.htmlClass}>+item</li>
       <li class={DonatrStyles.navItem.htmlClass}>+€</li>
       <li class={DonatrStyles.navItem.htmlClass}>>funding</li>
     </ul>

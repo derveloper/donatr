@@ -62,6 +62,18 @@ object Api {
     val DonaterCreated: DonaterCreated = js.native
   }
 
+  @js.native
+  @JSName("DonatableCreated")
+  class DonatableCreated extends DonatrEvent {
+    val donatable: Donatable = js.native
+  }
+
+  @js.native
+  @JSName("DonatableCreatedEvent")
+  class DonatableCreatedEvent extends DonatrEvent {
+    val DonatableCreated: DonatableCreated = js.native
+  }
+
   def fromFuture[T](future: Future[T]): Rx[Option[Try[T]]] = {
     val result = Var(Option.empty[Try[T]])
     future.onComplete(x => result := Some(x))
@@ -84,6 +96,14 @@ object Api {
     post("/api/donaters", InputData.str2ajax(JSON.stringify(js.Dynamic.literal(
       name = name,
       email = email,
+      balance = 0
+    ))), f => f)
+  }
+
+  def createDonatable(name: String, minDonationAmount: Double): Unit = {
+    post("/api/donatables", InputData.str2ajax(JSON.stringify(js.Dynamic.literal(
+      name = name,
+      minDonationAmount = minDonationAmount,
       balance = 0
     ))), f => f)
   }

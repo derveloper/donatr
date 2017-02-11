@@ -77,12 +77,10 @@ lazy val donatrUi = (project in file("./donatr-ui")).
     test in assembly := {},
     libraryDependencies ++= Seq(
       "in.nvilla" %%% "monadic-html" % "latest.integration",
-      "com.github.japgolly.scalacss" %%% "core" % "0.5.1",
-      "com.lihaoyi" %%% "scalatags" % "0.6.3"
+      "com.github.japgolly.scalacss" %%% "core" % "0.5.1"
     ),
     jsDependencies ++= Seq(
-      "org.webjars.npm" % "spark-md5" % "2.0.2" / "spark-md5.js",
-      "org.webjars.npm" % "sweetalert2" % "6.1.1" / "sweetalert2.min.js"
+      "org.webjars.npm" % "spark-md5" % "2.0.2" / "spark-md5.js"
     ),
     emitSourceMaps := true,
     artifactPath in (Compile, fastOptJS) :=

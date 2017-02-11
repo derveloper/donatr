@@ -1,6 +1,6 @@
 package donatrui
 
-import donatrui.Api.{Donatable, Donater, DonaterCreatedEvent, DonaterUpdatedEvent}
+import donatrui.Api._
 import mhtml.{Cancelable, Var}
 
 import scala.scalajs.js
@@ -36,10 +36,16 @@ object States {
     donaters := donaters.value :+ event.DonaterCreated.donater
   }
 
+  def updateState(event: DonatableCreatedEvent): Unit = {
+    donatables := donatables.value :+ event.DonatableCreated.donatable
+  }
+
   def updateState(eventType: Symbol, obj: js.Object): Unit = eventType match {
     case 'DonaterUpdated =>
       updateState(obj.asInstanceOf[DonaterUpdatedEvent])
     case 'DonaterCreated =>
       updateState(obj.asInstanceOf[DonaterCreatedEvent])
+    case 'DonatableCreated =>
+      updateState(obj.asInstanceOf[DonatableCreatedEvent])
   }
 }

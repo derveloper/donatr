@@ -52,7 +52,7 @@ object Components {
     </div>
   }
 
-  def CreateUserDialog(): Elem = {
+  def CreateDonaterDialog(): Elem = {
     val name = Var("")
     val email = Var("")
 
@@ -68,6 +68,27 @@ object Components {
         <form onsubmit={onSubmit _}>
           <input required={true} oninput={inputEvent(name := _.value)} placeholder="name" />
           <input required={true} oninput={inputEvent(name := _.value)} type="email" placeholder="email" />
+          <button class="swal2-styled" type="submit">Create</button></form>
+      </div>
+    </div>
+  }
+
+  def CreateDonatableDialog(): Elem = {
+    val name = Var("")
+    val minDonationAmount = Var(0.0)
+
+    def onSubmit(e: Event) = {
+      e.preventDefault()
+      Api.createDonatable(name.value, minDonationAmount.value)
+      currentDialog := None
+    }
+
+    <div class="swal2-modal swal2-show">
+      <h2>Create an Item</h2>
+      <div class="swal2-content">
+        <form onsubmit={onSubmit _}>
+          <input required={true} oninput={inputEvent(name := _.value)} placeholder="name" />
+          <input required={true} oninput={inputEvent(name := _.value)} type="number" step="any" placeholder="price" />
           <button class="swal2-styled" type="submit">Create</button></form>
       </div>
     </div>
