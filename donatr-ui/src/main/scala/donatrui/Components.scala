@@ -26,7 +26,10 @@ object Components {
 
   def DonatableComponent(donatable: Donatable): Elem = {
     def onClick: (Event) => Unit = { event: Event =>
-      Api.donate(currentDonater.value.get, donatable)
+      for (_ <- 0 to currentMultiplicator.value) {
+        Api.donate(currentDonater.value.get, donatable)
+      }
+      currentMultiplicator := 1
     }
 
     <div onclick={onClick} class={DonatrStyles.donater.htmlClass}>

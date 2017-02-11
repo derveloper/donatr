@@ -15,6 +15,7 @@ object States {
   val currentNav: Var[Elem] = Var(Layout.donaterNavBar)
   val currentView = Var(<span/>)
   val currentDialog: Var[Option[Elem]] = Var(None)
+  val currentMultiplicator: Var[Int] = Var(1)
 
   def setCurrentDonater(donaterId: String): Cancelable = {
     Api.fetchDonater(donaterId).foreach {

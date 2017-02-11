@@ -44,6 +44,11 @@ object Layout {
           case _ => <span/>
       }}
       </li>
+      <li>x{ currentMultiplicator.map { m => {
+          <input value={s"$m"}
+                 type="number"
+                 onblur={inputEvent(currentMultiplicator := _.value.toInt)} />}}}
+      </li>
     </ul>
   }
 
