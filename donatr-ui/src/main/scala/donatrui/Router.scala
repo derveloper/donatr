@@ -5,7 +5,6 @@ import org.scalajs.dom
 object Router {
   def init(routes: List[(String, (Map[String, String]) => Unit)]): Unit = {
     dom.window.onhashchange = (e) => {
-      println("hash change!")
       router(dom.window.location.hash, routes)
     }
     router(dom.window.location.hash, routes)

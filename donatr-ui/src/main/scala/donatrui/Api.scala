@@ -17,7 +17,7 @@ object Api {
   trait Donation extends js.Object {
     val from: String = js.native
     val to: String = js.native
-    val value: Float = js.native
+    val value: Double = js.native
   }
 
   @js.native
@@ -25,14 +25,22 @@ object Api {
     val id: String = js.native
     val name: String = js.native
     val email: String = js.native
-    val balance: Float = js.native
+    val balance: Double = js.native
   }
 
   @js.native
   trait Donatable extends js.Object {
     val id: String = js.native
     val name: String = js.native
-    val minDonationAmount: Float = js.native
+    val minDonationAmount: Double = js.native
+  }
+
+  @js.native
+  trait Fundable extends js.Object {
+    val id: String = js.native
+    val name: String = js.native
+    val fundingTarget: Double = js.native
+    val balance: Double = js.native
   }
 
   @js.native
@@ -74,6 +82,30 @@ object Api {
     val DonatableCreated: DonatableCreated = js.native
   }
 
+  @js.native
+  @JSName("FundableUpdated")
+  class FundableUpdated extends DonatrEvent {
+    val fundable: Fundable = js.native
+  }
+
+  @js.native
+  @JSName("FundableUpdatedEvent")
+  class FundableUpdatedEvent extends DonatrEvent {
+    val FundableUpdated: FundableUpdated = js.native
+  }
+
+  @js.native
+  @JSName("FundableCreated")
+  class FundableCreated extends DonatrEvent {
+    val fundable: Fundable = js.native
+  }
+
+  @js.native
+  @JSName("FundableCreatedEvent")
+  class FundableCreatedEvent extends DonatrEvent {
+    val FundableCreated: FundableCreated = js.native
+  }
+
   def fromFuture[T](future: Future[T]): Rx[Option[Try[T]]] = {
     val result = Var(Option.empty[Try[T]])
     future.onComplete(x => result := Some(x))
@@ -108,6 +140,14 @@ object Api {
     ))), f => f)
   }
 
+  def createFundable(name: String, fundingTarget: Double): Unit = {
+    post("/api/fundables", InputData.str2ajax(JSON.stringify(js.Dynamic.literal(
+      name = name,
+      fundingTarget = fundingTarget,
+      balance = 0
+    ))), f => f)
+  }
+
   def fetchDonater(id: String): Rx[Option[Try[Donater]]] = {
     fetch(s"/api/donaters/$id", f => f.asInstanceOf[Donater])
   }
@@ -128,11 +168,27 @@ object Api {
       }
   }
 
+  def fetchFundables: Rx[List[Fundable]] = {
+    fetch("/api/fundables", f => f.asInstanceOf[Array[Fundable]].toList)
+      .map {
+        case Some(Success(fundables)) => fundables
+        case _ => List.empty
+      }
+  }
+
   def donate(donater: Donater, donatable: Donatable): Rx[Option[Try[js.Dynamic]]] = {
     post("/api/donations", InputData.str2ajax(JSON.stringify(js.Dynamic.literal(
       from = donater.id,
       to = donatable.id,
       value = donatable.minDonationAmount
+    ))), f => f)
+  }
+
+  def donate(donater: Donater, fundable: Fundable, amount: Double): Rx[Option[Try[js.Dynamic]]] = {
+    post("/api/donations", InputData.str2ajax(JSON.stringify(js.Dynamic.literal(
+      from = donater.id,
+      to = fundable.id,
+      value = amount
     ))), f => f)
   }
 

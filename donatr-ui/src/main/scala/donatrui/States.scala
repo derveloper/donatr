@@ -10,6 +10,7 @@ import scala.xml.Elem
 object States {
   val donaters: Var[List[Donater]] = Var(List.empty)
   val donatables: Var[List[Donatable]] = Var(List.empty)
+  val fundables: Var[List[Fundable]] = Var(List.empty)
   val currentDonater: Var[Option[Donater]] = Var(None)
   val currentNav: Var[Elem] = Var(Layout.donaterNavBar)
   val currentView = Var(<span/>)
@@ -17,10 +18,10 @@ object States {
 
   def setCurrentDonater(donaterId: String): Cancelable = {
     Api.fetchDonater(donaterId).foreach {
-      case None => println("loading")
+      case None => None
       case Some(Success(donater)) =>
         currentDonater := Some(donater)
-      case _ => println("Failure!")
+      case _ => None
     }
   }
 
@@ -40,6 +41,17 @@ object States {
     donatables := donatables.value :+ event.DonatableCreated.donatable
   }
 
+  def updateState(event: FundableCreatedEvent): Unit = {
+    fundables := fundables.value :+ event.FundableCreated.fundable
+  }
+
+  def updateState(event: FundableUpdatedEvent): Unit = {
+    fundables := fundables.value.map { f =>
+      if(f.id == event.FundableUpdated.fundable.id) event.FundableUpdated.fundable
+      else f
+    }
+  }
+
   def updateState(eventType: Symbol, obj: js.Object): Unit = eventType match {
     case 'DonaterUpdated =>
       updateState(obj.asInstanceOf[DonaterUpdatedEvent])
@@ -47,6 +59,10 @@ object States {
       updateState(obj.asInstanceOf[DonaterCreatedEvent])
     case 'DonatableCreated =>
       updateState(obj.asInstanceOf[DonatableCreatedEvent])
+    case 'FundableCreated =>
+      updateState(obj.asInstanceOf[FundableCreatedEvent])
+    case 'FundableUpdated =>
+      updateState(obj.asInstanceOf[FundableUpdatedEvent])
     case _ =>
   }
 }

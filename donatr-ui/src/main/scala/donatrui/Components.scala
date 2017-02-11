@@ -1,6 +1,6 @@
 package donatrui
 
-import donatrui.Api.{Donatable, Donater}
+import donatrui.Api.{Donatable, Donater, Fundable}
 import mhtml.{Rx, Var}
 import org.scalajs.dom.{Event, Node}
 
@@ -37,6 +37,19 @@ object Components {
     </div>
   }
 
+  def FundableComponent(fundable: Fundable): Elem = {
+    def onClick: (Event) => Unit = { event: Event =>
+      Layout.fund(event, fundable)
+    }
+
+    <div onclick={onClick} class={DonatrStyles.donater.htmlClass}>
+      <img src={s"https://www.gravatar.com/avatar/${md5(fundable.name)}?s=115"}/>
+      <div class={DonatrStyles.donaterName.htmlClass}>
+        {fundable.name} / {fundable.balance} / {fundable.fundingTarget}
+      </div>
+    </div>
+  }
+
   def CurrentDonaterComponent(donater: Option[Donater]): Elem = {
     <div class={DonatrStyles.currentDonater.htmlClass}>
       {donater.map(d => {
@@ -67,7 +80,7 @@ object Components {
       <div class="swal2-content">
         <form onsubmit={onSubmit _}>
           <input required={true} oninput={inputEvent(name := _.value)} placeholder="name" />
-          <input required={true} oninput={inputEvent(name := _.value)} type="email" placeholder="email" />
+          <input required={true} oninput={inputEvent(email := _.value)} type="email" placeholder="email" />
           <button class="swal2-styled" type="submit">Create</button></form>
       </div>
     </div>
@@ -90,6 +103,49 @@ object Components {
           <input required={true} oninput={inputEvent(name := _.value)} placeholder="name" />
           <input required={true} oninput={inputEvent(name := _.value)} type="number" step="any" placeholder="price" />
           <button class="swal2-styled" type="submit">Create</button></form>
+      </div>
+    </div>
+  }
+
+  def CreateFundableDialog(): Elem = {
+    val name = Var("")
+    val fundingTarget = Var(0.0)
+
+    def onSubmit(e: Event) = {
+      e.preventDefault()
+      Api.createFundable(name.value, fundingTarget.value)
+      currentDialog := None
+    }
+
+    <div class="swal2-modal swal2-show">
+      <h2>Create a Funding</h2>
+      <div class="swal2-content">
+        <form onsubmit={onSubmit _}>
+          <input required={true} oninput={inputEvent(name := _.value)} placeholder="name" />
+          <input required={true} oninput={inputEvent(fundingTarget := _.value.toDouble)}
+                 type="number" step="any" placeholder="funding target" />
+          <button class="swal2-styled" type="submit">Create</button></form>
+      </div>
+    </div>
+  }
+
+  def FundDialog(fundable: Fundable): Elem = {
+    val value = Var(0.0)
+
+    def onSubmit(e: Event) = {
+      e.preventDefault()
+      Api.donate(currentDonater.value.get, fundable, value.value)
+      currentDialog := None
+    }
+
+    <div class="swal2-modal swal2-show">
+      <h2>Deposit!</h2>
+      <div class="swal2-content">
+        <form onsubmit={onSubmit _}>
+          <input required={true}
+                 oninput={inputEvent(value := _.value.toDouble)}
+                 type="number" step="any" placeholder="amount" />
+          <button class="swal2-styled" type="submit">Fund</button></form>
       </div>
     </div>
   }

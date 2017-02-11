@@ -20,7 +20,6 @@ object Routes {
   import Bool._
 
   def updateCurrentView(view: Elem, after: Unit => Unit = () => _): Unit = {
-    println(s"update view ${view.getClass.getName}")
     currentView.update(_ => view)
     after(())
   }
@@ -32,6 +31,13 @@ object Routes {
     currentNav := Layout.donatableNavBar
   }
 
+  def fundablesRoute(params: Map[String, String]): Unit = {
+    fundables.value.isEmpty :? Api.fetchFundables.foreach(l => fundables := l)
+    Views.fundablesView()
+      .foreach(updateCurrentView(_, _ => States.setCurrentDonater(params("donaterId"))))
+    currentNav := Layout.fundableNavBar
+  }
+
   def donatersRoute(params: Map[String, String]): Unit = {
     donaters.value.isEmpty :? Api.fetchDonaters.foreach(l => donaters := l)
     Views.donatersView()
@@ -41,6 +47,7 @@ object Routes {
 
   val routes: List[(String, (Map[String, String]) => Unit)] = List(
     "/:donaterId/donatables" -> Routes.donatablesRoute,
+    "/:donaterId/fundables" -> Routes.fundablesRoute,
     "/" -> Routes.donatersRoute
   )
 }
