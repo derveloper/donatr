@@ -35,7 +35,7 @@ object Components {
     <div onclick={onClick} class={DonatrStyles.donater.htmlClass}>
       <img src={s"https://www.gravatar.com/avatar/${md5(donatable.name)}?s=115"}/>
       <div class={DonatrStyles.donaterName.htmlClass}>
-        {donatable.name}
+        {donatable.name} / {donatable.minDonationAmount}
       </div>
     </div>
   }
