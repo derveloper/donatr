@@ -100,8 +100,12 @@ object Api {
         }
   }
 
-  def fetchDonatables: Rx[Option[Try[List[Donatable]]]] = {
+  def fetchDonatables: Rx[List[Donatable]] = {
     fetch("/api/donatables", f => f.asInstanceOf[Array[Donatable]].toList)
+      .map {
+        case Some(Success(donatables)) => donatables
+        case _ => List.empty
+      }
   }
 
   def donate(donater: Donater, donatable: Donatable): Rx[Option[Try[js.Dynamic]]] = {

@@ -1,8 +1,8 @@
 package donatrui
 
+import donatrui.Components.{DonatableComponent, DonaterComponent}
 import mhtml.Rx
 
-import scala.util.Success
 import scala.xml.Elem
 
 object Views {
@@ -10,18 +10,15 @@ object Views {
     States.donaters
       .map { donaters =>
           <div>
-            {donaters.map(d => Components.DonaterComponent(d))}
+            {donaters.map(DonaterComponent)}
           </div>
       }
 
   def donatablesView(): Rx[Elem] =
-    Api.fetchDonatables
-      .map {
-        case None => <div>Loading</div>
-        case Some(Success(donaters)) =>
-          <div>
-            {donaters.map(d => Components.DonatableComponent(d))}
-          </div>
-        case _ => <div>Failure!</div>
+    States.donatables
+      .map { donatables =>
+        <div>
+          {donatables.map(DonatableComponent)}
+        </div>
       }
 }

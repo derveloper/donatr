@@ -1,6 +1,6 @@
 package donatrui
 
-import donatrui.Api.{Donater, DonaterCreatedEvent, DonaterUpdatedEvent}
+import donatrui.Api.{Donatable, Donater, DonaterCreatedEvent, DonaterUpdatedEvent}
 import mhtml.{Cancelable, Var}
 
 import scala.scalajs.js
@@ -9,6 +9,7 @@ import scala.xml.Elem
 
 object States {
   val donaters: Var[List[Donater]] = Var(List.empty)
+  val donatables: Var[List[Donatable]] = Var(List.empty)
   val currentDonater: Var[Option[Donater]] = Var(None)
   val currentNav: Var[Elem] = Var(Layout.donaterNavBar)
   val currentView = Var(<span/>)
