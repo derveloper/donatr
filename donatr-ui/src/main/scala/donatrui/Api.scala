@@ -136,6 +136,13 @@ object Api {
     ))), f => f)
   }
 
+  def donate(donater: Donater, value: Double): Rx[Option[Try[js.Dynamic]]] = {
+    post("/api/donations", InputData.str2ajax(JSON.stringify(js.Dynamic.literal(
+      to = donater.id,
+      value = value
+    ))), f => f)
+  }
+
   private def fetch[Out](url: String, f: js.Dynamic => Out) = {
     doGetRequest(s"$url")(s => JSON.parse(s))
       .map { d => d.map(d2 => d2.map(d3 => f(d3))) }

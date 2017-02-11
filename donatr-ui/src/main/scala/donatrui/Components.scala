@@ -94,6 +94,27 @@ object Components {
     </div>
   }
 
+  def DepositDialog(): Elem = {
+    val value = Var(0.0)
+
+    def onSubmit(e: Event) = {
+      e.preventDefault()
+      Api.donate(currentDonater.value.get, value.value)
+      currentDialog := None
+    }
+
+    <div class="swal2-modal swal2-show">
+      <h2>Deposit!</h2>
+      <div class="swal2-content">
+        <form onsubmit={onSubmit _}>
+          <input required={true}
+                 oninput={inputEvent(value := _.value.toDouble)}
+                 type="number" step="any" placeholder="amount" />
+          <button class="swal2-styled" type="submit">Deposit</button></form>
+      </div>
+    </div>
+  }
+
   def BaseDialog(): Rx[Elem] = {
     currentDialog.map {
       case Some(dialog) =>

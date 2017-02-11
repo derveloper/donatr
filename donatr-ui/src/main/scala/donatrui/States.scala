@@ -47,5 +47,6 @@ object States {
       updateState(obj.asInstanceOf[DonaterCreatedEvent])
     case 'DonatableCreated =>
       updateState(obj.asInstanceOf[DonatableCreatedEvent])
+    case _ =>
   }
 }

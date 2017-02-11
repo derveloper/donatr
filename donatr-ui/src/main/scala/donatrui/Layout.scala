@@ -15,6 +15,10 @@ object Layout {
     currentDialog := Some(Components.CreateDonatableDialog())
   }
 
+  private def createLedgerDonation(event: Event): Unit = {
+    currentDialog := Some(Components.DepositDialog())
+  }
+
   val donaterNavBar: Elem = {
     <ul class={DonatrStyles.nav.htmlClass}>
       <li onclick={createDonater _} class={DonatrStyles.navItem.htmlClass}>+user</li>
@@ -24,7 +28,7 @@ object Layout {
   val donatableNavBar: Elem = {
     <ul class={DonatrStyles.nav.htmlClass}>
       <li onclick={createDonatable _} class={DonatrStyles.navItem.htmlClass}>+item</li>
-      <li class={DonatrStyles.navItem.htmlClass}>+€</li>
+      <li onclick={createLedgerDonation _} class={DonatrStyles.navItem.htmlClass}>+€</li>
       <li class={DonatrStyles.navItem.htmlClass}>>funding</li>
     </ul>
   }
