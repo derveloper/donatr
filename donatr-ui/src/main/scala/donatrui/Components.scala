@@ -64,7 +64,7 @@ object Components {
           </div>
           <div>{d.balance}</div>
         </div>
-      }).getOrElse(<span>select user</span>)}
+      }).getOrElse(<span class={DonatrStyles.currentDonaterAvatarName.htmlClass}>select user</span>)}
     </div>
   }
 

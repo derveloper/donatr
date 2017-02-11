@@ -40,7 +40,7 @@ object Layout {
       <li onclick={deposit _} class={DonatrStyles.navItem.htmlClass}>+€</li>
       <li class={DonatrStyles.navItem.htmlClass}>
         {currentDonater.map {
-          case Some(d) => <a href={s"#/${d.id}/fundables"}>&lt;funding</a>
+          case Some(d) => <a href={s"#/${d.id}/fundables"}>&gt;funding</a>
           case _ => <span/>
       }}
       </li>

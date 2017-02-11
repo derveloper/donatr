@@ -36,7 +36,9 @@ object DonatrStyles extends StyleSheet.Inline {
   )
 
   val currentDonaterAvatarName = style(
-    verticalAlign.middle
+    verticalAlign.middle,
+    display.inlineBlock,
+    lineHeight(3 rem)
   )
 
   val currentDonaterAvatarImage = style(
@@ -45,10 +47,11 @@ object DonatrStyles extends StyleSheet.Inline {
 
   val currentDonater = style(
     commonBorder,
-    width(80 vw),
-    margin(0 px, auto),
+    width :=! "calc((100 vw) - (2 rem))",
+    margin(0 px, 1 rem),
     fontSize(1.4 rem),
     padding(0.8 rem),
+    height(3 rem),
     &.active(
       backgroundColor(rgba(0, 255, 0, 0.3))
     )
@@ -62,11 +65,15 @@ object DonatrStyles extends StyleSheet.Inline {
 
   )
 
-  val nav = style()
+  val nav = style(
+    height(3 rem)
+  )
   val navItem = style(
     display.inlineBlock,
     listStyleType := "none",
-    fontSize(1.4 rem)
+    fontSize(1.4 rem),
+    lineHeight(4 rem),
+    marginRight(2 rem)
   )
   val hr = style(border(1 px, solid, rgb(0, 255, 0)))
 }
