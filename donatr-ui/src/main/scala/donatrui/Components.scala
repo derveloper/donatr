@@ -1,7 +1,8 @@
 package donatrui
 
 import donatrui.Api.{Donatable, Donater}
-import org.scalajs.dom.Event
+import mhtml.{Rx, Var}
+import org.scalajs.dom.{Event, Node}
 
 import scala.xml.Elem
 
@@ -49,5 +50,34 @@ object Components {
         </div>
       }).getOrElse(<span>select user</span>)}
     </div>
+  }
+
+  def CreateUserDialog(): Elem = {
+    val name = Var("")
+    val email = Var("")
+    <div class="swal2-modal swal2-show">
+      <h2>Create a User</h2>
+      <div class="swal2-content">
+        <input onchange={inputEvent(name := _.value)} />
+        <input onchange={inputEvent(name := _.value)} />
+        <button class="swal2-styled" type="submit">Create</button>
+      </div>
+    </div>
+  }
+
+  def BaseDialog(): Rx[Elem] = {
+    currentDialog.map {
+      case Some(dialog) =>
+        <div onclick={(e: Event) => {
+          // TODO: get rid of this nasty hack
+          val cls = e.target.asInstanceOf[Node].attributes.getNamedItem("class")
+          if(cls != null && cls.value.contains("swal2-in"))
+            currentDialog := None
+        }}
+             class="swal2-container swal2-fade swal2-in">
+          {dialog}
+        </div>
+      case None => <span/>
+    }
   }
 }

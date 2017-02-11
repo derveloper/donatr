@@ -8,7 +8,7 @@ object Layout {
   import States._
 
   private def createUser(event: Event): Unit = {
-    swal(swalOptions(title = "FOOOOOOdadsO", onOpen = _ => println("foooo")))
+    currentDialog := Some(Components.CreateUserDialog())
   }
 
   val donaterNavBar: Elem = {

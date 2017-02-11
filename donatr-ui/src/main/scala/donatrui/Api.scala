@@ -68,6 +68,14 @@ object Api {
         f(x.responseText)
       }))
 
+  def createDonater(name: String, email: String): Unit = {
+    post("/api/donaters", InputData.str2ajax(JSON.stringify(js.Dynamic.literal(
+      name = name,
+      email = email,
+      balance = 0
+    ))), f => f)
+  }
+
   def fetchDonater(id: String): Rx[Option[Try[Donater]]] = {
     fetch(s"/api/donaters/$id", f => f.asInstanceOf[Donater])
   }
@@ -84,7 +92,7 @@ object Api {
     fetch("/api/donatables", f => f.asInstanceOf[Array[Donatable]].toList)
   }
 
-  def donate(donater: Donater, donatable: Donatable) = {
+  def donate(donater: Donater, donatable: Donatable): Rx[Option[Try[js.Dynamic]]] = {
     post("/api/donations", InputData.str2ajax(JSON.stringify(js.Dynamic.literal(
       from = donater.id,
       to = donatable.id,
