@@ -44,8 +44,8 @@ object Layout {
           case _ => <span/>
       }}
       </li>
-      <li>x{ currentMultiplicator.map { m => {
-          <input value={s"$m"}
+      <li class={DonatrStyles.navItem.htmlClass}>x{ currentMultiplicator.map { m => {
+          <input class="multiplicator" value={s"$m"}
                  type="number"
                  onblur={inputEvent(currentMultiplicator := _.value.toInt)} />}}}
       </li>
@@ -67,7 +67,7 @@ object Layout {
 
   def main: Elem = {
     <div id="app">
-      <h1 class={DonatrStyles.header.htmlClass}>donatr</h1>
+      <h1 class={DonatrStyles.header.htmlClass}><a href="#/">donatr</a></h1>
       {currentDonater.map(d => Components.CurrentDonaterComponent(d))}
       {States.currentNav}
       <hr class={DonatrStyles.hr.htmlClass}/>
