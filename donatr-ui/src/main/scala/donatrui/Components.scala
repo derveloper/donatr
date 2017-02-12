@@ -1,7 +1,9 @@
 package donatrui
 
 import donatrui.Api.{Donatable, Donater, Fundable}
+import donatrui.Router.router
 import mhtml.{Rx, Var}
+import org.scalajs.dom
 import org.scalajs.dom.{Event, Node}
 
 import scala.xml.Elem
@@ -9,18 +11,28 @@ import scala.xml.Elem
 object Components {
   import States._
 
-  def DonaterComponent(donater: Donater): Elem = {
+  def Link(href: String, child: Elem): Elem = {
     def onClick(event: Event): Unit = {
-      currentDonater := Some(donater)
+      event.stopPropagation()
+      event.preventDefault()
+      dom.window.history.pushState(href, null, href)
+      router(href, Routes.routes)
     }
+    <a onclick={onClick _} href={href}>
+      {child}
+    </a>
+  }
 
+  def DonaterComponent(donater: Donater): Elem = {
     <div class={"DonatrStyles-donater"}>
-      <a onclick={onClick _} href={s"#/${donater.id}/donatables"}>
-        <img src={s"https://www.gravatar.com/avatar/${md5(donater.email)}?s=115"}/>
-        <div class={"DonatrStyles-donaterName"}>
-          {donater.name}
-        </div>
-      </a>
+      {Link(s"/${donater.id}/donatables", {
+        <span>
+          <img src={s"https://www.gravatar.com/avatar/${md5(donater.email)}?s=115"}/>
+          <div class={"DonatrStyles-donaterName"}>
+            {donater.name}
+          </div>
+        </span>
+      })}
     </div>
   }
 

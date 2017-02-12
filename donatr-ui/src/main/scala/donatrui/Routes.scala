@@ -45,7 +45,7 @@ object Routes {
     currentNav := Layout.donaterNavBar
   }
 
-  val routes: List[(String, (Map[String, String]) => Unit)] = List(
+  lazy val routes: List[(String, (Map[String, String]) => Unit)] = List(
     "/:donaterId/donatables" -> Routes.donatablesRoute,
     "/:donaterId/fundables" -> Routes.fundablesRoute,
     "/" -> Routes.donatersRoute

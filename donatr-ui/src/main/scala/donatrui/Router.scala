@@ -1,12 +1,18 @@
 package donatrui
 
 import org.scalajs.dom
+import org.scalajs.dom.{Event, PopStateEvent}
 
 object Router {
   def init(routes: List[(String, (Map[String, String]) => Unit)]): Unit = {
     dom.window.onhashchange = (e) => {
+      println(e)
       router(dom.window.location.hash, routes)
     }
+    dom.window.addEventListener("popstate", (e: Event) => {
+      val poppedRoute = Option.apply(e.asInstanceOf[PopStateEvent].state.asInstanceOf[String]).getOrElse("/")
+      router(poppedRoute, routes)
+    })
     router(dom.window.location.hash, routes)
   }
 

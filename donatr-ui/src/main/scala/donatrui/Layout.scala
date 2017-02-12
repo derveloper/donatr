@@ -1,6 +1,7 @@
 package donatrui
 
 import donatrui.Api.Fundable
+import donatrui.Components.Link
 import org.scalajs.dom.Event
 
 import scala.xml.Elem
@@ -40,7 +41,8 @@ object Layout {
       <li onclick={deposit _} class={"DonatrStyles-navItem"}>+€</li>
       <li class={"DonatrStyles-navItem"}>
         {currentDonater.map {
-          case Some(d) => <a href={s"#/${d.id}/fundables"}>&gt;funding</a>
+          case Some(d) =>
+            Link(s"/${d.id}/fundables", <span>&gt;funding</span>)
           case _ => <span/>
       }}
       </li>
@@ -58,7 +60,8 @@ object Layout {
       <li onclick={deposit _} class={"DonatrStyles-navItem"}>+€</li>
       <li class={"DonatrStyles-navItem"}>
         {currentDonater.map {
-          case Some(d) => <a href={s"#/${d.id}/donatables"}>&lt;items</a>
+          case Some(d) =>
+            Link(s"/${d.id}/donatables", <span>&lt;items</span>)
           case _ => <span/>
       }}
       </li>
