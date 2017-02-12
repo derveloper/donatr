@@ -41,7 +41,9 @@ object DonatrVertxServer {
     router.route().handler(BodyHandler.create())
 
     router.get("/api/donaters").handler { ctx =>
-      ok(ctx, donatr.donaters.map(_._2.asJson).asJson.noSpaces)
+      ok(ctx, donatr.donaters.values.toList
+        .sortWith { (a, b) => a.name.compareTo(b.name) < 0 }
+        .asJson.noSpaces)
     }
 
     router.get("/api/donaters/:donaterId").handler { ctx =>
@@ -52,7 +54,7 @@ object DonatrVertxServer {
     router.get("/api/donatables").handler { ctx =>
       ok(ctx, donatr.donatables.values.toList
         .sortBy(_.balance)
-        .reverse.map(_.asJson).asJson.noSpaces)
+        .reverse.asJson.noSpaces)
     }
 
     router.get("/api/fundables").handler { ctx =>
@@ -117,15 +119,15 @@ object DonatrVertxServer {
     }
 
     decode[DonationWithoutId](ctx.getBodyAsString.getOrElse(""))
-        .fold(
-          err => decode[DonationWithoutIdAndFrom](ctx.getBodyAsString.getOrElse(""))
-            .flatMap(d => donatr.processCommand(CreateLedgerDonation(d)))
-            .map(_.donation)
-            .fold(badRequest(ctx, _), handleSuccess),
-          d => donatr.processCommand(CreateDonation(d))
-            .map(_.donation)
-            .fold(badRequest(ctx, _), handleSuccess)
-        )
+      .fold(
+        err => decode[DonationWithoutIdAndFrom](ctx.getBodyAsString.getOrElse(""))
+          .flatMap(d => donatr.processCommand(CreateLedgerDonation(d)))
+          .map(_.donation)
+          .fold(badRequest(ctx, _), handleSuccess),
+        d => donatr.processCommand(CreateDonation(d))
+          .map(_.donation)
+          .fold(badRequest(ctx, _), handleSuccess)
+      )
   }
 
   private def ok(ctx: RoutingContext, json: String) = {

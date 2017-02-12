@@ -1,14 +1,12 @@
 package donatrui
 
 
-import donatrui.States._
-
 import scala.language.implicitConversions
 import scala.xml.Elem
 
 case class Bool(b: Boolean) {
-  def :?[X](t: => X) = new {
-    if(b) t
+  def :?[X](t: => X): Object = new {
+    if (b) t
   }
 }
 
@@ -17,6 +15,8 @@ object Bool {
 }
 
 object Routes {
+  import donatrui.States._
+  import scala.collection.immutable.ListMap
   import Bool._
 
   def updateCurrentView(view: Elem, after: Unit => Unit = () => _): Unit = {
@@ -25,10 +25,10 @@ object Routes {
   }
 
   def donatablesRoute(params: Map[String, String]): Unit = {
-    println("donatablesRoute")
     donatables.value.isEmpty :? Api.fetchDonatables.foreach(l => donatables := l)
     Views.donatablesView()
-      .foreach(updateCurrentView(_, _ => {println("each donatableview"); States.setCurrentDonater(params("donaterId"))}))
+      .foreach(updateCurrentView(_, _ => {
+        States.setCurrentDonater(params("donaterId"))}))
     currentNav := Layout.donatableNavBar
   }
 
@@ -40,7 +40,7 @@ object Routes {
   }
 
   def donatersRoute(params: Map[String, String]): Unit = {
-    donaters.value.isEmpty :? Api.fetchDonaters.foreach(l => donaters := l.map(e => e.id -> e).toMap)
+    donaters.value.isEmpty :? Api.fetchDonaters.foreach(l => donaters := ListMap(l.map(e => e.id -> e):_*))
     Views.donatersView()
       .foreach(updateCurrentView(_, _ => States.unsetCurrentDonater()))
     currentNav := Layout.donaterNavBar

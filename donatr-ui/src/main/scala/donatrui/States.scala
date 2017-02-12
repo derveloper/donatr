@@ -8,7 +8,9 @@ import scala.util.Success
 import scala.xml.Elem
 
 object States {
-  val donaters: Var[Map[String, Donater]] = Var(Map.empty)
+  import scala.collection.immutable.ListMap
+
+  val donaters: Var[ListMap[String, Donater]] = Var(ListMap.empty)
   val donatables: Var[List[Donatable]] = Var(List.empty)
   val fundables: Var[List[Fundable]] = Var(List.empty)
   val currentDonater: Var[Option[Donater]] = Var(None)
@@ -18,11 +20,10 @@ object States {
   val currentMultiplicator: Var[Int] = Var(1)
 
   def setCurrentDonater(donaterId: String): Unit = {
-    println("setCurrentDonater")
     if ((currentDonater.value.nonEmpty
         && currentDonater.value.get.id != donaterId)
     || currentDonater.value.isEmpty) {
-      if(donaters.value.contains(donaterId)) {
+      if (donaters.value.contains(donaterId)) {
         currentDonater := Some(donaters.value(donaterId))
       }
       else {
@@ -58,7 +59,7 @@ object States {
 
   def updateState(event: FundableUpdatedEvent): Unit = {
     fundables := fundables.value.map { f =>
-      if(f.id == event.FundableUpdated.fundable.id) event.FundableUpdated.fundable
+      if (f.id == event.FundableUpdated.fundable.id) event.FundableUpdated.fundable
       else f
     }
   }
