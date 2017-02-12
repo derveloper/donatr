@@ -40,7 +40,7 @@ object Routes {
   }
 
   def donatersRoute(params: Map[String, String]): Unit = {
-    donaters.value.isEmpty :? Api.fetchDonaters.foreach(l => donaters := l)
+    donaters.value.isEmpty :? Api.fetchDonaters.foreach(l => donaters := l.map(e => e.id -> e).toMap)
     Views.donatersView()
       .foreach(updateCurrentView(_, _ => States.unsetCurrentDonater()))
     currentNav := Layout.donaterNavBar

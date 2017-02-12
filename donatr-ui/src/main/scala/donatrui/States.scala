@@ -8,7 +8,7 @@ import scala.util.Success
 import scala.xml.Elem
 
 object States {
-  val donaters: Var[List[Donater]] = Var(List.empty)
+  val donaters: Var[Map[String, Donater]] = Var(Map.empty)
   val donatables: Var[List[Donatable]] = Var(List.empty)
   val fundables: Var[List[Fundable]] = Var(List.empty)
   val currentDonater: Var[Option[Donater]] = Var(None)
@@ -22,12 +22,17 @@ object States {
     if ((currentDonater.value.nonEmpty
         && currentDonater.value.get.id != donaterId)
     || currentDonater.value.isEmpty) {
-      Api.fetchDonater(donaterId).foreach {
-        case None => None
-        case Some(Success(donater)) =>
-          currentDonater := Some(donater)
-        case _ => None
-      }.cancel
+      if(donaters.value.contains(donaterId)) {
+        currentDonater := Some(donaters.value(donaterId))
+      }
+      else {
+        Api.fetchDonater(donaterId).foreach {
+          case None => None
+          case Some(Success(donater)) =>
+            currentDonater := Some(donater)
+          case _ => None
+        }.cancel
+      }
     }
   }
 
@@ -40,7 +45,7 @@ object States {
   }
 
   def updateState(event: DonaterCreatedEvent): Unit = {
-    donaters := donaters.value :+ event.DonaterCreated.donater
+    donaters := donaters.value + (event.DonaterCreated.donater.id -> event.DonaterCreated.donater)
   }
 
   def updateState(event: DonatableCreatedEvent): Unit = {

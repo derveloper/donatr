@@ -10,7 +10,7 @@ object Views {
     States.donaters
       .map { donaters =>
         <div>
-          {donaters.map(DonaterComponent)}
+          {donaters.values.map(DonaterComponent).toList}
         </div>
       }
   }
