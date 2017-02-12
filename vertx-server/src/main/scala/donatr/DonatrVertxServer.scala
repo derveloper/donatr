@@ -42,7 +42,7 @@ object DonatrVertxServer {
 
     router.get("/api/donaters").handler { ctx =>
       ok(ctx, donatr.donaters.values.toList
-        .sortWith { (a, b) => a.name.compareTo(b.name) < 0 }
+        .sortBy(_.name)
         .asJson.noSpaces)
     }
 
