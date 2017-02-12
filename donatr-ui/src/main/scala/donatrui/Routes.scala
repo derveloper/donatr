@@ -25,9 +25,10 @@ object Routes {
   }
 
   def donatablesRoute(params: Map[String, String]): Unit = {
+    println("donatablesRoute")
     donatables.value.isEmpty :? Api.fetchDonatables.foreach(l => donatables := l)
     Views.donatablesView()
-      .foreach(updateCurrentView(_, _ => States.setCurrentDonater(params("donaterId"))))
+      .foreach(updateCurrentView(_, _ => {println("each donatableview"); States.setCurrentDonater(params("donaterId"))}))
     currentNav := Layout.donatableNavBar
   }
 

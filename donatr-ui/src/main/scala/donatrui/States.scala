@@ -1,7 +1,7 @@
 package donatrui
 
 import donatrui.Api._
-import mhtml.{Cancelable, Var}
+import mhtml.Var
 
 import scala.scalajs.js
 import scala.util.Success
@@ -17,12 +17,17 @@ object States {
   val currentDialog: Var[Option[Elem]] = Var(None)
   val currentMultiplicator: Var[Int] = Var(1)
 
-  def setCurrentDonater(donaterId: String): Cancelable = {
-    Api.fetchDonater(donaterId).foreach {
-      case None => None
-      case Some(Success(donater)) =>
-        currentDonater := Some(donater)
-      case _ => None
+  def setCurrentDonater(donaterId: String): Unit = {
+    println("setCurrentDonater")
+    if ((currentDonater.value.nonEmpty
+        && currentDonater.value.get.id != donaterId)
+    || currentDonater.value.isEmpty) {
+      Api.fetchDonater(donaterId).foreach {
+        case None => None
+        case Some(Success(donater)) =>
+          currentDonater := Some(donater)
+        case _ => None
+      }.cancel
     }
   }
 

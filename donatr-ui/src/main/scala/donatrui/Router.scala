@@ -13,7 +13,7 @@ object Router {
       val poppedRoute = Option.apply(e.asInstanceOf[PopStateEvent].state.asInstanceOf[String]).getOrElse("/")
       router(poppedRoute, routes)
     })
-    router(dom.window.location.hash, routes)
+    router(dom.window.location.pathname, routes)
   }
 
   def router(uRL: String, routes: List[(String, (Map[String, String]) => Unit)]): Unit = {

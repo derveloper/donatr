@@ -70,7 +70,7 @@ object Layout {
 
   def main: Elem = {
     <div id="app">
-      <h1 class={"DonatrStyles-header"}><a href="#/">donatr</a></h1>
+      <h1 class={"DonatrStyles-header"}>{Link("/", <span>donatr</span>)}</h1>
       {currentDonater.map(d => Components.CurrentDonaterComponent(d))}
       {States.currentNav}
       <hr class={"DonatrStyles-hr"}/>
