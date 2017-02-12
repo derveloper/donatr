@@ -160,6 +160,8 @@ input.multiplicator {
     padding-left: 0.5rem;
     padding-bottom: 0.3rem;
     word-wrap: break-word;
+    display: inline-block;
+    width: 115px;
 }
 
 .DonatrStyles-nav {
