@@ -15,7 +15,7 @@ object DonatrToDonatr2 {
 
   def main(args: Array[String]): Unit = {
     val oldDonatrUrl = new URL("http://mete.fnord.fnet:80")
-    val newDonatrUrl = new URL("http://localhost:8080")
+    val newDonatrUrl = new URL("http://donatr.fnord.fnet:80")
     val vertx = Vertx.vertx()
     val oldClient = vertx.createHttpClient(HttpClientOptions()
       .setDefaultHost(oldDonatrUrl.getHost)

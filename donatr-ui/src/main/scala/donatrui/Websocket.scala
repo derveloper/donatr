@@ -8,8 +8,8 @@ import scala.scalajs.js.JSON
 
 object Websocket {
   def init(): Unit = {
-    val schema =  if(dom.window.location.port == "") "wss://" else "ws://"
-    val port = if(dom.window.location.port == "") "" else ":"+dom.window.location.port
+    val schema =  if (dom.window.location.protocol == "https:") "wss://" else "ws://"
+    val port = if (dom.window.location.port == "") "" else ":"+dom.window.location.port
     val wss = schema+dom.window.location.hostname+port+"/api/events"
     val ws = new WebSocket(wss)
     ws.onmessage = (msg) => {
