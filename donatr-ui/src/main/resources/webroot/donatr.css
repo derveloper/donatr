@@ -1,3 +1,99 @@
+* {
+    font-family: monospace;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #000;
+    color: #00ff00;
+    font-size: 16px;
+}
+
+a, a:hover {
+    color: #00ff00;
+    text-decoration: none;
+    display: inline-block;
+}
+
+a:active {
+    color: #00ff00;
+    background-color: rgba(0, 255, 0, 0.3);
+}
+
+input {
+    font-size: 1.5rem;
+    border: none;
+    border-bottom: 2px solid #00ff00;
+    background-color: #000;
+    color: #00ff00;
+    display: block;
+    margin: 1rem;
+}
+
+a, button {
+    outline: 0;
+}
+
+ul {
+    margin: 0 1rem;
+    padding: 0;
+}
+
+input.multiplicator {
+    display: inline-block;
+    width: 2rem;
+    text-align: right;
+}
+
+.swal2-modal button.swal2-styled {
+    margin-bottom: 1rem;
+    margin-top: 2rem;
+}
+
+.swal2-modal {
+    background-color: #000;
+    border: solid 0.1rem #00ff00;
+    border-radius: 0;
+    color: #00ff00;
+    display: block;
+    padding: 1rem 6rem;
+}
+
+.swal2-modal h2 {
+    margin-bottom: 2rem;
+}
+
+.swal2-modal .swal2-title {
+    color: #00ff00;
+}
+
+.swal2-modal input.swal2-donatr-input {
+    border: solid 0.1rem #00ff00;
+    border-radius: 0;
+}
+
+.swal2-icon.swal2-success .fix {
+    background-color: #000;
+}
+.swal2-icon.swal2-success::after,
+.swal2-icon.swal2-success::before {
+    background-color: #000;
+}
+
+.swal2-modal .swal2-input[type=number] {
+    max-width: none;
+    width: 100%;
+    text-align: right;
+}
+
+.swal2-modal .swal2-styled {
+    border-radius: 0;
+    border: 0.1rem solid #00ff00 !important;
+    background-color: #000;
+    color: #00ff00 !important;
+}
+
 .DonatrStyles-header {
     text-align: center;
 }
