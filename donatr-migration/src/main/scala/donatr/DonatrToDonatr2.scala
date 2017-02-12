@@ -40,7 +40,7 @@ object DonatrToDonatr2 {
     val oldDonatablesFuture = oldDonatablesPromise.future
     oldClient.get("/api/aggregate/donatable").handler { response =>
       response.bodyHandler { body =>
-        oldPromise.success(body.toJsonObject.getJsonArray("donatables"))
+        oldDonatablesPromise.success(body.toJsonObject.getJsonArray("donatables"))
       }
     }.end()
 
