@@ -5,7 +5,7 @@ import java.util.UUID
 import io.vertx.core.impl.FileResolver
 import io.vertx.scala.core.Vertx
 import io.vertx.scala.core.http.{HttpServerOptions, ServerWebSocket}
-import io.vertx.scala.ext.web.handler.{BodyHandler, CorsHandler, StaticHandler}
+import io.vertx.scala.ext.web.handler.{BodyHandler, CorsHandler}
 
 object DonatrVertxServer {
 
@@ -67,14 +67,11 @@ object DonatrVertxServer {
     router.post("/api/donations").handler(postDonation)
 
     router.get("/favicon.ico").handler(ctx => ctx.response().sendFile("webroot/favicon.ico"))
-    router.get("/static/*").handler(StaticHandler.create("webroot/static"))
-    router.get("/2/donatrui-opt.js").handler(ctx => ctx.response().sendFile("webroot2/donatrui-opt.js"))
-    router.get("/2/sweetalert2.min.css").handler(ctx => ctx.response().sendFile("webroot2/sweetalert2.min.css"))
-    router.get("/2/donatr.css").handler(ctx => ctx.response().sendFile("webroot2/donatr.css"))
-    router.get("/2/donatrui-jsdeps.js").handler(ctx => ctx.response().sendFile("webroot2/donatrui-jsdeps.js"))
-    router.get("/2/donatrui-opt.js.map").handler(ctx => ctx.response().sendFile("webroot2/donatrui-opt.js.map"))
-    router.get("/2/*").handler(ctx => ctx.response().sendFile("webroot2/index.html"))
-
+    router.get("/donatrui-opt.js").handler(ctx => ctx.response().sendFile("webroot/donatrui-opt.js"))
+    router.get("/sweetalert2.min.css").handler(ctx => ctx.response().sendFile("webroot/sweetalert2.min.css"))
+    router.get("/donatr.css").handler(ctx => ctx.response().sendFile("webroot/donatr.css"))
+    router.get("/donatrui-jsdeps.js").handler(ctx => ctx.response().sendFile("webroot/donatrui-jsdeps.js"))
+    router.get("/donatrui-opt.js.map").handler(ctx => ctx.response().sendFile("webroot/donatrui-opt.js.map"))
     router.get("/*").handler(ctx => ctx.response().sendFile("webroot/index.html"))
 
     val options = HttpServerOptions()

@@ -83,15 +83,15 @@ lazy val donatrUi = (project in file("./donatr-ui")).
     ),
     emitSourceMaps := true,
     artifactPath in (Compile, fastOptJS) :=
-      ((crossTarget in (Compile, fastOptJS)).value / "classes" / "webroot2" /
+      ((crossTarget in (Compile, fastOptJS)).value / "classes" / "webroot" /
         ((moduleName in fastOptJS).value + "-opt.js")),
     artifactPath in (Compile, fullOptJS) :=
-      ((crossTarget in (Compile, fullOptJS)).value / "classes" / "webroot2" /
+      ((crossTarget in (Compile, fullOptJS)).value / "classes" / "webroot" /
         ((moduleName in fullOptJS).value + "-opt.js")),
     artifactPath in (Compile, packageMinifiedJSDependencies) :=
-      ((crossTarget in (Compile, packageMinifiedJSDependencies)).value / "classes" / "webroot2" /
+      ((crossTarget in (Compile, packageMinifiedJSDependencies)).value / "classes" / "webroot" /
         ((moduleName in packageMinifiedJSDependencies).value + "-jsdeps.js")),
     artifactPath in (Compile, packageJSDependencies) :=
-      ((crossTarget in (Compile, packageJSDependencies)).value / "classes" / "webroot2" /
+      ((crossTarget in (Compile, packageJSDependencies)).value / "classes" / "webroot" /
         ((moduleName in packageJSDependencies).value + "-jsdeps.js"))
   ).enablePlugins(ScalaJSPlugin)
