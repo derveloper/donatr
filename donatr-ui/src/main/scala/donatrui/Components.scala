@@ -45,7 +45,7 @@ object Components {
     }
 
     <div onclick={onClick} class={"DonatrStyles-donater"}>
-      <img src={s"${donatable.imageUrl}"}/>
+      <img src={s"${donatable.imageUrl}"} width="115" height="115" />
       <div class={"DonatrStyles-donaterName"}>
         {donatable.name} / {donatable.minDonationAmount}
       </div>
@@ -58,7 +58,7 @@ object Components {
     }
 
     <div onclick={onClick} class={"DonatrStyles-donater"}>
-      <img src={s"${fundable.imageUrl}"}/>
+      <img src={s"${fundable.imageUrl}"} width="115" height="115" />
       <div class={"DonatrStyles-donaterName"}>
         {fundable.name} / {fundable.balance} / {fundable.fundingTarget}
       </div>
