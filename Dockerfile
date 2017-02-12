@@ -6,7 +6,7 @@ EXPOSE 8080
 
 RUN /bin/bash && rm -rf donatr \
     && git clone --depth 1 https://github.com/derveloper/donatr.git -b rewrite \
-    && cd /code/donatr && sbt dontrUi/fullOptJS assembly \
+    && cd /code/donatr && sbt donatrUi/fullOptJS assembly \
     && rm -rf /root/.m2 \
     ; rm -rf /root/.npm \
     ; rm -rf /root/.ivy2 \
