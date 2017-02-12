@@ -29,6 +29,13 @@ lazy val donatr = (project in file("."))
 lazy val donatrMigration = (project in file("./donatr-migration")).
   settings(
     resolvers += "Sonatype SNAPSHOTS" at "https://oss.sonatype.org/content/repositories/snapshots/",
+    assemblyMergeStrategy in assembly := {
+      case PathList("META-INF", "MANIFEST.MF") => MergeStrategy.discard
+      case PathList("META-INF", xs @ _*) => MergeStrategy.last
+      case PathList("META-INF", "io.netty.versions.properties") => MergeStrategy.last
+      case "codegen.json" => MergeStrategy.discard
+      case x => MergeStrategy.first
+    },
     libraryDependencies ++= Seq(
       "io.circe" %% "circe-core" % "0.7.0",
       "io.circe" %% "circe-generic" % "0.7.0",
