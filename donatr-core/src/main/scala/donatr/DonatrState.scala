@@ -17,11 +17,11 @@ case class DonatrState(
     case DonaterCreated(Donater(id, name, email, balance)) =>
       copy(donaters = donaters + (id -> Donater(id, name, email, balance)))
 
-    case DonatableCreated(Donatable(id, name, minDonationAmount, balance)) =>
-      copy(donatables = donatables + (id -> Donatable(id, name, minDonationAmount, balance)))
+    case DonatableCreated(Donatable(id, imageUrl, name, minDonationAmount, balance)) =>
+      copy(donatables = donatables + (id -> Donatable(id, imageUrl, name, minDonationAmount, balance)))
 
-    case FundableCreated(Fundable(id, name, fundingTarget, balance)) =>
-      copy(fundables = fundables + (id -> Fundable(id, name, fundingTarget, balance)))
+    case FundableCreated(Fundable(id, name, imageUrl, fundingTarget, balance)) =>
+      copy(fundables = fundables + (id -> Fundable(id, name, imageUrl, fundingTarget, balance)))
 
     case DonationCreated(Donation(id, from, to, value)) =>
       copy(donations = donations + (id -> Donation(id, from, to, value)))

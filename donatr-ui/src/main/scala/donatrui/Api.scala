@@ -32,6 +32,7 @@ object Api {
   trait Donatable extends js.Object {
     val id: String = js.native
     val name: String = js.native
+    val imageUrl: String = js.native
     val minDonationAmount: Double = js.native
   }
 
@@ -39,6 +40,7 @@ object Api {
   trait Fundable extends js.Object {
     val id: String = js.native
     val name: String = js.native
+    val imageUrl: String = js.native
     val fundingTarget: Double = js.native
     val balance: Double = js.native
   }
@@ -132,17 +134,19 @@ object Api {
     ))), f => f)
   }
 
-  def createDonatable(name: String, minDonationAmount: Double): Unit = {
+  def createDonatable(name: String, imageUrl: String, minDonationAmount: Double): Unit = {
     post("/api/donatables", InputData.str2ajax(JSON.stringify(js.Dynamic.literal(
       name = name,
+      imageUrl = imageUrl,
       minDonationAmount = minDonationAmount,
       balance = 0
     ))), f => f)
   }
 
-  def createFundable(name: String, fundingTarget: Double): Unit = {
+  def createFundable(name: String, imageUrl: String, fundingTarget: Double): Unit = {
     post("/api/fundables", InputData.str2ajax(JSON.stringify(js.Dynamic.literal(
       name = name,
+      imageUrl = imageUrl,
       fundingTarget = fundingTarget,
       balance = 0
     ))), f => f)

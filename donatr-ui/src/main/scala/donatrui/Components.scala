@@ -45,7 +45,7 @@ object Components {
     }
 
     <div onclick={onClick} class={"DonatrStyles-donater"}>
-      <img src={s"https://www.gravatar.com/avatar/${md5(donatable.name)}?s=115"}/>
+      <img src={s"${donatable.imageUrl}"}/>
       <div class={"DonatrStyles-donaterName"}>
         {donatable.name} / {donatable.minDonationAmount}
       </div>
@@ -58,7 +58,7 @@ object Components {
     }
 
     <div onclick={onClick} class={"DonatrStyles-donater"}>
-      <img src={s"https://www.gravatar.com/avatar/${md5(fundable.name)}?s=115"}/>
+      <img src={s"${fundable.imageUrl}"}/>
       <div class={"DonatrStyles-donaterName"}>
         {fundable.name} / {fundable.balance} / {fundable.fundingTarget}
       </div>
@@ -103,11 +103,12 @@ object Components {
 
   def CreateDonatableDialog(): Elem = {
     val name = Var("")
+    val imageUrl = Var("")
     val minDonationAmount = Var(0.0)
 
     def onSubmit(e: Event) = {
       e.preventDefault()
-      Api.createDonatable(name.value, minDonationAmount.value)
+      Api.createDonatable(name.value, imageUrl.value, minDonationAmount.value)
       currentDialog := None
     }
 
@@ -116,6 +117,7 @@ object Components {
       <div class="swal2-content">
         <form onsubmit={onSubmit _}>
           <input required={true} oninput={inputEvent(name := _.value)} placeholder="name" />
+          <input required={true} oninput={inputEvent(imageUrl := _.value)} placeholder="image url" />
           <input required={true} oninput={inputEvent(minDonationAmount := _.value.toDouble)}
                  type="number" step="any" placeholder="price" />
           <button class="swal2-styled" type="submit">Create</button></form>
@@ -125,11 +127,12 @@ object Components {
 
   def CreateFundableDialog(): Elem = {
     val name = Var("")
+    val imageUrl = Var("")
     val fundingTarget = Var(0.0)
 
     def onSubmit(e: Event) = {
       e.preventDefault()
-      Api.createFundable(name.value, fundingTarget.value)
+      Api.createFundable(name.value, imageUrl.value, fundingTarget.value)
       currentDialog := None
     }
 
@@ -138,6 +141,7 @@ object Components {
       <div class="swal2-content">
         <form onsubmit={onSubmit _}>
           <input required={true} oninput={inputEvent(name := _.value)} placeholder="name" />
+          <input required={true} oninput={inputEvent(imageUrl := _.value)} placeholder="image url" />
           <input required={true} oninput={inputEvent(fundingTarget := _.value.toDouble)}
                  type="number" step="any" placeholder="funding target" />
           <button class="swal2-styled" type="submit">Create</button></form>

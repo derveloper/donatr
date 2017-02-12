@@ -16,19 +16,23 @@ case class DonaterWithoutId(name: String,
 
 case class Donatable(id: UUID,
                      name: String,
+                     imageUrl: String,
                      minDonationAmount: BigDecimal,
                      balance: BigDecimal)
 
 case class DonatableWithoutId(name: String,
+                              imageUrl: String,
                               minDonationAmount: BigDecimal,
                               balance: BigDecimal)
 
 case class Fundable(id: UUID,
                     name: String,
+                    imageUrl: String,
                     fundingTarget: BigDecimal,
                     balance: BigDecimal = 0)
 
 case class FundableWithoutId(name: String,
+                             imageUrl: String,
                              fundingTarget: BigDecimal,
                              balance: BigDecimal)
 

@@ -3,7 +3,7 @@ import org.scalajs.sbtplugin.ScalaJSPlugin.AutoImport.{fullOptJS, packageMinifie
 
 
 lazy val donatr = (project in file("."))
-  .aggregate(donatrCore, vertxServer, donatrUi)
+  .aggregate(donatrCore, vertxServer, donatrUi, donatrMigration)
   .settings(
     inThisBuild(List(
       organization := "de.fnordeingang",
@@ -25,6 +25,21 @@ lazy val donatr = (project in file("."))
       case x => MergeStrategy.first
     }
   ).dependsOn(donatrCore, vertxServer)
+
+lazy val donatrMigration = (project in file("./donatr-migration")).
+  settings(
+    resolvers += "Sonatype SNAPSHOTS" at "https://oss.sonatype.org/content/repositories/snapshots/",
+    libraryDependencies ++= Seq(
+      "io.circe" %% "circe-core" % "0.7.0",
+      "io.circe" %% "circe-generic" % "0.7.0",
+      "io.circe" %% "circe-parser" % "0.7.0",
+      "org.slf4j" % "slf4j-api" % "1.7.22",
+      Dependencies.vertxLangScala.exclude("io.vertx", "vertx-codegen"),
+      Dependencies.vertxCodegen,
+      Dependencies.vertxWeb.exclude("io.vertx", "vertx-codegen"),
+      "ch.qos.logback" % "logback-classic" % "1.1.10"
+    )
+  ).dependsOn(donatrCore)
 
 lazy val donatrCore = (project in file("./donatr-core")).
   settings(

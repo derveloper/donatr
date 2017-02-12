@@ -39,9 +39,10 @@ object Benchmark {
 
   val donatableGen = for {
     name <- Gen.alphaStr
+    imageUrl <- Gen.alphaStr
     balance <- Gen.chooseNum(-10.0, 10.0)
     minDonationAmount <- Gen.chooseNum(-10.0, 10.0)
-  } yield DonatableWithoutId(name.take(4), balance, minDonationAmount)
+  } yield DonatableWithoutId(name.take(4), imageUrl.take(4), balance, minDonationAmount)
 
   def noop(a: Any): Unit = {}
 

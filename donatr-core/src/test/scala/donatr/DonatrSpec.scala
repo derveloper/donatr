@@ -25,7 +25,7 @@ class DonatrSpec extends FlatSpec with Matchers {
   }
 
   it should "create new Donatable" in new Db {
-    val donatableCreated = donatr.processCommand(CreateDonatable(DonatableWithoutId("Foo", 0, 0)))
+    val donatableCreated = donatr.processCommand(CreateDonatable(DonatableWithoutId("Foo", "fooimg", 0, 0)))
     donatableCreated should be(a[Right[_, DonatableCreated]])
 
     val donatable = donatr.donatables(donatableCreated.right.get.donatable.id)
@@ -33,7 +33,7 @@ class DonatrSpec extends FlatSpec with Matchers {
   }
 
   it should "create new Fundable" in new Db {
-    val fundableCreated = donatr.processCommand(CreateFundable(FundableWithoutId("Foo", 0, 0)))
+    val fundableCreated = donatr.processCommand(CreateFundable(FundableWithoutId("Foo", "fooimg", 0, 0)))
     fundableCreated should be(a[Right[_, DonatableCreated]])
 
     val fundable = donatr.fundables(fundableCreated.right.get.fundable.id)
@@ -48,15 +48,15 @@ class DonatrSpec extends FlatSpec with Matchers {
   }
 
   it should "return NameTaken on duplicate Donatables name" in new Db {
-    val donatableCreated1 = donatr.processCommand(CreateDonatable(DonatableWithoutId("Foo", 0, 0)))
-    val donatableCreated2 = donatr.processCommand(CreateDonatable(DonatableWithoutId("Foo", 0, 0)))
+    val donatableCreated1 = donatr.processCommand(CreateDonatable(DonatableWithoutId("Foo", "fooimg", 0, 0)))
+    val donatableCreated2 = donatr.processCommand(CreateDonatable(DonatableWithoutId("Foo", "fooimg", 0, 0)))
     donatableCreated1 should be(a[Right[_, DonatableCreated]])
     donatableCreated2 should be(a[Left[NameTaken, _]])
   }
 
   it should "return NameTaken on duplicate Fundables name" in new Db {
-    val fundableCreated1 = donatr.processCommand(CreateFundable(FundableWithoutId("Foo", 0, 0)))
-    val fundableCreated2 = donatr.processCommand(CreateFundable(FundableWithoutId("Foo", 0, 0)))
+    val fundableCreated1 = donatr.processCommand(CreateFundable(FundableWithoutId("Foo", "fooimg", 0, 0)))
+    val fundableCreated2 = donatr.processCommand(CreateFundable(FundableWithoutId("Foo", "fooimg", 0, 0)))
     fundableCreated1 should be(a[Right[_, FundableCreated]])
     fundableCreated2 should be(a[Left[NameTaken, _]])
   }
@@ -136,7 +136,7 @@ class DonatrSpec extends FlatSpec with Matchers {
   }
 
   private def mkDonatable(donatr: DonatrCore) = {
-    val donatableCreated = donatr.processCommand(CreateDonatable(DonatableWithoutId("Foo", 1, 0)))
+    val donatableCreated = donatr.processCommand(CreateDonatable(DonatableWithoutId("Foo", "fooimg", 1, 0)))
     donatableCreated should be(a[Right[_, DonatableCreated]])
     donatableCreated.right.get.donatable.id
   }
@@ -148,7 +148,7 @@ class DonatrSpec extends FlatSpec with Matchers {
   }
 
   private def mkFundable(donatr: DonatrCore) = {
-    val fundableCreated = donatr.processCommand(CreateFundable(FundableWithoutId("Foo", 0, 0)))
+    val fundableCreated = donatr.processCommand(CreateFundable(FundableWithoutId("Foo", "fooimg", 0, 0)))
     fundableCreated should be(a[Right[_, FundableCreated]])
     fundableCreated.right.get.fundable.id
   }
