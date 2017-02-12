@@ -15,4 +15,6 @@ RUN /bin/bash && rm -rf donatr \
     && cp /code/donatr/target/scala-2.12/donatr-assembly-0.1.0-SNAPSHOT.jar /code \
     && rm -rf /code/donatr
 
+VOLUME /code/db
+
 CMD ["java","-jar","/code/donatr-assembly-0.1.0-SNAPSHOT.jar"]
