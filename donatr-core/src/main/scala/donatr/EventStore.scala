@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory
 import slick.jdbc.H2Profile.api._
 import slick.lifted.{ProvenShape, TableQuery}
 
-class EventStore(url: String = "jdbc:h2:file:./donatr.h2.db") {
+class EventStore(url: String = "jdbc:h2:file:./db/donatr.h2.db") {
 
   import scala.concurrent.ExecutionContext
   import scala.concurrent.duration.Duration
