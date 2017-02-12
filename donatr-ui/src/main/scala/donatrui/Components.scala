@@ -14,10 +14,10 @@ object Components {
       currentDonater := Some(donater)
     }
 
-    <div class={DonatrStyles.donater.htmlClass}>
+    <div class={"DonatrStyles-donater"}>
       <a onclick={onClick _} href={s"#/${donater.id}/donatables"}>
         <img src={s"https://www.gravatar.com/avatar/${md5(donater.email)}?s=115"}/>
-        <div class={DonatrStyles.donaterName.htmlClass}>
+        <div class={"DonatrStyles-donaterName"}>
           {donater.name}
         </div>
       </a>
@@ -32,9 +32,9 @@ object Components {
       currentMultiplicator := 1
     }
 
-    <div onclick={onClick} class={DonatrStyles.donater.htmlClass}>
+    <div onclick={onClick} class={"DonatrStyles-donater"}>
       <img src={s"https://www.gravatar.com/avatar/${md5(donatable.name)}?s=115"}/>
-      <div class={DonatrStyles.donaterName.htmlClass}>
+      <div class={"DonatrStyles-donaterName"}>
         {donatable.name} / {donatable.minDonationAmount}
       </div>
     </div>
@@ -45,26 +45,26 @@ object Components {
       Layout.fund(event, fundable)
     }
 
-    <div onclick={onClick} class={DonatrStyles.donater.htmlClass}>
+    <div onclick={onClick} class={"DonatrStyles-donater"}>
       <img src={s"https://www.gravatar.com/avatar/${md5(fundable.name)}?s=115"}/>
-      <div class={DonatrStyles.donaterName.htmlClass}>
+      <div class={"DonatrStyles-donaterName"}>
         {fundable.name} / {fundable.balance} / {fundable.fundingTarget}
       </div>
     </div>
   }
 
   def CurrentDonaterComponent(donater: Option[Donater]): Elem = {
-    <div class={DonatrStyles.currentDonater.htmlClass}>
+    <div class={"DonatrStyles-currentDonater"}>
       {donater.map(d => {
-        <div class={DonatrStyles.currentDonaterAvatar.htmlClass}>
+        <div class={"DonatrStyles-currentDonaterAvatar"}>
           <div>
-            <img class={DonatrStyles.currentDonaterAvatarImage.htmlClass}
+            <img class={"DonatrStyles-currentDonaterAvatarImage"}
                  src={s"https://www.gravatar.com/avatar/${md5(d.email)}?s=40"}/>
-            <span class={DonatrStyles.currentDonaterAvatarName.htmlClass}>{d.name}</span>
+            <span class={"DonatrStyles-currentDonaterAvatarName"}>{d.name}</span>
           </div>
           <div>{d.balance}</div>
         </div>
-      }).getOrElse(<span class={DonatrStyles.currentDonaterAvatarName.htmlClass}>select user</span>)}
+      }).getOrElse(<span class={"DonatrStyles-currentDonaterAvatarName"}>select user</span>)}
     </div>
   }
 

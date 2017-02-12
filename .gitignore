@@ -139,3 +139,4 @@ project/plugins/project/
 .ensime
 /webroot2/
 !/webroot2/
+!/donatr-ui/src/main/scala/donatrui/Components.scala

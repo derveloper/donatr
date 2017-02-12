@@ -1,0 +1,84 @@
+.DonatrStyles-header {
+    text-align: center;
+}
+
+.DonatrStyles-donater {
+    border: 2px solid rgb(0,255,0);
+    display: inline-block;
+    word-wrap: break-word;
+    margin: 1rem;
+    vertical-align: top;
+    width: 115px;
+}
+
+.DonatrStyles-donater:hover {
+    cursor: pointer;
+}
+
+.DonatrStyles-donater:active {
+    background-color: rgba(0,255,0,0.3);
+}
+
+.DonatrStyles-currentDonaterAvatar {
+    display: -moz-flex;
+    display: -webkit-flex;
+    display: -ms-flex;
+    display: -o-flex;
+    display: flex;
+    -moz-justify-content: space-between;
+    -webkit-justify-content: space-between;
+    -ms-justify-content: space-between;
+    -o-justify-content: space-between;
+    justify-content: space-between;
+    -moz-align-items: center;
+    -webkit-align-items: center;
+    -ms-align-items: center;
+    -o-align-items: center;
+    align-items: center;
+}
+
+.DonatrStyles-currentDonaterAvatarName {
+    vertical-align: middle;
+    display: inline-block;
+    line-height: 3rem;
+}
+
+.DonatrStyles-currentDonaterAvatarImage {
+    vertical-align: middle;
+}
+
+.DonatrStyles-currentDonater {
+    border: 2px solid rgb(0,255,0);
+    width: calc((100vw) - (2rem));
+    margin: 0 1rem;
+    font-size: 1.4rem;
+    padding: 0.8rem;
+    height: 3rem;
+}
+
+.DonatrStyles-currentDonater:active {
+    background-color: rgba(0,255,0,0.3);
+}
+
+.DonatrStyles-donaterName {
+    font-size: 1.2rem;
+    padding-left: 0.5rem;
+    padding-bottom: 0.3rem;
+    word-wrap: break-word;
+}
+
+.DonatrStyles-nav {
+    height: 3rem;
+}
+
+.DonatrStyles-navItem {
+    display: inline-block;
+    list-style-type: none;
+    font-size: 1.4rem;
+    line-height: 4rem;
+    margin-right: 0.7rem;
+}
+
+.DonatrStyles-hr {
+    border: 1px solid rgb(0,255,0);
+}
