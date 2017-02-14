@@ -24,6 +24,15 @@ class DonatrSpec extends FlatSpec with Matchers {
     donater.balance should be (0)
   }
 
+  it should "update the Donater name" in new Db {
+    val donaterCreated = donatr.processCommand(CreateDonater(DonaterWithoutId("Foo", "Bar", 0)))
+    donaterCreated should be(a[Right[_, DonaterCreated]])
+
+    private val id = donaterCreated.right.get.donater.id
+    donatr.processCommand(ChangeDonaterName(id, "fooNew"))
+    donatr.donaters(id).name should be("fooNew")
+  }
+
   it should "create new Donatable" in new Db {
     val donatableCreated = donatr.processCommand(CreateDonatable(DonatableWithoutId("Foo", "fooimg", 0, 0)))
     donatableCreated should be(a[Right[_, DonatableCreated]])

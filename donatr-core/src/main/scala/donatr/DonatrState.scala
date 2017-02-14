@@ -17,6 +17,9 @@ case class DonatrState(
     case DonaterCreated(Donater(id, name, email, balance)) =>
       copy(donaters = donaters + (id -> Donater(id, name, email, balance)))
 
+    case DonaterNameChanged(id, name) =>
+      copy(donaters = donaters + (id -> donaters(id).copy(name = name)))
+
     case DonatableCreated(Donatable(id, imageUrl, name, minDonationAmount, balance)) =>
       copy(donatables = donatables + (id -> Donatable(id, imageUrl, name, minDonationAmount, balance)))
 

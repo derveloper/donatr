@@ -7,9 +7,9 @@ import org.slf4j.LoggerFactory
 import scala.math.BigDecimal.RoundingMode
 
 class DonatrCore(val eventStore: EventStore = new EventStore(),
-                 initialLedger: Ledger)(implicit val eventPublisher: EventPublisher)
-{
+                 initialLedger: Ledger)(implicit val eventPublisher: EventPublisher) {
   private val log = LoggerFactory.getLogger(this.getClass)
+
   import scala.concurrent.ExecutionContext
   import ExecutionContext.Implicits.global
 
@@ -18,16 +18,20 @@ class DonatrCore(val eventStore: EventStore = new EventStore(),
   rebuildState()
 
   def donaters: Map[UUID, Donater] = state.donaters
+
   def donatables: Map[UUID, Donatable] = state.donatables
+
   def fundables: Map[UUID, Fundable] = state.fundables
+
   def donations: Map[UUID, Donation] = state.donations
+
   def ledger: Ledger = state.ledger
 
   def rebuildState(): Unit = {
     log.info("rebuilding state started")
     resetState()
 
-    if(eventStore.getEvents.isEmpty) {
+    if (eventStore.getEvents.isEmpty) {
       eventStore.insert(LedgerCreated(state.ledger))
     }
 
@@ -109,8 +113,19 @@ class DonatrCore(val eventStore: EventStore = new EventStore(),
       .fold(err => Left(err), event => Right(event))
   }
 
-  def processCommand(create: CreateLedgerDonation): Either[Throwable, DonationCreated] = {
-    processCommand(CreateDonation(DonationWithoutId(state.ledger.id, create.donation.to, create.donation.value)))
+  def processCommand(ledgerDonation: CreateLedgerDonation): Either[Throwable, DonationCreated] = {
+    processCommand(
+      CreateDonation(DonationWithoutId(state.ledger.id, ledgerDonation.donation.to, ledgerDonation.donation.value)))
+  }
+
+  def processCommand(change: ChangeDonaterName): Either[Throwable, DonaterNameChanged] = {
+    val nameAvailable = change.name.nonEmpty && state.donaters.count(_._2.name == change.name) == 0
+    val throwableOrNameChanged = Either.cond(nameAvailable,
+      DonaterNameChanged(change.donaterId, change.name),
+      NameTaken())
+      .flatMap(persistEvent)
+    eventPublisher.publish(DonaterUpdated(state.donaters(change.donaterId)))
+    throwableOrNameChanged
   }
 
   private def persistEvent[E <: Event](event: E): Either[Throwable, E] = {
