@@ -12,6 +12,7 @@ case class DonaterUpdated(donater: Donater) extends Event
 case class DonatableCreated(donatable: Donatable) extends Event
 
 case class FundableCreated(fundable: Fundable) extends Event
+
 case class FundableUpdated(fundable: Fundable) extends Event
 
 case class DonationCreated(donation: Donation) extends Event

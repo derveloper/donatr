@@ -3,7 +3,7 @@ import org.scalajs.sbtplugin.ScalaJSPlugin.AutoImport.{fullOptJS, packageMinifie
 
 
 lazy val donatr = (project in file("."))
-  .aggregate(donatrCore, vertxServer, donatrUi, donatrMigration)
+  .aggregate(donatrCore, donatrUi, http4sServer)
   .settings(
     inThisBuild(List(
       organization := "de.fnordeingang",
@@ -11,22 +11,15 @@ lazy val donatr = (project in file("."))
       scalaVersion := "2.12.1",
       version := "0.1.0-SNAPSHOT",
       scalacOptions ++= Seq("-deprecation", "-feature"),
-      resolvers += "Sonatype SNAPSHOTS" at "https://oss.sonatype.org/content/repositories/snapshots/",
       test in assembly := {}
     )),
     herokuAppName in Compile := "donatr",
     herokuFatJar in Compile := Some((assemblyOutputPath in assembly).value),
-    mainClass in assembly := Some("donatr.DonatrVertxServer"),
-    assemblyMergeStrategy in assembly := {
-      case PathList("META-INF", "MANIFEST.MF") => MergeStrategy.discard
-      case PathList("META-INF", xs @ _*) => MergeStrategy.last
-      case PathList("META-INF", "io.netty.versions.properties") => MergeStrategy.last
-      case "codegen.json" => MergeStrategy.discard
-      case x => MergeStrategy.first
-    }
-  ).dependsOn(donatrCore, vertxServer)
+    mainClass in assembly := Some("donatr.DonatrHttp4sServer"),
+    assemblyMergeStrategy in assembly := (x => MergeStrategy.first)
+  ).dependsOn(donatrCore, http4sServer)
 
-lazy val donatrMigration = (project in file("./donatr-migration")).
+/*lazy val donatrMigration = (project in file("./donatr-migration")).
   settings(
     resolvers += "Sonatype SNAPSHOTS" at "https://oss.sonatype.org/content/repositories/snapshots/",
     assemblyMergeStrategy in assembly := {
@@ -46,7 +39,7 @@ lazy val donatrMigration = (project in file("./donatr-migration")).
       Dependencies.vertxWeb.exclude("io.vertx", "vertx-codegen"),
       "ch.qos.logback" % "logback-classic" % "1.1.10"
     )
-  ).dependsOn(donatrCore)
+  ).dependsOn(donatrCore)*/
 
 lazy val donatrCore = (project in file("./donatr-core")).
   settings(
@@ -64,7 +57,21 @@ lazy val donatrCore = (project in file("./donatr-core")).
     )
   )
 
-lazy val vertxServer = (project in file("./vertx-server")).
+lazy val http4sServer = (project in file("./http4s-server")).
+  settings(
+    mainClass in assembly := Some("donatr.DonatrHttp4sServer"),
+    assemblyMergeStrategy in assembly := (x => MergeStrategy.first),
+    libraryDependencies ++= Seq(
+      "org.http4s" %% "http4s-blaze-server" % "0.15.4a",
+      "org.http4s" %% "http4s-dsl" % "0.15.4a",
+      "org.http4s" %% "http4s-circe" % "0.15.4a",
+      "io.circe" %% "circe-generic" % "0.7.0",
+      scalaTest % Test,
+      "org.scalacheck" %% "scalacheck" % "1.13.4" % Test
+    )
+  ).dependsOn(donatrCore).dependsOn(donatrUi)
+
+/*lazy val vertxServer = (project in file("./vertx-server")).
   settings(
     resolvers += "Sonatype SNAPSHOTS" at "https://oss.sonatype.org/content/repositories/snapshots/",
     mainClass in assembly := Some("donatr.DonatrVertxServer"),
@@ -85,17 +92,11 @@ lazy val vertxServer = (project in file("./vertx-server")).
       scalaTest % Test,
       "org.scalacheck" %% "scalacheck" % "1.13.4" % Test
     )
-  ).dependsOn(donatrCore).dependsOn(donatrUi)
+  ).dependsOn(donatrCore).dependsOn(donatrUi)*/
 
 lazy val donatrUi = (project in file("./donatr-ui")).
   settings(
-    assemblyMergeStrategy in assembly := {
-      case PathList("META-INF", "MANIFEST.MF") => MergeStrategy.discard
-      case PathList("META-INF", xs @ _*) => MergeStrategy.last
-      case PathList("META-INF", "io.netty.versions.properties") => MergeStrategy.last
-      case "codegen.json" => MergeStrategy.discard
-      case x => MergeStrategy.first
-    },
+    assemblyMergeStrategy in assembly := (x => MergeStrategy.first),
     test in assembly := {},
     libraryDependencies ++= Seq(
       "in.nvilla" %%% "monadic-html" % "latest.integration"
@@ -104,16 +105,16 @@ lazy val donatrUi = (project in file("./donatr-ui")).
       "org.webjars.npm" % "spark-md5" % "2.0.2" / "spark-md5.js"
     ),
     emitSourceMaps := true,
-    artifactPath in (Compile, fastOptJS) :=
-      ((crossTarget in (Compile, fastOptJS)).value / "classes" / "webroot" /
+    artifactPath in(Compile, fastOptJS) :=
+      ((crossTarget in(Compile, fastOptJS)).value / "classes" / "webroot" /
         ((moduleName in fastOptJS).value + "-opt.js")),
-    artifactPath in (Compile, fullOptJS) :=
-      ((crossTarget in (Compile, fullOptJS)).value / "classes" / "webroot" /
+    artifactPath in(Compile, fullOptJS) :=
+      ((crossTarget in(Compile, fullOptJS)).value / "classes" / "webroot" /
         ((moduleName in fullOptJS).value + "-opt.js")),
-    artifactPath in (Compile, packageMinifiedJSDependencies) :=
-      ((crossTarget in (Compile, packageMinifiedJSDependencies)).value / "classes" / "webroot" /
+    artifactPath in(Compile, packageMinifiedJSDependencies) :=
+      ((crossTarget in(Compile, packageMinifiedJSDependencies)).value / "classes" / "webroot" /
         ((moduleName in packageMinifiedJSDependencies).value + "-jsdeps.js")),
-    artifactPath in (Compile, packageJSDependencies) :=
-      ((crossTarget in (Compile, packageJSDependencies)).value / "classes" / "webroot" /
+    artifactPath in(Compile, packageJSDependencies) :=
+      ((crossTarget in(Compile, packageJSDependencies)).value / "classes" / "webroot" /
         ((moduleName in packageJSDependencies).value + "-jsdeps.js"))
   ).enablePlugins(ScalaJSPlugin)

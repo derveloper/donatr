@@ -2,6 +2,7 @@ package donatr
 
 import java.util.UUID
 
+
 case class Ledger(id: UUID,
                   balance: BigDecimal = 0)
 
@@ -36,7 +37,15 @@ case class FundableWithoutId(name: String,
                              fundingTarget: BigDecimal,
                              balance: BigDecimal)
 
-case class DonationWithoutId(from: UUID, to: UUID, value: BigDecimal)
-case class DonationWithoutIdAndFrom(to: UUID, value: BigDecimal)
+case class Donation(id: UUID,
+                    from: UUID,
+                    to: UUID,
+                    value: BigDecimal)
 
-case class Donation(id: UUID, from: UUID, to: UUID, value: BigDecimal)
+case class DonationWithoutId(from: UUID,
+                             to: UUID,
+                             value: BigDecimal)
+
+case class DonationWithoutIdAndFrom(to: UUID,
+                                    value: BigDecimal)
+
