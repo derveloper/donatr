@@ -1,34 +1,50 @@
 import Dependencies._
 import org.scalajs.sbtplugin.ScalaJSPlugin.AutoImport.{fullOptJS, packageMinifiedJSDependencies}
 
+lazy val commonSettings = Seq(
+  organization := "de.fnordeingang",
+  //scalaOrganization := "org.typelevel",
+  scalaVersion := "2.12.1",
+  version := "0.1.0-SNAPSHOT",
+  scalacOptions ++= Seq("-deprecation",
+    "-encoding", "UTF-8",
+    "-feature",
+    "-language:existentials",
+    "-language:higherKinds",
+    "-language:implicitConversions",
+    "-target:jvm-1.8",
+    "-unchecked",
+    "-Xfatal-warnings",
+    "-Xlint",
+    "-Yinline-warnings",
+    "-Yno-adapted-args",
+    "-Ywarn-dead-code",
+    "-Ywarn-numeric-widen",
+    "-Ywarn-value-discard",
+    "-Xfuture"),
+  test in assembly := {},
+  assemblyMergeStrategy in assembly := {
+    case PathList("META-INF", "MANIFEST.MF") => MergeStrategy.discard
+    case PathList("META-INF", xs @ _*) => MergeStrategy.last
+    case PathList("META-INF", "io.netty.versions.properties") => MergeStrategy.last
+    case "codegen.json" => MergeStrategy.discard
+    case x => MergeStrategy.first
+  }
+)
 
 lazy val donatr = (project in file("."))
   .aggregate(donatrCore, donatrUi, http4sServer)
   .settings(
-    inThisBuild(List(
-      organization := "de.fnordeingang",
-      //scalaOrganization := "org.typelevel",
-      scalaVersion := "2.12.1",
-      version := "0.1.0-SNAPSHOT",
-      scalacOptions ++= Seq("-deprecation", "-feature"),
-      test in assembly := {}
-    )),
+    commonSettings,
     herokuAppName in Compile := "donatr",
     herokuFatJar in Compile := Some((assemblyOutputPath in assembly).value),
-    mainClass in assembly := Some("donatr.DonatrHttp4sServer"),
-    assemblyMergeStrategy in assembly := (x => MergeStrategy.first)
+    mainClass in assembly := Some("donatr.DonatrHttp4sServer")
   ).dependsOn(donatrCore, http4sServer)
 
 /*lazy val donatrMigration = (project in file("./donatr-migration")).
   settings(
     resolvers += "Sonatype SNAPSHOTS" at "https://oss.sonatype.org/content/repositories/snapshots/",
-    assemblyMergeStrategy in assembly := {
-      case PathList("META-INF", "MANIFEST.MF") => MergeStrategy.discard
-      case PathList("META-INF", xs @ _*) => MergeStrategy.last
-      case PathList("META-INF", "io.netty.versions.properties") => MergeStrategy.last
-      case "codegen.json" => MergeStrategy.discard
-      case x => MergeStrategy.first
-    },
+    commonSettings,
     libraryDependencies ++= Seq(
       "io.circe" %% "circe-core" % "0.7.0",
       "io.circe" %% "circe-generic" % "0.7.0",
@@ -43,7 +59,7 @@ lazy val donatr = (project in file("."))
 
 lazy val donatrCore = (project in file("./donatr-core")).
   settings(
-    resolvers += "Sonatype SNAPSHOTS" at "https://oss.sonatype.org/content/repositories/snapshots/",
+    commonSettings,
     libraryDependencies ++= Seq(
       "io.circe" %% "circe-core" % "0.7.0",
       "io.circe" %% "circe-generic" % "0.7.0",
@@ -60,7 +76,7 @@ lazy val donatrCore = (project in file("./donatr-core")).
 lazy val http4sServer = (project in file("./http4s-server")).
   settings(
     mainClass in assembly := Some("donatr.DonatrHttp4sServer"),
-    assemblyMergeStrategy in assembly := (x => MergeStrategy.first),
+    commonSettings,
     libraryDependencies ++= Seq(
       "org.http4s" %% "http4s-blaze-server" % "0.15.4a",
       "org.http4s" %% "http4s-dsl" % "0.15.4a",
@@ -73,8 +89,7 @@ lazy val http4sServer = (project in file("./http4s-server")).
 
 lazy val donatrUi = (project in file("./donatr-ui")).
   settings(
-    assemblyMergeStrategy in assembly := (x => MergeStrategy.first),
-    test in assembly := {},
+    commonSettings,
     libraryDependencies ++= Seq(
       "in.nvilla" %%% "monadic-html" % "latest.integration"
     ),

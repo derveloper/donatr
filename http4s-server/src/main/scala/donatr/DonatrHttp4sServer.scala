@@ -88,9 +88,9 @@ object DonatrHttp4sServer extends ServerApp with Logging{
   }
 
   override def server(args: List[String]): Task[Server] = {
-
+    val port = Option(System.getenv("PORT")).map(_.toInt).getOrElse(8080)
     BlazeBuilder
-      .bindHttp(8080, "localhost")
+      .bindHttp(port, "localhost")
       .mountService(fileService, "/")
       .mountService(donatrService, "/api")
       .start
