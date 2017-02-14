@@ -14,6 +14,8 @@ import scalaz.stream.{Exchange, Process}
 
 trait Logging { protected lazy val log: Logger = LoggerFactory.getLogger(this.getClass) }
 
+case class ErrorResponse(message: String)
+
 object DonatrHttp4sServer extends ServerApp with Logging{
   import java.util.concurrent.Executors
 
@@ -83,7 +85,7 @@ object DonatrHttp4sServer extends ServerApp with Logging{
   }
 
   private def commandToResponse[E](res: Either[Throwable, E], f: E => UUID) = {
-    res.fold(e => BadRequest(e.getMessage),
+    res.fold(e => BadRequest(ErrorResponse(e.getMessage).asJson),
       d => Created().putHeaders(`Location`(Uri.unsafeFromString(s"/api/donater/${f(d)}"))))
   }
 
