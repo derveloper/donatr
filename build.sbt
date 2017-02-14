@@ -71,29 +71,6 @@ lazy val http4sServer = (project in file("./http4s-server")).
     )
   ).dependsOn(donatrCore).dependsOn(donatrUi)
 
-/*lazy val vertxServer = (project in file("./vertx-server")).
-  settings(
-    resolvers += "Sonatype SNAPSHOTS" at "https://oss.sonatype.org/content/repositories/snapshots/",
-    mainClass in assembly := Some("donatr.DonatrVertxServer"),
-    assemblyMergeStrategy in assembly := {
-      case PathList("META-INF", "MANIFEST.MF") => MergeStrategy.discard
-      case PathList("META-INF", xs @ _*) => MergeStrategy.last
-      case PathList("META-INF", "io.netty.versions.properties") => MergeStrategy.last
-      case "codegen.json" => MergeStrategy.discard
-      case x => MergeStrategy.first
-    },
-    libraryDependencies ++= Seq(
-      Dependencies.vertxLangScala.exclude("io.vertx", "vertx-codegen"),
-      Dependencies.vertxCodegen,
-      Dependencies.vertxWeb.exclude("io.vertx", "vertx-codegen"),
-      "io.circe" %% "circe-core" % "0.7.0",
-      "io.circe" %% "circe-generic" % "0.7.0",
-      "io.circe" %% "circe-parser" % "0.7.0",
-      scalaTest % Test,
-      "org.scalacheck" %% "scalacheck" % "1.13.4" % Test
-    )
-  ).dependsOn(donatrCore).dependsOn(donatrUi)*/
-
 lazy val donatrUi = (project in file("./donatr-ui")).
   settings(
     assemblyMergeStrategy in assembly := (x => MergeStrategy.first),
