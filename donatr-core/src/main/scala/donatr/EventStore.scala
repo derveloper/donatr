@@ -41,7 +41,7 @@ class EventStore(url: String = "jdbc:h2:file:./db/donatr.h2.db") {
   def insert(event: Event): Either[Throwable, Unit] = {
     try {
       scala.concurrent.Await.result(db.run(DBIO.seq(
-        events += (UUID.randomUUID().toString, event.asJson.noSpaces)
+        events += ((UUID.randomUUID().toString, event.asJson.noSpaces))
       )), Duration.Inf)
       Right(())
     }

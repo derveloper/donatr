@@ -5,8 +5,11 @@ lazy val commonSettings = Seq(
   organization := "de.fnordeingang",
   //scalaOrganization := "org.typelevel",
   scalaVersion := "2.12.1",
-  version := "0.1.0-SNAPSHOT",
-  scalacOptions ++= Seq("-deprecation",
+  version := "0.1.0-SNAPSHOT"
+)
+
+lazy val scalacSettings = Seq(
+  scalacOptions := Seq("-deprecation",
     "-encoding", "UTF-8",
     "-feature",
     "-language:existentials",
@@ -16,12 +19,14 @@ lazy val commonSettings = Seq(
     "-unchecked",
     "-Xfatal-warnings",
     "-Xlint",
-    "-Yinline-warnings",
     "-Yno-adapted-args",
     "-Ywarn-dead-code",
     "-Ywarn-numeric-widen",
     "-Ywarn-value-discard",
-    "-Xfuture"),
+    "-Xfuture")
+)
+
+lazy val assemblySetting = Seq(
   test in assembly := {},
   assemblyMergeStrategy in assembly := {
     case PathList("META-INF", "MANIFEST.MF") => MergeStrategy.discard
@@ -36,6 +41,7 @@ lazy val donatr = (project in file("."))
   .aggregate(donatrCore, donatrUi, http4sServer)
   .settings(
     commonSettings,
+    assemblySetting,
     herokuAppName in Compile := "donatr",
     herokuFatJar in Compile := Some((assemblyOutputPath in assembly).value),
     mainClass in assembly := Some("donatr.DonatrHttp4sServer")
@@ -60,6 +66,7 @@ lazy val donatr = (project in file("."))
 lazy val donatrCore = (project in file("./donatr-core")).
   settings(
     commonSettings,
+    scalacSettings,
     libraryDependencies ++= Seq(
       "io.circe" %% "circe-core" % "0.7.0",
       "io.circe" %% "circe-generic" % "0.7.0",
@@ -77,6 +84,8 @@ lazy val http4sServer = (project in file("./http4s-server")).
   settings(
     mainClass in assembly := Some("donatr.DonatrHttp4sServer"),
     commonSettings,
+    assemblySetting,
+    scalacSettings,
     libraryDependencies ++= Seq(
       "org.http4s" %% "http4s-blaze-server" % "0.15.4a",
       "org.http4s" %% "http4s-dsl" % "0.15.4a",
@@ -90,6 +99,7 @@ lazy val http4sServer = (project in file("./http4s-server")).
 lazy val donatrUi = (project in file("./donatr-ui")).
   settings(
     commonSettings,
+    assemblySetting,
     libraryDependencies ++= Seq(
       "in.nvilla" %%% "monadic-html" % "latest.integration"
     ),
