@@ -5,15 +5,15 @@ import java.util.UUID
 import org.scalatest.{FlatSpec, Matchers}
 
 class DonatrSpec extends FlatSpec with Matchers {
-  val ledgerId = UUID.randomUUID()
+  final class EP extends EventPublisher {
+    override def publish(event: Event): Unit = {}
+  }
+
   trait Db {
-    val eventStore = new EventStore(s"jdbc:h2:mem:donatr-${UUID.randomUUID()};DB_CLOSE_DELAY=-1")
-    val ledger = Ledger(ledgerId)
-    class EP extends EventPublisher {
-      override def publish(event: Event): Unit = {}
-    }
+    implicit val eventStore = new EventStore(s"jdbc:h2:mem:donatr-${UUID.randomUUID()};DB_CLOSE_DELAY=-1")
     implicit val ep = new EP()
-    val donatr = new DonatrCore(eventStore, ledger)
+    val donatr = new DonatrCore()
+    val ledgerId: UUID = donatr.ledger.id
   }
 
   it should "create new Donater" in new Db {

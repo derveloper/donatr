@@ -6,14 +6,20 @@ import org.slf4j.LoggerFactory
 
 import scala.math.BigDecimal.RoundingMode
 
-class DonatrCore(val eventStore: EventStore = new EventStore(),
-                 initialLedger: Ledger)(implicit val eventPublisher: EventPublisher) {
+
+class DonatrCore(implicit
+                 val eventStore: EventStore,
+                 val eventPublisher: EventPublisher) {
   private val log = LoggerFactory.getLogger(this.getClass)
+
+  import DonatrTypes._
 
   import scala.concurrent.ExecutionContext
   import ExecutionContext.Implicits.global
 
-  private var state = DonatrState(ledger = initialLedger)
+  implicit var state = DonatrState(ledger = Ledger(UUID.randomUUID()))
+
+  import DonatrState._
 
   rebuildState()
 
@@ -44,6 +50,68 @@ class DonatrCore(val eventStore: EventStore = new EventStore(),
 
   def resetState(): Unit = {
     state = DonatrState(ledger = ledger.copy(balance = 0))
+  }
+
+  implicit val CreateDonaterC: CreateCommand[DonaterWithoutId] = CreateCommand.instance(d => createDonater(d))
+
+  implicit val ChangeDonaterNameC: ChangeNameCommand[Donater] = ChangeNameCommand.instance((donater, name) =>
+    changeDonaterName(donater, name))
+
+  def create[T](entity: T)(implicit creator: CreateCommand[T]): Either[Throwable, UUID] = {
+    creator.create(entity)
+  }
+
+  def changeName[T](obj: T, name: Name)(implicit creator: ChangeNameCommand[T]): Either[Throwable, UUID] = {
+    creator.changeName(obj, name)
+  }
+
+  private def persistEvent[E <: Event](event: E): Either[Throwable, E] = {
+    eventStore.insert(event) match {
+      case Right(_) =>
+        state = state.apply(event)
+        eventPublisher.publish(event)
+        Right(event)
+      case Left(err) => Left(err)
+    }
+  }
+
+  private def persistEvent2[E <: Event](event: E): Either[Throwable, E] = {
+    eventStore.insert(event) match {
+      case Right(_) => Right(event)
+      case Left(err) => Left(err)
+    }
+  }
+
+  private def processEvent[E <: Event](eitherEvent: Either[Throwable, E], f: E => Unit) = {
+    eitherEvent.flatMap(persistEvent2)
+      .flatMap(e => {
+        f(e)
+        Right(e)
+      })
+      .flatMap(e => {
+        eventPublisher.publish(e)
+        Right(e)
+      })
+  }
+
+  private def createDonater(donater: DonaterWithoutId) = {
+    processEvent(Either.cond(donater.name.nonEmpty && state.donaters.count(_._2.name == donater.name) == 0,
+      DonaterCreated(Donater(UUID.randomUUID(), donater.name, donater.email, donater.balance)),
+      NameTaken()), (e: DonaterCreated) => state = state.create(state, e))
+      .map(_.donater.id)
+  }
+
+  private def changeDonaterName(donater: Donater, name: String): Either[Throwable, UUID] = {
+    val id = donater.id
+    val nameAvailable = name.nonEmpty && state.donaters.count(_._2.name == name) == 0
+    processEvent(Either.cond(nameAvailable,
+      DonaterNameChanged(id, name),
+      NameTaken()), (e: DonaterNameChanged) => state = state.changeName(state, e))
+      .map(_.donaterId)
+      .flatMap(id => {
+        eventPublisher.publish(DonaterUpdated(state.donaters(id)))
+        Right(id)
+      })
   }
 
   def processCommand(donater: CreateDonater): Either[Throwable, DonaterCreated] = {
@@ -126,15 +194,5 @@ class DonatrCore(val eventStore: EventStore = new EventStore(),
       .flatMap(persistEvent)
     eventPublisher.publish(DonaterUpdated(state.donaters(change.donaterId)))
     throwableOrNameChanged
-  }
-
-  private def persistEvent[E <: Event](event: E): Either[Throwable, E] = {
-    eventStore.insert(event) match {
-      case Right(_) =>
-        state = state.apply(event)
-        eventPublisher.publish(event)
-        Right(event)
-      case Left(err) => Left(err)
-    }
   }
 }

@@ -1,18 +1,62 @@
 package donatr
 
-import java.util.UUID
+import donatr.DonatrTypes._
 
-case class DonatrState(
-                        donaters: Map[UUID, Donater] = Map.empty,
-                        donatables: Map[UUID, Donatable] = Map.empty,
-                        fundables: Map[UUID, Fundable] = Map.empty,
-                        donations: Map[UUID, Donation] = Map.empty,
-                        ledger: Ledger
-                      ) {
+trait CreateCommand[T] {
+  def create(obj: T): Either[Throwable, Id]
+}
+
+object CreateCommand {
+  def instance[T](f: T => Either[Throwable, Id]) = new CreateCommand[T] {
+    override def create(obj: T): Either[Throwable, Id] = f(obj)
+  }
+}
+
+trait ChangeNameCommand[T] {
+  def changeName(obj: T, name: Name): Either[Throwable, Id]
+}
+
+object ChangeNameCommand {
+  def instance[T](f: (T, String) => Either[Throwable, Id]) = new ChangeNameCommand[T] {
+    override def changeName(obj: T, name: Name): Either[Throwable, Id] = f(obj, name)
+  }
+}
+
+trait EventT[S, T] {
+  def reduce(state: S, obj: T): S
+}
+
+object EventT {
+  def instance[S, T](f: (S,T) => S) = new EventT[S, T] {
+    override def reduce(state: S, obj: T): S = f(state, obj)
+  }
+}
+
+object DonatrState {
+  implicit val CreateDonaterE: EventT[DonatrState, DonaterCreated] = EventT.instance((state, d) =>
+    state.copy(donaters = state.donaters + (d.donater.id -> d.donater)))
+
+  implicit val DonaterNameChangedE: EventT[DonatrState, DonaterNameChanged] = EventT.instance((state, d) =>
+    state.copy(donaters = state.donaters + (d.donaterId -> state.donaters(d.donaterId).copy(name = d.name))))
+}
+
+case class DonatrState(donaters: Map[Id, Donater] = Map.empty,
+                       donatables: Map[Id, Donatable] = Map.empty,
+                       fundables: Map[Id, Fundable] = Map.empty,
+                       donations: Map[Id, Donation] = Map.empty,
+                       ledger: Ledger)
+{
+  def create[S,T](state: S, entity: T)(implicit creator: EventT[S,T]): S = {
+    creator.reduce(state, entity)
+  }
+
+  def changeName[S,T](state: S, entity: T)(implicit creator: EventT[S,T]): S = {
+    creator.reduce(state, entity)
+  }
 
   def apply(event: Event): DonatrState = event match {
     case LedgerCreated(Ledger(id, balance)) =>
-      copy(ledger = Ledger(id, balance))
+      DonatrState(ledger = Ledger(id, balance))
 
     case DonaterCreated(Donater(id, name, email, balance)) =>
       copy(donaters = donaters + (id -> Donater(id, name, email, balance)))

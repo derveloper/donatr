@@ -45,7 +45,8 @@ object DonatrHttp4sServer extends ServerApp with Logging {
   }
 
   private implicit val ep = new EP()
-  val donatr = new DonatrCore(initialLedger = Ledger(UUID.randomUUID()))
+  private implicit val es = new EventStore()
+  val donatr = new DonatrCore()
 
   private def static(file: String, request: Request) =
     StaticFile.fromResource("/webroot/" + file, Some(request)).map(Task.now).getOrElse(NotFound())
@@ -66,7 +67,7 @@ object DonatrHttp4sServer extends ServerApp with Logging {
 
     case r@POST -> Root / "donaters" =>
       r.as(jsonOf[DonaterWithoutId]).flatMap { donater =>
-        commandToResponse[DonaterCreated](donatr.processCommand(CreateDonater(donater)), _.donater.id)
+        CreatedResponseFrom("/api/donatables", donatr.create(donater))
       }
 
     case r@POST -> Root / "donatables" =>
@@ -99,6 +100,11 @@ object DonatrHttp4sServer extends ServerApp with Logging {
   private def commandToResponse[E](res: Either[Throwable, E], f: E => UUID) = {
     res.fold(e => BadRequest(ErrorResponse(e.getMessage).asJson),
       d => Created().putHeaders(`Location`(Uri.unsafeFromString(s"/api/donater/${f(d)}"))))
+  }
+
+  private def CreatedResponseFrom(path: String, res: Either[Throwable, UUID]) = {
+    res.fold(e => BadRequest(ErrorResponse(e.getMessage).asJson),
+      d => Created().putHeaders(`Location`(Uri.unsafeFromString(s"$path/$d"))))
   }
 
   override def server(args: List[String]): Task[Server] = {

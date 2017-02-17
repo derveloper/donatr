@@ -1,51 +1,63 @@
 package donatr
 
-import java.util.UUID
 
+object DonatrTypes {
+  import java.util.UUID
+  type Id = UUID
+  type Name = String
+  type Email = String
+  type ImageUrl = String
+  type Balance = BigDecimal
+  type MinDonation = BigDecimal
+  type FundingTarget = BigDecimal
+  type Value = BigDecimal
+}
 
-case class Ledger(id: UUID,
-                  balance: BigDecimal = 0)
+import donatr.DonatrTypes._
 
-case class Donater(id: UUID,
-                   name: String,
-                   email: String,
+case class Ledger(id: Id,
+                  balance: Balance = 0)
+
+case class Donater(id: Id,
+                   name: Name,
+                   email: Email,
                    balance: BigDecimal)
 
-case class DonaterWithoutId(name: String,
-                            email: String,
+case class DonaterWithoutId(name: Name,
+                            email: Email,
                             balance: BigDecimal)
 
-case class Donatable(id: UUID,
-                     name: String,
-                     imageUrl: String,
-                     minDonationAmount: BigDecimal,
-                     balance: BigDecimal)
+case class Donatable(id: Id,
+                     name: Name,
+                     imageUrl: ImageUrl,
+                     minDonationAmount: MinDonation,
+                     balance: Balance)
 
-case class DonatableWithoutId(name: String,
-                              imageUrl: String,
-                              minDonationAmount: BigDecimal,
-                              balance: BigDecimal)
+case class DonatableWithoutId(name: Name,
+                              imageUrl: ImageUrl,
+                              minDonationAmount: MinDonation,
+                              balance: Balance)
 
-case class Fundable(id: UUID,
-                    name: String,
-                    imageUrl: String,
-                    fundingTarget: BigDecimal,
-                    balance: BigDecimal = 0)
+case class Fundable(id: Id,
+                    name: Name,
+                    imageUrl: ImageUrl,
+                    fundingTarget: FundingTarget,
+                    balance: Balance = 0)
 
-case class FundableWithoutId(name: String,
-                             imageUrl: String,
-                             fundingTarget: BigDecimal,
-                             balance: BigDecimal)
+case class FundableWithoutId(name: Name,
+                             imageUrl: ImageUrl,
+                             fundingTarget: FundingTarget,
+                             balance: Balance)
 
-case class Donation(id: UUID,
-                    from: UUID,
-                    to: UUID,
-                    value: BigDecimal)
+case class Donation(id: Id,
+                    from: Id,
+                    to: Id,
+                    value: Value)
 
-case class DonationWithoutId(from: UUID,
-                             to: UUID,
-                             value: BigDecimal)
+case class DonationWithoutId(from: Id,
+                             to: Id,
+                             value: Value)
 
-case class DonationWithoutIdAndFrom(to: UUID,
-                                    value: BigDecimal)
+case class DonationWithoutIdAndFrom(to: Id,
+                                    value: Value)
 
