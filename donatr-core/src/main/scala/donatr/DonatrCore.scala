@@ -53,6 +53,8 @@ class DonatrCore(implicit
   }
 
   implicit val CreateDonaterC: CreateCommand[DonaterWithoutId] = CreateCommand.instance(d => createDonater(d))
+  implicit val CreateDonatableC: CreateCommand[DonatableWithoutId] = CreateCommand.instance(d => createDonatable(d))
+  implicit val CreateFundableC: CreateCommand[FundableWithoutId] = CreateCommand.instance(d => createFundable(d))
 
   implicit val ChangeDonaterNameC: ChangeNameCommand[Donater] = ChangeNameCommand.instance((donater, name) =>
     changeDonaterName(donater, name))
@@ -97,8 +99,24 @@ class DonatrCore(implicit
   private def createDonater(donater: DonaterWithoutId) = {
     processEvent(Either.cond(donater.name.nonEmpty && state.donaters.count(_._2.name == donater.name) == 0,
       DonaterCreated(Donater(UUID.randomUUID(), donater.name, donater.email, donater.balance)),
-      NameTaken()), (e: DonaterCreated) => state = state.create(state, e))
+      NameTaken()), (e: DonaterCreated) => state = state.reduce(state, e))
       .map(_.donater.id)
+  }
+
+  private def createDonatable(donatable: DonatableWithoutId) = {
+    processEvent(Either.cond(donatable.name.nonEmpty && state.donatables.count(_._2.name == donatable.name) == 0,
+      DonatableCreated(Donatable(
+          UUID.randomUUID(), donatable.name, donatable.imageUrl, donatable.minDonationAmount, donatable.balance)),
+      NameTaken()), (e: DonatableCreated) => state = state.reduce(state, e))
+      .map(_.donatable.id)
+  }
+
+  private def createFundable(fundable: FundableWithoutId) = {
+    processEvent(Either.cond(fundable.name.nonEmpty && state.fundables.count(_._2.name == fundable.name) == 0,
+      FundableCreated(Fundable(
+        UUID.randomUUID(), fundable.name, fundable.imageUrl, fundable.fundingTarget, fundable.balance)),
+      NameTaken()), (e: FundableCreated) => state = state.reduce(state, e))
+      .map(_.fundable.id)
   }
 
   private def changeDonaterName(donater: Donater, name: String): Either[Throwable, UUID] = {
@@ -106,7 +124,7 @@ class DonatrCore(implicit
     val nameAvailable = name.nonEmpty && state.donaters.count(_._2.name == name) == 0
     processEvent(Either.cond(nameAvailable,
       DonaterNameChanged(id, name),
-      NameTaken()), (e: DonaterNameChanged) => state = state.changeName(state, e))
+      NameTaken()), (e: DonaterNameChanged) => state = state.reduce(state, e))
       .map(_.donaterId)
       .flatMap(id => {
         eventPublisher.publish(DonaterUpdated(state.donaters(id)))

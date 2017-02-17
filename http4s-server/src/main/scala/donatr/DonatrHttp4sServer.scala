@@ -48,6 +48,8 @@ object DonatrHttp4sServer extends ServerApp with Logging {
   private implicit val es = new EventStore()
   val donatr = new DonatrCore()
 
+  import donatr._
+
   private def static(file: String, request: Request) =
     StaticFile.fromResource("/webroot/" + file, Some(request)).map(Task.now).getOrElse(NotFound())
 

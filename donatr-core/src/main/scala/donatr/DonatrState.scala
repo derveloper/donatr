@@ -36,6 +36,12 @@ object DonatrState {
   implicit val CreateDonaterE: EventT[DonatrState, DonaterCreated] = EventT.instance((state, d) =>
     state.copy(donaters = state.donaters + (d.donater.id -> d.donater)))
 
+  implicit val CreateDonatableE: EventT[DonatrState, DonatableCreated] = EventT.instance((state, d) =>
+    state.copy(donatables = state.donatables + (d.donatable.id -> d.donatable)))
+
+  implicit val CreateFundableE: EventT[DonatrState, FundableCreated] = EventT.instance((state, d) =>
+    state.copy(fundables = state.fundables + (d.fundable.id -> d.fundable)))
+
   implicit val DonaterNameChangedE: EventT[DonatrState, DonaterNameChanged] = EventT.instance((state, d) =>
     state.copy(donaters = state.donaters + (d.donaterId -> state.donaters(d.donaterId).copy(name = d.name))))
 }
@@ -46,11 +52,7 @@ case class DonatrState(donaters: Map[Id, Donater] = Map.empty,
                        donations: Map[Id, Donation] = Map.empty,
                        ledger: Ledger)
 {
-  def create[S,T](state: S, entity: T)(implicit creator: EventT[S,T]): S = {
-    creator.reduce(state, entity)
-  }
-
-  def changeName[S,T](state: S, entity: T)(implicit creator: EventT[S,T]): S = {
+  def reduce[S,T](state: S, entity: T)(implicit creator: EventT[S,T]): S = {
     creator.reduce(state, entity)
   }
 
