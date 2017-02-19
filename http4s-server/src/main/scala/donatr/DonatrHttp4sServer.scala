@@ -69,39 +69,34 @@ object DonatrHttp4sServer extends ServerApp with Logging {
 
     case r@POST -> Root / "donaters" =>
       r.as(jsonOf[DonaterWithoutId]).flatMap { donater =>
-        CreatedResponseFrom("/api/donatables", donatr.create(donater))
+        CreatedResponseFrom("/api/donaters", donatr.create(donater))
       }
 
     case r@POST -> Root / "donatables" =>
       r.as(jsonOf[DonatableWithoutId]).flatMap { donatable =>
-        commandToResponse[DonatableCreated](donatr.processCommand(CreateDonatable(donatable)), _.donatable.id)
+        CreatedResponseFrom("/api/donatables", donatr.create(donatable))
       }
 
     case r@POST -> Root / "fundables" =>
       r.as(jsonOf[FundableWithoutId]).flatMap { fundable =>
-        commandToResponse[FundableCreated](donatr.processCommand(CreateFundable(fundable)), _.fundable.id)
+        CreatedResponseFrom("/api/fundables", donatr.create(fundable))
       }
 
     case r@POST -> Root / "donations" =>
       r.as(jsonOf[DonationWithoutId]).flatMap { donation =>
-        commandToResponse[DonationCreated](donatr.processCommand(CreateDonation(donation)), _.donation.id)
+        CreatedResponseFrom("/api/donations", donatr.create(donation))
       }.or(r.as(jsonOf[DonationWithoutIdAndFrom]).flatMap(f =>
-        commandToResponse[DonationCreated](donatr.processCommand(CreateLedgerDonation(f)), _.donation.id)))
+        CreatedResponseFrom("/api/donations", donatr.create(f))))
 
     case r@PUT -> Root / "donaters" / id =>
       r.as(jsonOf[DonaterPatch]).flatMap { donater =>
-        donater.name.map(name => donatr.processCommand(ChangeDonaterName(UUID.fromString(id), name)))
+        donater.name.map(name => donatr.changeName(state.donaters(UUID.fromString(id)), name))
         NoContent()
       }
 
     case r@GET -> Root / "events" =>
       val src = eventTopic.subscribe.map(e => Text(e.asJson.noSpaces))
       WS(Exchange(src, Process.halt))
-  }
-
-  private def commandToResponse[E](res: Either[Throwable, E], f: E => UUID) = {
-    res.fold(e => BadRequest(ErrorResponse(e.getMessage).asJson),
-      d => Created().putHeaders(`Location`(Uri.unsafeFromString(s"/api/donater/${f(d)}"))))
   }
 
   private def CreatedResponseFrom(path: String, res: Either[Throwable, UUID]) = {

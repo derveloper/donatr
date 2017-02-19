@@ -41,9 +41,9 @@ class DonatrCore(implicit
       eventStore.insert(LedgerCreated(state.ledger))
     }
 
-    eventStore.getEvents.foreach { e =>
-      state = state.apply(e)
-    }
+    /*eventStore.getEvents.foreach { e =>
+      //state = state.reduce()
+    }*/
 
     log.info("rebuilt state")
   }
@@ -55,6 +55,9 @@ class DonatrCore(implicit
   implicit val CreateDonaterC: CreateCommand[DonaterWithoutId] = CreateCommand.instance(d => createDonater(d))
   implicit val CreateDonatableC: CreateCommand[DonatableWithoutId] = CreateCommand.instance(d => createDonatable(d))
   implicit val CreateFundableC: CreateCommand[FundableWithoutId] = CreateCommand.instance(d => createFundable(d))
+  implicit val CreateDonationC: CreateCommand[DonationWithoutId] = CreateCommand.instance(d => createDonation(d))
+  implicit val CreateDonationWithoutFromC: CreateCommand[DonationWithoutIdAndFrom] =
+    CreateCommand.instance(d => createLedgerDonation(d))
 
   implicit val ChangeDonaterNameC: ChangeNameCommand[Donater] = ChangeNameCommand.instance((donater, name) =>
     changeDonaterName(donater, name))
@@ -65,16 +68,6 @@ class DonatrCore(implicit
 
   def changeName[T](obj: T, name: Name)(implicit creator: ChangeNameCommand[T]): Either[Throwable, UUID] = {
     creator.changeName(obj, name)
-  }
-
-  private def persistEvent[E <: Event](event: E): Either[Throwable, E] = {
-    eventStore.insert(event) match {
-      case Right(_) =>
-        state = state.apply(event)
-        eventPublisher.publish(event)
-        Right(event)
-      case Left(err) => Left(err)
-    }
   }
 
   private def persistEvent2[E <: Event](event: E): Either[Throwable, E] = {
@@ -132,85 +125,62 @@ class DonatrCore(implicit
       })
   }
 
-  def processCommand(donater: CreateDonater): Either[Throwable, DonaterCreated] = {
-    val d = donater.donater
-    Either.cond(d.name.nonEmpty && state.donaters.count(_._2.name == d.name) == 0,
-      DonaterCreated(Donater(UUID.randomUUID(), d.name, d.email, d.balance)),
-      NameTaken())
-      .flatMap(persistEvent)
+  def createDonation(donation: DonationWithoutId): Either[Throwable, UUID] = {
+    val d = donation
+    val newId = UUID.randomUUID()
+
+    withdraw(newId, d.from, d.value)
+      .flatMap(_ => deposit(newId, d.to, d.value))
+      .flatMap(f => persistEvent2(DonationCreated(Donation(f.donationId, d.from, d.to, d.value))))
+      .fold(err => Left(err), event => Right(event.donation.id))
   }
 
-  def processCommand(donatable: CreateDonatable): Either[Throwable, DonatableCreated] = {
-    val d = donatable.donatable
-    Either.cond(d.name.nonEmpty && state.donatables.count(_._2.name == d.name) == 0,
-      DonatableCreated(Donatable(UUID.randomUUID(), d.name, d.imageUrl, d.minDonationAmount, d.balance)),
-      NameTaken())
-      .flatMap(persistEvent)
+  def createLedgerDonation(donation: DonationWithoutIdAndFrom): Either[Throwable, UUID] = {
+    val d = donation
+    val newId = UUID.randomUUID()
+
+    withdraw(newId, state.ledger.id, d.value)
+      .flatMap(_ => deposit(newId, d.to, d.value))
+      .flatMap(f => persistEvent2(DonationCreated(Donation(f.donationId, state.ledger.id, d.to, d.value))))
+      .fold(err => Left(err), event => Right(event.donation.id))
   }
 
-  def processCommand(fundable: CreateFundable): Either[Throwable, FundableCreated] = {
-    val d = fundable.fundable
-    Either.cond(d.name.nonEmpty && state.fundables.count(_._2.name == d.name) == 0,
-      FundableCreated(Fundable(UUID.randomUUID(), d.name, d.imageUrl, d.fundingTarget, d.balance)),
-      NameTaken())
-      .flatMap(persistEvent)
-  }
-
-  def processCommand(withdraw: Withdraw): Either[Throwable, Withdrawn] = {
-    if (state.donaters.contains(withdraw.entityId)) {
-      val throwableOrWithdrawn = persistEvent(Withdrawn(withdraw.donationId, withdraw.entityId, withdraw.withdrawValue))
-      eventPublisher.publish(DonaterUpdated(state.donaters(withdraw.entityId)))
+  private def withdraw(donationId: Id, fromId: Id, value: Value) = {
+    if (state.donaters.contains(fromId)) {
+      val throwableOrWithdrawn = persistEvent2(Withdrawn(donationId, fromId, value))
+        .flatMap(e => processEvent(Right(e), (e: Withdrawn) => state = state.reduce(state, e)))
+      eventPublisher.publish(DonaterUpdated(state.donaters(fromId)))
       throwableOrWithdrawn
     } else {
-      persistEvent(Withdrawn(withdraw.donationId, state.ledger.id, withdraw.withdrawValue))
+      persistEvent2(Withdrawn(donationId, state.ledger.id, value))
+        .flatMap(e => processEvent(Right(e), (e: Withdrawn) => state = state.reduce(state, e)))
     }
   }
 
-  def processCommand(deposit: Deposit): Either[Throwable, Deposited] = {
-    (state.donaters.get(deposit.entityId),
-      state.donatables.get(deposit.entityId),
-      state.fundables.get(deposit.entityId)
+  private def deposit(donationId: Id, toId: Id, value: Value) = {
+    persistEvent2(Deposited(donationId, toId, value))
+      .flatMap(e => processEvent(Right(e), (e: Deposited) => state = state.reduce(state, e)))
+
+    (state.donaters.get(toId),
+      state.donatables.get(toId),
+      state.fundables.get(toId)
     ) match {
       case (Some(donater), None, None) =>
-        val throwableOrDeposited = persistEvent(Deposited(deposit.donationId, deposit.entityId, deposit.depositValue))
+        val throwableOrDeposited = persistEvent2(Deposited(donationId, toId, value))
         eventPublisher.publish(DonaterUpdated(state.donaters(donater.id)))
         throwableOrDeposited
       case (None, Some(donatable), None) =>
-        val depositValue = deposit.depositValue.setScale(2, RoundingMode.UP)
+        val depositValue = value.setScale(2, RoundingMode.UP)
         val minDonationAmount = donatable.minDonationAmount.setScale(2, RoundingMode.UP)
         Either.cond((depositValue - minDonationAmount) > -0.1,
-          Deposited(deposit.donationId, deposit.entityId, deposit.depositValue),
-          BelowMinDonationAmount(donatable.minDonationAmount, deposit.depositValue)
-        ).flatMap(persistEvent)
+          Deposited(donationId, toId, value),
+          BelowMinDonationAmount(donatable.minDonationAmount, value)
+        ).flatMap(persistEvent2)
       case (None, None, Some(fundable)) =>
-        val throwableOrDeposited = persistEvent(Deposited(deposit.donationId, deposit.entityId, deposit.depositValue))
+        val throwableOrDeposited = persistEvent2(Deposited(donationId, toId, value))
         eventPublisher.publish(FundableUpdated(state.fundables(fundable.id)))
         throwableOrDeposited
-      case _ => Left(UnknownEntity(deposit.entityId))
+      case _ => Left(UnknownEntity(toId))
     }
-  }
-
-  def processCommand(donation: CreateDonation): Either[Throwable, DonationCreated] = {
-    val d = donation.donation
-    val newId = UUID.randomUUID()
-    processCommand(Withdraw(newId, d.from, d.value))
-      .flatMap(f => processCommand(Deposit(f.donationId, d.to, d.value)))
-      .flatMap(f => persistEvent(DonationCreated(Donation(f.donationId, d.from, d.to, d.value))))
-      .fold(err => Left(err), event => Right(event))
-  }
-
-  def processCommand(ledgerDonation: CreateLedgerDonation): Either[Throwable, DonationCreated] = {
-    processCommand(
-      CreateDonation(DonationWithoutId(state.ledger.id, ledgerDonation.donation.to, ledgerDonation.donation.value)))
-  }
-
-  def processCommand(change: ChangeDonaterName): Either[Throwable, DonaterNameChanged] = {
-    val nameAvailable = change.name.nonEmpty && state.donaters.count(_._2.name == change.name) == 0
-    val throwableOrNameChanged = Either.cond(nameAvailable,
-      DonaterNameChanged(change.donaterId, change.name),
-      NameTaken())
-      .flatMap(persistEvent)
-    eventPublisher.publish(DonaterUpdated(state.donaters(change.donaterId)))
-    throwableOrNameChanged
   }
 }
