@@ -158,15 +158,13 @@ class DonatrCore(implicit
   }
 
   private def deposit(donationId: Id, toId: Id, value: Value) = {
-    persistEvent2(Deposited(donationId, toId, value))
-      .flatMap(e => processEvent(Right(e), (e: Deposited) => state = state.reduce(state, e)))
-
     (state.donaters.get(toId),
       state.donatables.get(toId),
       state.fundables.get(toId)
     ) match {
       case (Some(donater), None, None) =>
         val throwableOrDeposited = persistEvent2(Deposited(donationId, toId, value))
+          .flatMap(e => processEvent(Right(e), (e: Deposited) => state = state.reduce(state, e)))
         eventPublisher.publish(DonaterUpdated(state.donaters(donater.id)))
         throwableOrDeposited
       case (None, Some(donatable), None) =>
@@ -174,10 +172,12 @@ class DonatrCore(implicit
         val minDonationAmount = donatable.minDonationAmount.setScale(2, RoundingMode.UP)
         Either.cond((depositValue - minDonationAmount) > -0.1,
           Deposited(donationId, toId, value),
-          BelowMinDonationAmount(donatable.minDonationAmount, value)
-        ).flatMap(persistEvent2)
+          BelowMinDonationAmount(donatable.minDonationAmount, value))
+          .flatMap(persistEvent2)
+          .flatMap(e => processEvent(Right(e), (e: Deposited) => state = state.reduce(state, e)))
       case (None, None, Some(fundable)) =>
         val throwableOrDeposited = persistEvent2(Deposited(donationId, toId, value))
+          .flatMap(e => processEvent(Right(e), (e: Deposited) => state = state.reduce(state, e)))
         eventPublisher.publish(FundableUpdated(state.fundables(fundable.id)))
         throwableOrDeposited
       case _ => Left(UnknownEntity(toId))
