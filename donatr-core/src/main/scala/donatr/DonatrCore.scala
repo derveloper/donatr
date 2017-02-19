@@ -70,7 +70,7 @@ class DonatrCore(implicit
     creator.changeName(obj, name)
   }
 
-  private def persistEvent2[E <: Event](event: E): Either[Throwable, E] = {
+  private def persistEvent[E <: Event](event: E): Either[Throwable, E] = {
     eventStore.insert(event) match {
       case Right(_) => Right(event)
       case Left(err) => Left(err)
@@ -78,7 +78,7 @@ class DonatrCore(implicit
   }
 
   private def processEvent[E <: Event](eitherEvent: Either[Throwable, E], f: E => Unit) = {
-    eitherEvent.flatMap(persistEvent2)
+    eitherEvent.flatMap(persistEvent)
       .flatMap(e => {
         f(e)
         Right(e)
@@ -131,7 +131,7 @@ class DonatrCore(implicit
 
     withdraw(newId, d.from, d.value)
       .flatMap(_ => deposit(newId, d.to, d.value))
-      .flatMap(f => persistEvent2(DonationCreated(Donation(f.donationId, d.from, d.to, d.value))))
+      .flatMap(f => persistEvent(DonationCreated(Donation(f.donationId, d.from, d.to, d.value))))
       .fold(err => Left(err), event => Right(event.donation.id))
   }
 
@@ -141,18 +141,18 @@ class DonatrCore(implicit
 
     withdraw(newId, state.ledger.id, d.value)
       .flatMap(_ => deposit(newId, d.to, d.value))
-      .flatMap(f => persistEvent2(DonationCreated(Donation(f.donationId, state.ledger.id, d.to, d.value))))
+      .flatMap(f => persistEvent(DonationCreated(Donation(f.donationId, state.ledger.id, d.to, d.value))))
       .fold(err => Left(err), event => Right(event.donation.id))
   }
 
   private def withdraw(donationId: Id, fromId: Id, value: Value) = {
     if (state.donaters.contains(fromId)) {
-      val throwableOrWithdrawn = persistEvent2(Withdrawn(donationId, fromId, value))
+      val throwableOrWithdrawn = persistEvent(Withdrawn(donationId, fromId, value))
         .flatMap(e => processEvent(Right(e), (e: Withdrawn) => state = state.reduce(state, e)))
       eventPublisher.publish(DonaterUpdated(state.donaters(fromId)))
       throwableOrWithdrawn
     } else {
-      persistEvent2(Withdrawn(donationId, state.ledger.id, value))
+      persistEvent(Withdrawn(donationId, state.ledger.id, value))
         .flatMap(e => processEvent(Right(e), (e: Withdrawn) => state = state.reduce(state, e)))
     }
   }
@@ -163,7 +163,7 @@ class DonatrCore(implicit
       state.fundables.get(toId)
     ) match {
       case (Some(donater), None, None) =>
-        val throwableOrDeposited = persistEvent2(Deposited(donationId, toId, value))
+        val throwableOrDeposited = persistEvent(Deposited(donationId, toId, value))
           .flatMap(e => processEvent(Right(e), (e: Deposited) => state = state.reduce(state, e)))
         eventPublisher.publish(DonaterUpdated(state.donaters(donater.id)))
         throwableOrDeposited
@@ -173,10 +173,10 @@ class DonatrCore(implicit
         Either.cond((depositValue - minDonationAmount) > -0.1,
           Deposited(donationId, toId, value),
           BelowMinDonationAmount(donatable.minDonationAmount, value))
-          .flatMap(persistEvent2)
+          .flatMap(persistEvent)
           .flatMap(e => processEvent(Right(e), (e: Deposited) => state = state.reduce(state, e)))
       case (None, None, Some(fundable)) =>
-        val throwableOrDeposited = persistEvent2(Deposited(donationId, toId, value))
+        val throwableOrDeposited = persistEvent(Deposited(donationId, toId, value))
           .flatMap(e => processEvent(Right(e), (e: Deposited) => state = state.reduce(state, e)))
         eventPublisher.publish(FundableUpdated(state.fundables(fundable.id)))
         throwableOrDeposited
