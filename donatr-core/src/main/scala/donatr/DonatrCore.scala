@@ -33,17 +33,19 @@ class DonatrCore(implicit
 
   def ledger: Ledger = state.ledger
 
+  def events: Seq[Event] = eventStore.getEvents
+
   def rebuildState(): Unit = {
     log.info("rebuilding state started")
     resetState()
 
-    if (eventStore.getEvents.isEmpty) {
+    if (events.isEmpty) {
       eventStore.insert(LedgerCreated(state.ledger))
     }
 
-    /*eventStore.getEvents.foreach { e =>
-      //state = state.reduce()
-    }*/
+    events.foreach { e =>
+      state = state.reduce(state, e)
+    }
 
     log.info("rebuilt state")
   }
@@ -57,7 +59,7 @@ class DonatrCore(implicit
   implicit val CreateFundableC: CreateCommand[FundableWithoutId] = CreateCommand.instance(d => createFundable(d))
   implicit val CreateDonationC: CreateCommand[DonationWithoutId] = CreateCommand.instance(d => createDonation(d))
   implicit val CreateDonationWithoutFromC: CreateCommand[DonationWithoutIdAndFrom] =
-    CreateCommand.instance(d => createLedgerDonation(d))
+    CreateCommand.instance(d => createDonation(d))
 
   implicit val ChangeDonaterNameC: ChangeNameCommand[Donater] = ChangeNameCommand.instance((donater, name) =>
     changeDonaterName(donater, name))
@@ -135,25 +137,19 @@ class DonatrCore(implicit
       .fold(err => Left(err), event => Right(event.donation.id))
   }
 
-  def createLedgerDonation(donation: DonationWithoutIdAndFrom): Either[Throwable, UUID] = {
-    val d = donation
-    val newId = UUID.randomUUID()
-
-    withdraw(newId, state.ledger.id, d.value)
-      .flatMap(_ => deposit(newId, d.to, d.value))
-      .flatMap(f => persistEvent(DonationCreated(Donation(f.donationId, state.ledger.id, d.to, d.value))))
-      .fold(err => Left(err), event => Right(event.donation.id))
+  def createDonation(donation: DonationWithoutIdAndFrom): Either[Throwable, UUID] = {
+    createDonation(DonationWithoutId(state.ledger.id, donation.to, donation.value))
   }
 
   private def withdraw(donationId: Id, fromId: Id, value: Value) = {
     if (state.donaters.contains(fromId)) {
-      val throwableOrWithdrawn = persistEvent(Withdrawn(donationId, fromId, value))
-        .flatMap(e => processEvent(Right(e), (e: Withdrawn) => state = state.reduce(state, e)))
+      val throwableOrWithdrawn =
+        processEvent(Right(Withdrawn(donationId, fromId, value)), (e: Withdrawn) => state = state.reduce(state, e))
       eventPublisher.publish(DonaterUpdated(state.donaters(fromId)))
       throwableOrWithdrawn
     } else {
-      persistEvent(Withdrawn(donationId, state.ledger.id, value))
-        .flatMap(e => processEvent(Right(e), (e: Withdrawn) => state = state.reduce(state, e)))
+      processEvent(Right(
+        Withdrawn(donationId, state.ledger.id, value)), (e: Withdrawn) => state = state.reduce(state, e))
     }
   }
 
@@ -163,8 +159,8 @@ class DonatrCore(implicit
       state.fundables.get(toId)
     ) match {
       case (Some(donater), None, None) =>
-        val throwableOrDeposited = persistEvent(Deposited(donationId, toId, value))
-          .flatMap(e => processEvent(Right(e), (e: Deposited) => state = state.reduce(state, e)))
+        val throwableOrDeposited =
+          processEvent(Right(Deposited(donationId, toId, value)), (e: Deposited) => state = state.reduce(state, e))
         eventPublisher.publish(DonaterUpdated(state.donaters(donater.id)))
         throwableOrDeposited
       case (None, Some(donatable), None) =>
@@ -173,11 +169,10 @@ class DonatrCore(implicit
         Either.cond((depositValue - minDonationAmount) > -0.1,
           Deposited(donationId, toId, value),
           BelowMinDonationAmount(donatable.minDonationAmount, value))
-          .flatMap(persistEvent)
           .flatMap(e => processEvent(Right(e), (e: Deposited) => state = state.reduce(state, e)))
       case (None, None, Some(fundable)) =>
-        val throwableOrDeposited = persistEvent(Deposited(donationId, toId, value))
-          .flatMap(e => processEvent(Right(e), (e: Deposited) => state = state.reduce(state, e)))
+        val throwableOrDeposited =
+          processEvent(Right(Deposited(donationId, toId, value)), (e: Deposited) => state = state.reduce(state, e))
         eventPublisher.publish(FundableUpdated(state.fundables(fundable.id)))
         throwableOrDeposited
       case _ => Left(UnknownEntity(toId))

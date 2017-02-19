@@ -32,6 +32,17 @@ object EventT {
   }
 }
 
+case class DonatrState(donaters: Map[Id, Donater] = Map.empty,
+                       donatables: Map[Id, Donatable] = Map.empty,
+                       fundables: Map[Id, Fundable] = Map.empty,
+                       donations: Map[Id, Donation] = Map.empty,
+                       ledger: Ledger)
+{
+  def reduce[S,T](state: S, entity: T)(implicit creator: EventT[S,T]): S = {
+    creator.reduce(state, entity)
+  }
+}
+
 object DonatrState {
   implicit val CreateDonaterE: EventT[DonatrState, DonaterCreated] = EventT.instance((state, d) =>
     state.copy(donaters = state.donaters + (d.donater.id -> d.donater)))
@@ -42,7 +53,10 @@ object DonatrState {
   implicit val CreateFundableE: EventT[DonatrState, FundableCreated] = EventT.instance((state, d) =>
     state.copy(fundables = state.fundables + (d.fundable.id -> d.fundable)))
 
-  implicit val DonaterNameChangedE: EventT[DonatrState, DonaterNameChanged] = EventT.instance((state, d) =>
+  implicit val CreateLedgerE: EventT[DonatrState, LedgerCreated] = EventT.instance((state, d) =>
+    state.copy(ledger = d.ledger))
+
+  implicit val ChangeDonaterNameE: EventT[DonatrState, DonaterNameChanged] = EventT.instance((state, d) =>
     state.copy(donaters = state.donaters + (d.donaterId -> state.donaters(d.donaterId).copy(name = d.name))))
 
   implicit val CreateDonationE: EventT[DonatrState, DonationCreated] = EventT.instance((state, d) =>
@@ -77,15 +91,18 @@ object DonatrState {
       case _ => throw UnknownEntity(d.entityId)
     }
   })
-}
 
-case class DonatrState(donaters: Map[Id, Donater] = Map.empty,
-                       donatables: Map[Id, Donatable] = Map.empty,
-                       fundables: Map[Id, Fundable] = Map.empty,
-                       donations: Map[Id, Donation] = Map.empty,
-                       ledger: Ledger)
-{
-  def reduce[S,T](state: S, entity: T)(implicit creator: EventT[S,T]): S = {
-    creator.reduce(state, entity)
-  }
+  implicit val EventMatcherE: EventT[DonatrState, Event] = EventT.instance((state, d) => {
+    d match {
+      case e: DonaterCreated => CreateDonaterE.reduce(state, e)
+      case e: DonatableCreated => CreateDonatableE.reduce(state, e)
+      case e: FundableCreated => CreateFundableE.reduce(state, e)
+      case e: DonationCreated => CreateDonationE.reduce(state, e)
+      case e: LedgerCreated => CreateLedgerE.reduce(state, e)
+      case e: DonaterNameChanged => ChangeDonaterNameE.reduce(state, e)
+      case e: Withdrawn => WithdrawnE.reduce(state, e)
+      case e: Deposited => DepositedE.reduce(state, e)
+      case _ => throw UnknownEvent(d)
+    }
+  })
 }
