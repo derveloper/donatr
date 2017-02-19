@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory
 import slick.jdbc.H2Profile.api._
 import slick.lifted.{ProvenShape, TableQuery}
 
+import scala.concurrent.Await.result
+
 class EventStore(url: String = "jdbc:h2:file:./db/donatr.h2.db") {
 
   import scala.concurrent.ExecutionContext
@@ -21,7 +23,7 @@ class EventStore(url: String = "jdbc:h2:file:./db/donatr.h2.db") {
 
   try {
     log.debug("creating schema")
-    scala.concurrent.Await.result(db.run(DBIO.seq(
+    result(db.run(DBIO.seq(
       events.schema.create
     )), Duration.Inf)
   }
@@ -40,7 +42,7 @@ class EventStore(url: String = "jdbc:h2:file:./db/donatr.h2.db") {
 
   def insert(event: Event): Either[Throwable, Unit] = {
     try {
-      scala.concurrent.Await.result(db.run(DBIO.seq(
+      result(db.run(DBIO.seq(
         events += ((UUID.randomUUID().toString, event.asJson.noSpaces))
       )), Duration.Inf)
       Right(())
@@ -52,7 +54,7 @@ class EventStore(url: String = "jdbc:h2:file:./db/donatr.h2.db") {
 
   def getEvents(implicit ec: ExecutionContext): Seq[Event] = {
     try {
-      scala.concurrent.Await.result(db.run(events.result).map { allEvents =>
+      result(db.run(events.result).map { allEvents =>
         allEvents.map { e =>
           decode[Event](e._2)
         }
