@@ -1,6 +1,6 @@
 package donatr
 
-import java.util.UUID
+import donatr.DonatrTypes._
 
 sealed trait Command
 
@@ -14,4 +14,4 @@ case class CreateDonation(donation: DonationWithoutId) extends Command
 
 case class CreateLedgerDonation(donation: DonationWithoutIdAndFrom) extends Command
 
-case class ChangeDonaterName(donaterId: UUID, name: String) extends Command
+case class ChangeDonaterName(donaterId: Id, name: String) extends Command
