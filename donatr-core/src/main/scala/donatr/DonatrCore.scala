@@ -7,7 +7,14 @@ import org.slf4j.LoggerFactory
 import scala.math.BigDecimal.RoundingMode
 
 
+trait EventProcessor {
+  def persistEvent[E <: Event](event: E): Either[Throwable, E]
+
+  def processEvent[E <: Event](eitherEvent: Either[Throwable, E], f: E => Unit): Either[Throwable, E]
+}
+
 class DonatrCore(implicit
+                 val eventProcessor: EventProcessor,
                  val eventStore: EventStore,
                  val eventPublisher: EventPublisher) {
   private val log = LoggerFactory.getLogger(this.getClass)
@@ -72,14 +79,14 @@ class DonatrCore(implicit
     creator.changeName(obj, name)
   }
 
-  private def persistEvent[E <: Event](event: E): Either[Throwable, E] = {
+  def persistEvent[E <: Event](event: E): Either[Throwable, E] = {
     eventStore.insert(event) match {
       case Right(_) => Right(event)
       case Left(err) => Left(err)
     }
   }
 
-  private def processEvent[E <: Event](eitherEvent: Either[Throwable, E], f: E => Unit) = {
+  def processEvent[E <: Event](eitherEvent: Either[Throwable, E], f: E => Unit): Either[Throwable, E] = {
     eitherEvent.flatMap(persistEvent)
       .flatMap(e => {
         f(e)
@@ -137,7 +144,7 @@ class DonatrCore(implicit
       .fold(err => Left(err), event => Right(event.donation.id))
   }
 
-  def createDonation(donation: DonationWithoutIdAndFrom): Either[Throwable, UUID] = {
+  private def createDonation(donation: DonationWithoutIdAndFrom): Either[Throwable, UUID] = {
     createDonation(DonationWithoutId(state.ledger.id, donation.to, donation.value))
   }
 

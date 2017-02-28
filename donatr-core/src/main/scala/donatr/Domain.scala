@@ -9,11 +9,11 @@ case class Ledger(id: Id,
 case class Donater(id: Id,
                    name: Name,
                    email: Email,
-                   balance: BigDecimal)
+                   balance: Balance)
 
 case class DonaterWithoutId(name: Name,
                             email: Email,
-                            balance: BigDecimal)
+                            balance: Balance)
 
 case class Donatable(id: Id,
                      name: Name,
