@@ -20,14 +20,14 @@ object States {
   val currentMultiplicator: Var[Int] = Var(1)
 
   def setCurrentDonater(donaterId: String): Unit = {
-    if ((currentDonater.value.nonEmpty
-        && currentDonater.value.get.id != donaterId)
-    || currentDonater.value.isEmpty) {
-      if (donaters.value.contains(donaterId)) {
-        currentDonater := Some(donaters.value(donaterId))
+    if ((currentDonater.impure.value.nonEmpty
+        && currentDonater.impure.value.get.id != donaterId)
+    || currentDonater.impure.value.isEmpty) {
+      if (donaters.impure.value.contains(donaterId)) {
+        currentDonater := Some(donaters.impure.value(donaterId))
       }
       else {
-        Api.fetchDonater(donaterId).foreach {
+        Api.fetchDonater(donaterId).impure.foreach {
           case None => None
           case Some(Success(donater)) =>
             currentDonater := Some(donater)
@@ -46,19 +46,19 @@ object States {
   }
 
   def updateState(event: DonaterCreatedEvent): Unit = {
-    donaters := donaters.value + (event.DonaterCreated.donater.id -> event.DonaterCreated.donater)
+    donaters := donaters.impure.value + (event.DonaterCreated.donater.id -> event.DonaterCreated.donater)
   }
 
   def updateState(event: DonatableCreatedEvent): Unit = {
-    donatables := donatables.value :+ event.DonatableCreated.donatable
+    donatables := donatables.impure.value :+ event.DonatableCreated.donatable
   }
 
   def updateState(event: FundableCreatedEvent): Unit = {
-    fundables := fundables.value :+ event.FundableCreated.fundable
+    fundables := fundables.impure.value :+ event.FundableCreated.fundable
   }
 
   def updateState(event: FundableUpdatedEvent): Unit = {
-    fundables := fundables.value.map { f =>
+    fundables := fundables.impure.value.map { f =>
       if (f.id == event.FundableUpdated.fundable.id) event.FundableUpdated.fundable
       else f
     }

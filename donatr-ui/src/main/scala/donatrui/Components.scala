@@ -4,6 +4,7 @@ import donatrui.Api.{Donatable, Donater, Fundable}
 import donatrui.Router.router
 import mhtml.{Rx, Var}
 import org.scalajs.dom
+import org.scalajs.dom.html.Form
 import org.scalajs.dom.{Event, Node}
 
 import scala.xml.Elem
@@ -38,8 +39,9 @@ object Components {
 
   def DonatableComponent(donatable: Donatable): Elem = {
     def onClick: (Event) => Unit = { event: Event =>
-      for (_ <- 1 to currentMultiplicator.value) {
-        Api.donate(currentDonater.value.get, donatable)
+      for (_ <- 1 to currentMultiplicator.impure.value) {
+        val form = event.target.asInstanceOf[Form]
+        Api.donate(currentDonater.impure.value.get, donatable)
       }
       currentMultiplicator := 1
     }
@@ -86,7 +88,11 @@ object Components {
 
     def onSubmit(e: Event) = {
       e.preventDefault()
-      Api.createDonater(name.value, email.value)
+      val form = e.target.asInstanceOf[Form]
+      Api.createDonater(
+        form.elements.namedItem("name").nodeValue,
+        form.elements.namedItem("email").nodeValue
+      )
       currentDialog := None
     }
 
@@ -108,7 +114,7 @@ object Components {
 
     def onSubmit(e: Event) = {
       e.preventDefault()
-      Api.createDonatable(name.value, imageUrl.value, minDonationAmount.value)
+      Api.createDonatable(name.impure.value, imageUrl.impure.value, minDonationAmount.impure.value)
       currentDialog := None
     }
 
@@ -132,7 +138,7 @@ object Components {
 
     def onSubmit(e: Event) = {
       e.preventDefault()
-      Api.createFundable(name.value, imageUrl.value, fundingTarget.value)
+      Api.createFundable(name.impure.value, imageUrl.impure.value, fundingTarget.impure.value)
       currentDialog := None
     }
 
@@ -154,7 +160,7 @@ object Components {
 
     def onSubmit(e: Event) = {
       e.preventDefault()
-      Api.donate(currentDonater.value.get, fundable, value.value)
+      Api.donate(currentDonater.impure.value.get, fundable, value.impure.value)
       currentDialog := None
     }
 
@@ -175,7 +181,7 @@ object Components {
 
     def onSubmit(e: Event) = {
       e.preventDefault()
-      Api.donate(currentDonater.value.get, value.value)
+      Api.donate(currentDonater.impure.value.get, value.impure.value)
       currentDialog := None
     }
 

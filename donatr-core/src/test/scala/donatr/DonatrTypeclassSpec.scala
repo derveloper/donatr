@@ -13,6 +13,12 @@ class DonatrTypeclassSpec extends FlatSpec with Matchers {
   trait Db {
     implicit val eventStore = new EventStore(s"jdbc:h2:mem:donatr-${UUID.randomUUID()};DB_CLOSE_DELAY=-1")
     implicit val ep = new EP()
+    implicit val eventProcessor = new EventProcessor {
+      override def persistEvent[E <: Event](event: E): Either[Throwable, E] = { Right(event) }
+      override def processEvent[E <: Event](eitherEvent: Either[Throwable, E], f: (E) => Unit): Either[Throwable, E] = {
+        eitherEvent
+      }
+    }
     val donatr = new DonatrCore()
     val ledgerId: UUID = donatr.ledger.id
   }

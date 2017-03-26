@@ -13,9 +13,7 @@ trait EventProcessor {
   def processEvent[E <: Event](eitherEvent: Either[Throwable, E], f: E => Unit): Either[Throwable, E]
 }
 
-class DonatrCore(implicit
-                 val eventProcessor: EventProcessor,
-                 val eventStore: EventStore,
+class DonatrCore(implicit val eventStore: EventStore,
                  val eventPublisher: EventPublisher) {
   private val log = LoggerFactory.getLogger(this.getClass)
 

@@ -25,24 +25,25 @@ object Routes {
   }
 
   def donatablesRoute(params: Map[String, String]): Unit = {
-    donatables.value.isEmpty :? Api.fetchDonatables.foreach(l => donatables := l)
+    donatables.impure.value.isEmpty :? Api.fetchDonatables.map(l => donatables := l)
     Views.donatablesView()
-      .foreach(updateCurrentView(_, _ => {
+      .map(updateCurrentView(_, _ => {
         States.setCurrentDonater(params("donaterId"))}))
     currentNav := Layout.donatableNavBar
   }
 
   def fundablesRoute(params: Map[String, String]): Unit = {
-    fundables.value.isEmpty :? Api.fetchFundables.foreach(l => fundables := l)
+    fundables.impure.value.isEmpty :? Api.fetchFundables.map(l => fundables := l)
     Views.fundablesView()
-      .foreach(updateCurrentView(_, _ => States.setCurrentDonater(params("donaterId"))))
+      .map(updateCurrentView(_, _ => States.setCurrentDonater(params("donaterId"))))
     currentNav := Layout.fundableNavBar
   }
 
   def donatersRoute(params: Map[String, String]): Unit = {
-    donaters.value.isEmpty :? Api.fetchDonaters.foreach(l => donaters := ListMap(l.map(e => e.id -> e):_*))
+    donaters.impure.value.isEmpty :? Api.fetchDonaters.collect(l =>
+      donaters := ListMap(l.map(e => e.id -> e):_*))
     Views.donatersView()
-      .foreach(updateCurrentView(_, _ => States.unsetCurrentDonater()))
+      .map(updateCurrentView(_, _ => States.unsetCurrentDonater()))
     currentNav := Layout.donaterNavBar
   }
 
