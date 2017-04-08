@@ -6,13 +6,12 @@ import org.scalajs.dom.ext.Ajax.InputData
 
 import scala.concurrent.Future
 import scala.scalajs.js
-import scala.scalajs.js.annotation.JSName
+import scala.scalajs.js.annotation.JSGlobal
 import scala.scalajs.js.{Array, JSON}
 import scala.util.{Success, Try}
+import scala.concurrent.ExecutionContext.Implicits.global
 
 object Api {
-  import scala.concurrent.ExecutionContext.Implicits.global
-
   @js.native
   trait Donation extends js.Object {
     val from: String = js.native
@@ -49,79 +48,82 @@ object Api {
   trait DonatrEvent extends js.Object
 
   @js.native
-  @JSName("DonaterUpdated")
+  @JSGlobal("DonaterUpdated")
   class DonaterUpdated extends DonatrEvent {
     val donater: Donater = js.native
   }
 
   @js.native
-  @JSName("DonaterUpdatedEvent")
+  @JSGlobal("DonaterUpdatedEvent")
   class DonaterUpdatedEvent extends DonatrEvent {
     val DonaterUpdated: DonaterUpdated = js.native
   }
 
   @js.native
-  @JSName("DonaterCreated")
+  @JSGlobal("DonaterCreated")
   class DonaterCreated extends DonatrEvent {
     val donater: Donater = js.native
   }
 
   @js.native
-  @JSName("DonaterCreatedEvent")
+  @JSGlobal("DonaterCreatedEvent")
   class DonaterCreatedEvent extends DonatrEvent {
     val DonaterCreated: DonaterCreated = js.native
   }
 
   @js.native
-  @JSName("DonatableCreated")
+  @JSGlobal("DonatableCreated")
   class DonatableCreated extends DonatrEvent {
     val donatable: Donatable = js.native
   }
 
   @js.native
-  @JSName("DonatableCreatedEvent")
+  @JSGlobal("DonatableCreatedEvent")
   class DonatableCreatedEvent extends DonatrEvent {
     val DonatableCreated: DonatableCreated = js.native
   }
 
   @js.native
-  @JSName("FundableUpdated")
+  @JSGlobal("FundableUpdated")
   class FundableUpdated extends DonatrEvent {
     val fundable: Fundable = js.native
   }
 
   @js.native
-  @JSName("FundableUpdatedEvent")
+  @JSGlobal("FundableUpdatedEvent")
   class FundableUpdatedEvent extends DonatrEvent {
     val FundableUpdated: FundableUpdated = js.native
   }
 
   @js.native
-  @JSName("FundableCreated")
+  @JSGlobal("FundableCreated")
   class FundableCreated extends DonatrEvent {
     val fundable: Fundable = js.native
   }
 
   @js.native
-  @JSName("FundableCreatedEvent")
+  @JSGlobal("FundableCreatedEvent")
   class FundableCreatedEvent extends DonatrEvent {
     val FundableCreated: FundableCreated = js.native
   }
 
-  def fromFuture[T](future: Future[T]): Rx[Option[Try[T]]] = {
-    val result = Var(Option.empty[Try[T]])
-    future.onComplete(x => result := Some(x))
-    result
-  }
-
-  def doGetRequest[T](url: String)(f: String => T): Rx[Option[Try[T]]] =
-    fromFuture(Ajax.get(s"$url"))
-      .map(_.map(_.withFilter(_.status == 200).map { x =>
-        f(x.responseText)
-      }))
+  def doGetRequest[T](url: String)(f: js.Dynamic => T): Rx[Option[Try[T]]] =
+    Utils
+      .fromFuture(Ajax.get(url))
+      .map(r => {
+        println(r)
+        r.map(r2 => {
+          println(r2)
+          r2.withFilter(_.status == 200).map { x =>
+            val json = JSON.parse(x.responseText)
+            println("JSON: " + json)
+            f(json)
+          }
+        })
+      })
 
   def doPostRequest[T](url: String, data: Ajax.InputData)(f: String => T): Rx[Option[Try[T]]] =
-    fromFuture(Ajax.post(s"$url", data))
+    Utils.fromFuture(Ajax.post(s"$url", data))
       .map(_.map(_.withFilter(_.status == 200).map { x =>
         f(x.responseText)
       }))
@@ -152,20 +154,28 @@ object Api {
     ))), f => f)
   }
 
-  def fetchDonater(id: String): Rx[Option[Try[Donater]]] = {
-    fetch(s"/api/donaters/$id", f => f.asInstanceOf[Donater])
+  def fetchDonater(id: String): Rx[Option[Donater]] = {
+    doGetRequest(s"/api/donaters/$id")(f => {
+      println(f)
+      f.asInstanceOf[Donater]
+    }).map {
+      case Some(Success(donaters)) => Some(donaters)
+      case _ => None
+    }
   }
 
   def fetchDonaters: Rx[List[Donater]] = {
-    fetch("/api/donaters", f => f.asInstanceOf[Array[Donater]].toList)
-        .map {
-          case Some(Success(donaters)) => donaters
-          case _ => List.empty
-        }
+    doGetRequest("/api/donaters")(f => {
+      println(f)
+      f.asInstanceOf[Array[Donater]].toList
+    }).map {
+      case Some(Success(donaters)) => donaters
+      case _ => List.empty
+    }
   }
 
   def fetchDonatables: Rx[List[Donatable]] = {
-    fetch("/api/donatables", f => f.asInstanceOf[Array[Donatable]].toList)
+    doGetRequest("/api/donatables")(f => f.asInstanceOf[Array[Donatable]].toList)
       .map {
         case Some(Success(donatables)) => donatables
         case _ => List.empty
@@ -173,11 +183,19 @@ object Api {
   }
 
   def fetchFundables: Rx[List[Fundable]] = {
-    fetch("/api/fundables", f => f.asInstanceOf[Array[Fundable]].toList)
+    doGetRequest("/api/fundables")(f => f.asInstanceOf[Array[Fundable]].toList)
       .map {
         case Some(Success(fundables)) => fundables
         case _ => List.empty
       }
+  }
+
+  def donate(donaterId: String, donatable: Donatable): Rx[Option[Try[js.Dynamic]]] = {
+    post("/api/donations", InputData.str2ajax(JSON.stringify(js.Dynamic.literal(
+      from = donaterId,
+      to = donatable.id,
+      value = donatable.minDonationAmount
+    ))), f => f)
   }
 
   def donate(donater: Donater, donatable: Donatable): Rx[Option[Try[js.Dynamic]]] = {
@@ -196,6 +214,14 @@ object Api {
     ))), f => f)
   }
 
+  def donate(donaterId: String, fundable: Fundable, amount: Double): Rx[Option[Try[js.Dynamic]]] = {
+    post("/api/donations", InputData.str2ajax(JSON.stringify(js.Dynamic.literal(
+      from = donaterId,
+      to = fundable.id,
+      value = amount
+    ))), f => f)
+  }
+
   def donate(donater: Donater, value: Double): Rx[Option[Try[js.Dynamic]]] = {
     post("/api/donations", InputData.str2ajax(JSON.stringify(js.Dynamic.literal(
       to = donater.id,
@@ -203,13 +229,15 @@ object Api {
     ))), f => f)
   }
 
-  private def fetch[Out](url: String, f: js.Dynamic => Out) = {
-    doGetRequest(s"$url")(s => JSON.parse(s))
-      .map { d => d.map(d2 => d2.map(d3 => f(d3))) }
+  def donate(donaterId: String, value: Double): Rx[Option[Try[js.Dynamic]]] = {
+    post("/api/donations", InputData.str2ajax(JSON.stringify(js.Dynamic.literal(
+      to = donaterId,
+      value = value
+    ))), f => f)
   }
 
   private def post[Out](url: String, data: Ajax.InputData, f: js.Dynamic => Out) = {
-    doPostRequest(s"$url", data)(s => JSON.parse(s))
+    doPostRequest(url, data)(s => JSON.parse(s))
       .map { d => d.map(d2 => d2.map(d3 => f(d3))) }
   }
 }

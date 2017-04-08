@@ -7,16 +7,18 @@ import scala.xml.Elem
 
 object Views {
   def donatersView(): Rx[Elem] = {
-    States.donaters
+    println("donatersView")
+    Api.fetchDonaters
       .map { donaters =>
         <div>
-          {donaters.values.map(DonaterComponent).toList}
+          {donaters.map(DonaterComponent)}
         </div>
       }
   }
 
   def donatablesView(): Rx[Elem] = {
-    States.donatables
+    println("donatablesView")
+    Api.fetchDonatables
       .map { donatables =>
         <div>
           {donatables.map(DonatableComponent)}
@@ -25,7 +27,8 @@ object Views {
   }
 
   def fundablesView(): Rx[Elem] = {
-    States.fundables
+    println("fundablesView")
+    Api.fetchFundables
       .map { fundables =>
         <div>
           {fundables.map(FundableComponent)}

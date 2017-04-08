@@ -101,7 +101,7 @@ lazy val donatrUi = (project in file("./donatr-ui")).
     commonSettings,
     assemblySetting,
     libraryDependencies ++= Seq(
-      "in.nvilla" %%% "monadic-html" % "latest.integration",
+      "in.nvilla" %%% "monadic-html" % "0.3.0",
       scalaTest % Test,
       "org.seleniumhq.selenium" % "selenium-java" % "2.35.0" % "test"
     ),

@@ -74,7 +74,7 @@ object Layout {
       {currentDonater.map(d => Components.CurrentDonaterComponent(d))}
       {States.currentNav}
       <hr class={"DonatrStyles-hr"}/>
-      {currentView}
+      {currentRoute.flatMap(route => Router.route(route, Routes.routes))}
     </div>
   }
 }

@@ -1,10 +1,9 @@
 package donatrui
 
 import donatrui.Api.{Donatable, Donater, Fundable}
-import donatrui.Router.router
-import mhtml.{Rx, Var}
+import mhtml.Rx
 import org.scalajs.dom
-import org.scalajs.dom.html.Form
+import org.scalajs.dom.raw.{HTMLFormElement, HTMLInputElement}
 import org.scalajs.dom.{Event, Node}
 
 import scala.xml.Elem
@@ -17,7 +16,7 @@ object Components {
       event.stopPropagation()
       event.preventDefault()
       dom.window.history.pushState(href, null, href)
-      router(href, Routes.routes)
+      States.currentRoute := href
     }
     <a onclick={onClick _} href={href}>
       {child}
@@ -38,20 +37,27 @@ object Components {
   }
 
   def DonatableComponent(donatable: Donatable): Elem = {
-    def onClick: (Event) => Unit = { event: Event =>
-      for (_ <- 1 to currentMultiplicator.impure.value) {
-        val form = event.target.asInstanceOf[Form]
-        Api.donate(currentDonater.impure.value.get, donatable)
+    def onSubmit: (Event) => Unit = { event: Event =>
+      event.preventDefault()
+      val form = event.target.asInstanceOf[HTMLFormElement]
+      val multiplicator = form.elements.namedItem("multiplicator").asInstanceOf[HTMLInputElement].value.toInt
+      val donater = form.elements.namedItem("donater").asInstanceOf[HTMLInputElement].value
+      for (_ <- 1 to multiplicator) {
+        Api.donate(donater, donatable)
       }
       currentMultiplicator := 1
     }
 
-    <div onclick={onClick} class={"DonatrStyles-donater"}>
-      <img src={s"${donatable.imageUrl}"} width="115" height="115" />
-      <div class={"DonatrStyles-donaterName"}>
-        {donatable.name} / {donatable.minDonationAmount}
-      </div>
-    </div>
+    <form onsubmit={onSubmit}>
+      <input type="hidden" name="donater" value={currentDonater.map(_.map(_.id))} />
+      <input type="hidden" name="multiplicator" value={currentMultiplicator.map(_.toString)} />
+      <button type="submit" class={"DonatrStyles-donater"}>
+        <img src={s"${donatable.imageUrl}"} width="115" height="115" />
+        <div class={"DonatrStyles-donaterName"}>
+          {donatable.name} / {donatable.minDonationAmount}
+        </div>
+      </button>
+    </form>
   }
 
   def FundableComponent(fundable: Fundable): Elem = {
@@ -83,15 +89,12 @@ object Components {
   }
 
   def CreateDonaterDialog(): Elem = {
-    val name = Var("")
-    val email = Var("")
-
     def onSubmit(e: Event) = {
       e.preventDefault()
-      val form = e.target.asInstanceOf[Form]
+      val form = e.target.asInstanceOf[HTMLFormElement]
       Api.createDonater(
-        form.elements.namedItem("name").nodeValue,
-        form.elements.namedItem("email").nodeValue
+        form.elements.namedItem("name").asInstanceOf[HTMLInputElement].value,
+        form.elements.namedItem("email").asInstanceOf[HTMLInputElement].value
       )
       currentDialog := None
     }
@@ -100,21 +103,21 @@ object Components {
       <h2>Create a User</h2>
       <div class="swal2-content">
         <form onsubmit={onSubmit _}>
-          <input required={true} oninput={inputEvent(name := _.value)} placeholder="name" />
-          <input required={true} oninput={inputEvent(email := _.value)} type="email" placeholder="email" />
+          <input required={true} name="name" placeholder="name" />
+          <input required={true} name="email" type="email" placeholder="email" />
           <button class="swal2-styled" type="submit">Create</button></form>
       </div>
     </div>
   }
 
   def CreateDonatableDialog(): Elem = {
-    val name = Var("")
-    val imageUrl = Var("")
-    val minDonationAmount = Var(0.0)
-
     def onSubmit(e: Event) = {
       e.preventDefault()
-      Api.createDonatable(name.impure.value, imageUrl.impure.value, minDonationAmount.impure.value)
+      val form = e.target.asInstanceOf[HTMLFormElement]
+      val name = form.elements.namedItem("name").asInstanceOf[HTMLInputElement].value
+      val imageUrl = form.elements.namedItem("imageUrl").asInstanceOf[HTMLInputElement].value
+      val minDonationAmount = form.elements.namedItem("minDonationAmount").asInstanceOf[HTMLInputElement].value.toDouble
+      Api.createDonatable(name, imageUrl, minDonationAmount)
       currentDialog := None
     }
 
@@ -122,23 +125,22 @@ object Components {
       <h2>Create an Item</h2>
       <div class="swal2-content">
         <form onsubmit={onSubmit _}>
-          <input required={true} oninput={inputEvent(name := _.value)} placeholder="name" />
-          <input required={true} oninput={inputEvent(imageUrl := _.value)} placeholder="image url" />
-          <input required={true} oninput={inputEvent(minDonationAmount := _.value.toDouble)}
-                 type="number" step="any" placeholder="price" />
+          <input required={true} name="name" placeholder="name" />
+          <input required={true} name="imageUrl" placeholder="image url" />
+          <input required={true} name="minDonationAmount" type="number" step="any" placeholder="price" />
           <button class="swal2-styled" type="submit">Create</button></form>
       </div>
     </div>
   }
 
   def CreateFundableDialog(): Elem = {
-    val name = Var("")
-    val imageUrl = Var("")
-    val fundingTarget = Var(0.0)
-
     def onSubmit(e: Event) = {
       e.preventDefault()
-      Api.createFundable(name.impure.value, imageUrl.impure.value, fundingTarget.impure.value)
+      val form = e.target.asInstanceOf[HTMLFormElement]
+      val name = form.elements.namedItem("name").asInstanceOf[HTMLInputElement].value
+      val imageUrl = form.elements.namedItem("imageUrl").asInstanceOf[HTMLInputElement].value
+      val fundingTarget = form.elements.namedItem("fundingTarget").asInstanceOf[HTMLInputElement].value.toDouble
+      Api.createFundable(name, imageUrl, fundingTarget)
       currentDialog := None
     }
 
@@ -146,9 +148,9 @@ object Components {
       <h2>Create a Funding</h2>
       <div class="swal2-content">
         <form onsubmit={onSubmit _}>
-          <input required={true} oninput={inputEvent(name := _.value)} placeholder="name" />
-          <input required={true} oninput={inputEvent(imageUrl := _.value)} placeholder="image url" />
-          <input required={true} oninput={inputEvent(fundingTarget := _.value.toDouble)}
+          <input required={true} name="name" placeholder="name" />
+          <input required={true} name="imageUrl" placeholder="image url" />
+          <input required={true} name="fundingTarget"
                  type="number" step="any" placeholder="funding target" />
           <button class="swal2-styled" type="submit">Create</button></form>
       </div>
@@ -156,11 +158,12 @@ object Components {
   }
 
   def FundDialog(fundable: Fundable): Elem = {
-    val value = Var(0.0)
-
     def onSubmit(e: Event) = {
       e.preventDefault()
-      Api.donate(currentDonater.impure.value.get, fundable, value.impure.value)
+      val form = e.target.asInstanceOf[HTMLFormElement]
+      val donater = form.elements.namedItem("donater").asInstanceOf[HTMLInputElement].value
+      val value = form.elements.namedItem("amount").asInstanceOf[HTMLInputElement].value.toDouble
+      Api.donate(donater, fundable, value)
       currentDialog := None
     }
 
@@ -168,8 +171,8 @@ object Components {
       <h2>Deposit!</h2>
       <div class="swal2-content">
         <form onsubmit={onSubmit _}>
-          <input required={true}
-                 oninput={inputEvent(value := _.value.toDouble)}
+          <input type="hidden" name="donater" value={currentDonater.map(_.map(_.id))} />
+          <input required={true} name="amount"
                  type="number" step="any" placeholder="amount" />
           <button class="swal2-styled" type="submit">Fund</button></form>
       </div>
@@ -177,11 +180,12 @@ object Components {
   }
 
   def DepositDialog(): Elem = {
-    val value = Var(0.0)
-
     def onSubmit(e: Event) = {
       e.preventDefault()
-      Api.donate(currentDonater.impure.value.get, value.impure.value)
+      val form = e.target.asInstanceOf[HTMLFormElement]
+      val donater = form.elements.namedItem("donater").asInstanceOf[HTMLInputElement].value
+      val amount = form.elements.namedItem("amount").asInstanceOf[HTMLInputElement].value.toDouble
+      Api.donate(donater, amount)
       currentDialog := None
     }
 
@@ -189,8 +193,8 @@ object Components {
       <h2>Deposit!</h2>
       <div class="swal2-content">
         <form onsubmit={onSubmit _}>
-          <input required={true}
-                 oninput={inputEvent(value := _.value.toDouble)}
+          <input type="hidden" name="donater" value={currentDonater.map(_.map(_.id))} />
+          <input required={true} name="amount"
                  type="number" step="any" placeholder="amount" />
           <button class="swal2-styled" type="submit">Deposit</button></form>
       </div>

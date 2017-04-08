@@ -16,25 +16,17 @@ object States {
   val currentDonater: Var[Option[Donater]] = Var(None)
   val currentNav: Var[Elem] = Var(Layout.donaterNavBar)
   val currentView = Var(<span/>)
+  val currentRoute = Var("/")
   val currentDialog: Var[Option[Elem]] = Var(None)
   val currentMultiplicator: Var[Int] = Var(1)
 
   def setCurrentDonater(donaterId: String): Unit = {
-    if ((currentDonater.impure.value.nonEmpty
-        && currentDonater.impure.value.get.id != donaterId)
-    || currentDonater.impure.value.isEmpty) {
-      if (donaters.impure.value.contains(donaterId)) {
-        currentDonater := Some(donaters.impure.value(donaterId))
-      }
-      else {
-        Api.fetchDonater(donaterId).impure.foreach {
-          case None => None
-          case Some(Success(donater)) =>
-            currentDonater := Some(donater)
-          case _ => None
-        }.cancel
-      }
-    }
+    Api.fetchDonater(donaterId).impure.foreach {
+      case None => None
+      case Some(Success(donater)) =>
+        currentDonater := Some(donater)
+      case _ => None
+    }.cancel
   }
 
   def unsetCurrentDonater(): Unit = {
@@ -46,22 +38,22 @@ object States {
   }
 
   def updateState(event: DonaterCreatedEvent): Unit = {
-    donaters := donaters.impure.value + (event.DonaterCreated.donater.id -> event.DonaterCreated.donater)
+    donaters.update(d => d + (event.DonaterCreated.donater.id -> event.DonaterCreated.donater))
   }
 
   def updateState(event: DonatableCreatedEvent): Unit = {
-    donatables := donatables.impure.value :+ event.DonatableCreated.donatable
+    donatables.update(d => d :+ event.DonatableCreated.donatable)
   }
 
   def updateState(event: FundableCreatedEvent): Unit = {
-    fundables := fundables.impure.value :+ event.FundableCreated.fundable
+    fundables.update(f => f :+ event.FundableCreated.fundable)
   }
 
   def updateState(event: FundableUpdatedEvent): Unit = {
-    fundables := fundables.impure.value.map { f =>
-      if (f.id == event.FundableUpdated.fundable.id) event.FundableUpdated.fundable
-      else f
-    }
+    fundables.update(f => f.map { f2 =>
+      if (f2.id == event.FundableUpdated.fundable.id) event.FundableUpdated.fundable
+      else f2
+    })
   }
 
   def updateState(eventType: Symbol, obj: js.Object): Unit = eventType match {
