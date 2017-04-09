@@ -49,7 +49,7 @@ object Components {
     }
 
     <form onsubmit={onSubmit}>
-      <input type="hidden" name="donater" value={currentDonater.map(_.map(_.id))} />
+      <input type="hidden" name="donater" value={currentDonaterId} />
       <input type="hidden" name="multiplicator" value={currentMultiplicator.map(_.toString)} />
       <button type="submit" class={"DonatrStyles-donater"}>
         <img src={s"${donatable.imageUrl}"} width="115" height="115" />

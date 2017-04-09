@@ -29,7 +29,7 @@ object States {
   }
 
   def updateState(event: DonaterUpdatedEvent): Unit = {
-    currentDonater := Some(event.DonaterUpdated.donater)
+    currentDonaterId.impure.foreach(id => id.foreach(_ => currentDonaterId := Some(event.DonaterUpdated.donater.id)))
   }
 
   def updateState(event: DonaterCreatedEvent): Unit = {
