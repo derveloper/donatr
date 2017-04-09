@@ -73,18 +73,29 @@ object Components {
     </div>
   }
 
-  def CurrentDonaterComponent(donater: Option[Donater]): Elem = {
+  def CurrentDonaterComponent(currentDonater: Rx[Option[String]]): Rx[Elem] = {
+    currentDonater.map(_.getOrElse("")).flatMap { id =>
+      Api.fetchDonater(id).map {
+        case Some(donater) => CurrentDonaterDetails(donater)
+        case _ => <div class={"DonatrStyles-currentDonater"}><span class={"DonatrStyles-currentDonaterAvatarName"}>select user</span></div>
+      }
+    }
+  }
+
+  private def CurrentDonaterDetails(donater: Donater) = {
     <div class={"DonatrStyles-currentDonater"}>
-      {donater.map(d => {
-        <div class={"DonatrStyles-currentDonaterAvatar"}>
-          <div>
-            <img class={"DonatrStyles-currentDonaterAvatarImage"}
-                 src={s"https://www.gravatar.com/avatar/${md5(d.email)}?s=40"}/>
-            <span class={"DonatrStyles-currentDonaterAvatarName"}>{d.name}</span>
-          </div>
-          <div>{d.balance}</div>
+      <div class={"DonatrStyles-currentDonaterAvatar"}>
+        <div>
+          <img class={"DonatrStyles-currentDonaterAvatarImage"}
+               src={s"https://www.gravatar.com/avatar/${md5(donater.email)}?s=40"}/>
+          <span class={"DonatrStyles-currentDonaterAvatarName"}>
+            {donater.name}
+          </span>
         </div>
-      }).getOrElse(<span class={"DonatrStyles-currentDonaterAvatarName"}>select user</span>)}
+        <div>
+          {donater.balance}
+        </div>
+      </div>
     </div>
   }
 

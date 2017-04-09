@@ -18,8 +18,8 @@ object Bool {
 
 object Routes {
   import donatrui.States._
+
   import scala.collection.immutable.ListMap
-  import Bool._
 
   def updateCurrentView(view: Elem, after: Unit => Unit = () => _): Unit = {
     println("updateCurrentView")
@@ -29,9 +29,9 @@ object Routes {
 
   def donatablesRoute(params: Map[String, String]): Rx[Elem] = {
     Api.fetchDonatables.map(l => donatables := l)
-    println("donatbelsRoute")
+    println("donatablesRoute")
     currentNav := Layout.donatableNavBar
-    setCurrentDonater(params("donaterId"))
+    currentDonaterId := Some(params("donaterId"))
     Views.donatablesView()
   }
 
@@ -48,6 +48,7 @@ object Routes {
       donaters := ListMap(l.map(e => e.id -> e):_*)
     })
     currentNav := Layout.donaterNavBar
+    currentDonaterId := None
     Views.donatersView()
   }
 

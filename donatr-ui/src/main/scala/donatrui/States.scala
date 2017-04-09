@@ -4,7 +4,6 @@ import donatrui.Api._
 import mhtml.Var
 
 import scala.scalajs.js
-import scala.util.Success
 import scala.xml.Elem
 
 object States {
@@ -14,19 +13,15 @@ object States {
   val donatables: Var[List[Donatable]] = Var(List.empty)
   val fundables: Var[List[Fundable]] = Var(List.empty)
   val currentDonater: Var[Option[Donater]] = Var(None)
+  val currentDonaterId: Var[Option[String]] = Var(None)
   val currentNav: Var[Elem] = Var(Layout.donaterNavBar)
   val currentView = Var(<span/>)
   val currentRoute = Var("/")
   val currentDialog: Var[Option[Elem]] = Var(None)
   val currentMultiplicator: Var[Int] = Var(1)
 
-  def setCurrentDonater(donaterId: String): Unit = {
-    Api.fetchDonater(donaterId).impure.foreach {
-      case None => None
-      case Some(Success(donater)) =>
-        currentDonater := Some(donater)
-      case _ => None
-    }.cancel
+  def fetchDonater(donaterId: String): Unit = {
+    Api.fetchDonater(donaterId)
   }
 
   def unsetCurrentDonater(): Unit = {
