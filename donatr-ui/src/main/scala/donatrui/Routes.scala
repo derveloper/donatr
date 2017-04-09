@@ -1,10 +1,10 @@
 package donatrui
 
 
-import mhtml.Rx
-
 import scala.language.implicitConversions
 import scala.xml.Elem
+
+import mhtml.Rx
 
 case class Bool(b: Boolean) {
   def :?[X](t: => X): Object = new {
