@@ -40,8 +40,8 @@ object Components {
     def onSubmit: (Event) => Unit = { event: Event =>
       event.preventDefault()
       val form = event.target.asInstanceOf[HTMLFormElement]
-      val multiplicator = form.elements.namedItem("multiplicator").asInstanceOf[HTMLInputElement].value.toInt
-      val donater = form.elements.namedItem("donater").asInstanceOf[HTMLInputElement].value
+      val multiplicator = getInputValueFrom(form, "multiplicator").toInt
+      val donater = getInputValueFrom(form, "donater")
       for (_ <- 1 to multiplicator) {
         Api.donate(donater, donatable)
       }
@@ -73,13 +73,19 @@ object Components {
     </div>
   }
 
-  def CurrentDonaterComponent(currentDonater: Rx[Option[String]]): Rx[Elem] = {
-    currentDonater.map(_.getOrElse("")).flatMap { id =>
+  def CurrentDonaterComponent(): Rx[Elem] = {
+    currentDonaterId.map(_.getOrElse("")).flatMap { id =>
       Api.fetchDonater(id).map {
         case Some(donater) => CurrentDonaterDetails(donater)
-        case _ => <div class={"DonatrStyles-currentDonater"}><span class={"DonatrStyles-currentDonaterAvatarName"}>select user</span></div>
+        case _ => EmptyDonater
       }
     }
+  }
+
+  private def EmptyDonater = {
+    <div class={"DonatrStyles-currentDonater"}>
+      <span class={"DonatrStyles-currentDonaterAvatarName"}>select user</span>
+    </div>
   }
 
   private def CurrentDonaterDetails(donater: Donater) = {
@@ -103,9 +109,10 @@ object Components {
     def onSubmit(e: Event) = {
       e.preventDefault()
       val form = e.target.asInstanceOf[HTMLFormElement]
+      val name = "name"
       Api.createDonater(
-        form.elements.namedItem("name").asInstanceOf[HTMLInputElement].value,
-        form.elements.namedItem("email").asInstanceOf[HTMLInputElement].value
+        getInputValueFrom(form, name),
+        getInputValueFrom(form, "email")
       )
       currentDialog := None
     }
@@ -121,13 +128,17 @@ object Components {
     </div>
   }
 
+  private def getInputValueFrom(form: HTMLFormElement, name: String) = {
+    form.elements.namedItem(name).asInstanceOf[HTMLInputElement].value
+  }
+
   def CreateDonatableDialog(): Elem = {
     def onSubmit(e: Event) = {
       e.preventDefault()
       val form = e.target.asInstanceOf[HTMLFormElement]
-      val name = form.elements.namedItem("name").asInstanceOf[HTMLInputElement].value
-      val imageUrl = form.elements.namedItem("imageUrl").asInstanceOf[HTMLInputElement].value
-      val minDonationAmount = form.elements.namedItem("minDonationAmount").asInstanceOf[HTMLInputElement].value.toDouble
+      val name = getInputValueFrom(form, "name")
+      val imageUrl = getInputValueFrom(form, "imageUrl")
+      val minDonationAmount = getInputValueFrom(form, "minDonationAmount").toDouble
       Api.createDonatable(name, imageUrl, minDonationAmount)
       currentDialog := None
     }
@@ -148,9 +159,9 @@ object Components {
     def onSubmit(e: Event) = {
       e.preventDefault()
       val form = e.target.asInstanceOf[HTMLFormElement]
-      val name = form.elements.namedItem("name").asInstanceOf[HTMLInputElement].value
-      val imageUrl = form.elements.namedItem("imageUrl").asInstanceOf[HTMLInputElement].value
-      val fundingTarget = form.elements.namedItem("fundingTarget").asInstanceOf[HTMLInputElement].value.toDouble
+      val name = getInputValueFrom(form, "name")
+      val imageUrl = getInputValueFrom(form, "imageUrl")
+      val fundingTarget = getInputValueFrom(form, "fundingTarget").toDouble
       Api.createFundable(name, imageUrl, fundingTarget)
       currentDialog := None
     }
@@ -172,8 +183,8 @@ object Components {
     def onSubmit(e: Event) = {
       e.preventDefault()
       val form = e.target.asInstanceOf[HTMLFormElement]
-      val donater = form.elements.namedItem("donater").asInstanceOf[HTMLInputElement].value
-      val value = form.elements.namedItem("amount").asInstanceOf[HTMLInputElement].value.toDouble
+      val donater = getInputValueFrom(form, "donater")
+      val value = getInputValueFrom(form, "amount").toDouble
       Api.donate(donater, fundable, value)
       currentDialog := None
     }
@@ -194,8 +205,8 @@ object Components {
     def onSubmit(e: Event) = {
       e.preventDefault()
       val form = e.target.asInstanceOf[HTMLFormElement]
-      val donater = form.elements.namedItem("donater").asInstanceOf[HTMLInputElement].value
-      val amount = form.elements.namedItem("amount").asInstanceOf[HTMLInputElement].value.toDouble
+      val donater = getInputValueFrom(form, "donater")
+      val amount = getInputValueFrom(form, "amount").toDouble
       Api.donate(donater, amount)
       currentDialog := None
     }

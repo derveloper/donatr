@@ -71,7 +71,7 @@ object Layout {
   def main: Elem = {
     <div id="app">
       <h1 class={"DonatrStyles-header"}>{Link("/", <span>donatr</span>)}</h1>
-      {Components.CurrentDonaterComponent(currentDonaterId)}
+      {Components.CurrentDonaterComponent()}
       {States.currentNav}
       <hr class={"DonatrStyles-hr"}/>
       {currentRoute.flatMap(route => Router.route(route, Routes.routes))}
